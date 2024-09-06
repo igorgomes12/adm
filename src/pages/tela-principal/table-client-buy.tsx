@@ -35,7 +35,7 @@ const data = [
     system: 'WebLider',
     type: 'VESTUARIO',
     active: 'Sim',
-    uf: 'ES',
+    uf: 'MT',
     municipio: 'Brejetuba',
     status: 'Aguardando Cadastro',
   },

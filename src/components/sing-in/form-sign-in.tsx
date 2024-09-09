@@ -1,40 +1,51 @@
-import { FormProvider, useForm } from "react-hook-form";
-import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../ui/button";
-import { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { FormProvider, useForm } from 'react-hook-form'
+import { FormControl, FormField, FormItem, FormMessage } from '../ui/form'
+import { Input } from '../ui/input'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '../ui/button'
+import { useState } from 'react'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const signInSchema = z.object({
-  username: z.string().min(4, { message: "Necessário digitar a login completo" }),
-  password: z.string().min(4, { message: "Necessário digitar a senha completa" }).max(20),
-});
+  username: z
+    .string()
+    .min(4, { message: 'Necessário digitar a login completo' }),
+  password: z
+    .string()
+    .min(4, { message: 'Necessário digitar a senha completa' })
+    .max(20),
+})
 
-type SignInForm = z.infer<typeof signInSchema>;
+type SignInForm = z.infer<typeof signInSchema>
 
-export const SignInForm = ({ onSwitch }: { onSwitch: () => void }) => {
+export const SignInForm = () => {
   const form = useForm<SignInForm>({
     defaultValues: {
-      username: "",
-      password: "",
+      username: 'igor gomes',
+      password: '12345',
     },
     resolver: zodResolver(signInSchema),
-  });
+  })
 
-  const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
 
   const togglePasswordVisibility = () => {
-    setShowPassword((prevState) => !prevState);
-  };
+    setShowPassword(prevState => !prevState)
+  }
 
   const onSubmit = (data: SignInForm) => {
-    console.log("valores", data);
-    navigate("/tela-principal"); // Navigate to the TelaPrincipal page
-  };
+    try {
+      if (data) navigate('/tela-principal')
+        toast("Wow so easy!");
+    } catch (error) {
+      toast("Error");
+    }
+  }
 
   return (
     <FormProvider {...form}>
@@ -68,7 +79,7 @@ export const SignInForm = ({ onSwitch }: { onSwitch: () => void }) => {
                   <Input
                     className="cursor-pointer p-2 pr-10"
                     placeholder="senha"
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     {...field}
                   />
                   <div
@@ -88,16 +99,8 @@ export const SignInForm = ({ onSwitch }: { onSwitch: () => void }) => {
             Entrar
           </Button>
         </div>
+        <ToastContainer />
       </form>
-      <div className="w-full text-center">
-        <a
-          href="#"
-          className="text-gray-500 hover:text-gray-800 text-sm"
-          onClick={onSwitch}
-        >
-          Esqueceu a senha?
-        </a>
-      </div>
     </FormProvider>
-  );
-};
+  )
+}

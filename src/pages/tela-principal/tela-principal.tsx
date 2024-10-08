@@ -1,4 +1,4 @@
-import Sidebar from '../sidebar/sidebar'
+import Sidebar from '../../components/sidebar/sidebar'
 import { HeaderFirstPage } from './header-first-page'
 
 export const TelaPrincipal = () => {

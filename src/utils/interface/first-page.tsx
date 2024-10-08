@@ -20,6 +20,9 @@ export const canaisItems = [
   { label: 'Clientes de Venda', icon: <BsFillPersonPlusFill /> },
   { label: 'Clientes de Visita', icon: <ImUsers /> },
   { label: 'Contabilidades', icon: <FaDollarSign /> },
+  { label: 'Sistemas', icon: <FaDollarSign /> },
+  { label: 'Tipo Estabelecimento', icon: <FaDollarSign /> },
+  { label: 'Produtos', icon: <FaDollarSign /> },
 ];
 
 export const ratItems = [

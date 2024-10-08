@@ -6,12 +6,19 @@ import {
 import { useState } from 'react'
 import { TableClientBuy } from '../tables-client/table-client-buy'
 import BlurIn from '@/components/magicui/blur-in'
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  DashboardIcon,
+  ExitIcon,
+} from '@radix-ui/react-icons'
 
 export default function Sidebar() {
   const [openSubmenus, setOpenSubmenus] = useState<{
     [key in MenuId]?: boolean
   }>({})
   const [activeComponent, setActiveComponent] = useState<string | null>(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true)
 
   const handleToggleSubmenu = (id: MenuId) => {
     setOpenSubmenus(prev => ({
@@ -24,41 +31,67 @@ export default function Sidebar() {
     setActiveComponent(componentId)
   }
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
   return (
-    <div className="grid grid-cols-12 px-2 py-1">
-      <div className="flex flex-col col-span-12 md:col-span-2 border-r h-auto md:h-screen gap-2 items-start justify-start w-full">
+    <div className="flex">
+      <div
+        className={`flex flex-col h-screen bg-gray-500 text-white transition-all duration-300 ease-in-out ${
+          isSidebarOpen ? 'w-64' : 'w-16'
+        } relative`}
+      >
+        <button
+          className="absolute top-4 -right-4 bg-gray-700 p-2 rounded-xl transform transition-transform"
+          onClick={toggleSidebar}
+        >
+          {isSidebarOpen ? (
+            <ArrowLeftIcon className="w-4 h-4 font-bold" />
+          ) : (
+            <ArrowRightIcon className="w-4 h-4 font-bold" />
+          )}
+        </button>
+        <div className="flex items-center mb-4 border-b-white border-b-2 justify-center py-2">
+          <DashboardIcon className="w-6 h-6 mr-2" />
+          {isSidebarOpen && <span className="text-lg font-bold">Menu</span>}
+        </div>
         {menuNavigation.map(menu => (
-          <div key={menu.id} className="border-b-2 py-2 w-full">
+          <div key={menu.id} className="mb-4">
             <div
               onClick={() => handleToggleSubmenu(menu.id as MenuId)}
-              className="cursor-pointer w-full"
+              className="cursor-pointer flex items-center p-2 hover:bg-gray-700 rounded"
             >
-              {menu.label}
+              <span className="ml-2">{menu.label}</span>
             </div>
             {openSubmenus[menu.id as MenuId] &&
               submenuItems[menu.id as MenuId] && (
-                <div className="py-2 px-1 w-full gap-2 flex flex-col">
+                <div className="ml-4 mt-2">
                   {submenuItems[menu.id as MenuId].map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex border rounded-md bg-gray-50 hover:bg-gray-200 w-full items-center gap-2 px-2 py-2"
+                      className="flex items-center p-2 hover:bg-gray-700 rounded cursor-pointer"
                       onClick={() => handleSubmenuClick(item.label)}
                     >
                       {item.icon}
-                      <span className="cursor-pointer">{item.label}</span>
+                      <span className="ml-2">{item.label}</span>
                     </div>
                   ))}
                 </div>
               )}
           </div>
         ))}
+        <div className="mt-auto flex items-center p-2 hover:bg-gray-700 rounded cursor-pointer">
+          <ExitIcon className="w-4 h-4" />
+          {isSidebarOpen && <span className="ml-2">Sign out</span>}
+        </div>
       </div>
-      <div className="flex-1 col-span-12 md:col-span-10 p-2 flex items-start justify-start">
+      <div className="flex-1 p-4">
         {activeComponent === 'Clientes de Venda' ? (
           <TableClientBuy />
         ) : (
           <div className="flex flex-col h-screen bg-gray-400 w-full items-center justify-center">
-            <BlurIn word="Seja bem-vindo!" className="text-md"></BlurIn>
+            {/* <BlurIn word="Seja bem-vindo!" className="text-md"></BlurIn> */}
             <p>Lider Admin</p>
             <img
               src="https://liderautomacao.s3.amazonaws.com/site/public/logo.png"

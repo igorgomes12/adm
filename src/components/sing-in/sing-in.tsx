@@ -1,5 +1,5 @@
-import BlurIn from '../magicui/blur-in'
-import FlickeringGrid from '../magicui/flickering-grid'
+// import BlurIn from '../magicui/blur-in'
+// import FlickeringGrid from '../magicui/flickering-grid'
 import { SignInForm } from './form-sign-in'
 
 export const SignIn = () => {
@@ -12,7 +12,7 @@ export const SignIn = () => {
             alt="logo"
             className="absolute mr-20"
           />{' '}
-          <FlickeringGrid
+          {/* <FlickeringGrid
             className="z-0 absolute inset-0 size-full"
             squareSize={4}
             gridGap={6}
@@ -20,7 +20,7 @@ export const SignIn = () => {
             maxOpacity={0.5}
             flickerChance={0.1}
             width={900}
-          />
+          /> */}
         </div>
         <div className="flex flex-col w-full items-center justify-center">
           <div className="h-20 items-center justify-center flex w-full">
@@ -31,7 +31,7 @@ export const SignIn = () => {
             />
           </div>
           <div className="text-center text-md flex flex-col gap-2">
-            <BlurIn word="Seja bem-vindo!" className="text-md"></BlurIn>
+            {/* <BlurIn word="Seja bem-vindo!" className="text-md"></BlurIn> */}
             <p className="text-sm">
               Insira suas credenciais para acessar o sistema
             </p>

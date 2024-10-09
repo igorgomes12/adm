@@ -11,6 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table'
+import { ModalEstablishmentDelete } from './modal-establishment/delete-modal-establishment'
+import { useEstablishmentDeleteZustand } from './zustand-establishment/delete-establisment'
 
 const headers = ['Cód.', 'Nome Estabelecimento', 'Status', '']
 
@@ -20,9 +22,10 @@ export type TEstablishment = {
   status: boolean
 }
 
-const EstablishmentRow: FC<{ establishment: TEstablishment }> = ({
-  establishment,
-}) => (
+const EstablishmentRow: FC<{
+  establishment: TEstablishment
+  onOpenDelete: (id: number) => void
+}> = ({ establishment, onOpenDelete }) => (
   <TableRow>
     <TableCell className="text-xs items-center">{establishment.id}</TableCell>
     <TableCell className="text-xs items-center">{establishment.name}</TableCell>
@@ -37,7 +40,7 @@ const EstablishmentRow: FC<{ establishment: TEstablishment }> = ({
         <FaEdit size={24} />
       </button>
       <button
-        // onClick={() => onOpenDelete(establishment.id)}
+        onClick={() => onOpenDelete(establishment.id)}
         className="text-red-200 hover:text-red-500"
       >
         <FaTrash size={24} />
@@ -57,6 +60,7 @@ const LoadingRow: FC = () => (
 export const TableEstablishment: FC<{ searchTerm: string }> = ({
   searchTerm,
 }) => {
+  const { isOpen, onOpen } = useEstablishmentDeleteZustand()
   const { data, isLoading, error } = useQuery<TEstablishment[], Error>({
     queryKey: ['get-establishment'],
     queryFn: async () => {
@@ -95,7 +99,11 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
       )
 
     return filteredData.map(data => (
-      <EstablishmentRow key={data.id} establishment={data} />
+      <EstablishmentRow
+        key={data.id}
+        establishment={data}
+        onOpenDelete={onOpen}
+      />
     ))
   }, [isLoading, error, filteredData])
 
@@ -113,6 +121,7 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
         </TableHeader>
         <TableBody>{tableContent}</TableBody>
       </Table>
+      {isOpen && <ModalEstablishmentDelete />}
     </div>
   )
 }

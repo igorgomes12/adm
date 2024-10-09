@@ -1,33 +1,75 @@
+import { useQuery } from '@tanstack/react-query'
+import type { FC } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
+import api from '../sing-in/api/interceptors-axios'
+import { SkeletonCard } from '../skeleton-component/skeleton'
 import {
   Table,
-  TableHeader,
-  TableRow,
-  TableHead,
   TableBody,
   TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '../ui/table'
 
-const systemsData = [
-  {
-    id: 123,
-    name: 'Contabilidade Otavio',
-    telefone: '(27)9828-1164',
-    crc: '123',
-    cnpj: '11.379.457/0001-75',
-  },
-  {
-    id: 456,
-    name: 'Contabilidade Geral',
-    telefone: '(27)9828-1164',
-    crc: '123',
-    cnpj: '11.379.457/0001-75',
-  },
+const headers = [
+  'Cód.',
+  'Nome Contabilidade',
+  'Telefone',
+  'Email',
+  'Contato',
+  'CRC',
+  'CNPJ',
+  '',
 ]
 
-const headers = ['Cód.', 'Nome Contabilidade', 'Telefone', 'Crc', 'CNPJ', '']
+export type TAccount = {
+  id: number
+  name: string
+  phone: string
+  email: string
+  contact: string
+  crc: string
+  cnpj: string
+}
 
-export const TableAccounting = () => {
+const AccountRow: FC<{ account: TAccount }> = ({ account }) => (
+  <TableRow>
+    {Object.values(account).map((value, index) => (
+      <TableCell key={index} className="text-xs items-center">
+        {value}
+      </TableCell>
+    ))}
+    <TableCell className="flex items-center justify-center w-full h-full space-x-2">
+      <button className="text-blue-500 hover:text-blue-700">
+        <FaEdit size={24} />
+      </button>
+      <button className="text-red-500 hover:text-red-700">
+        <FaTrash size={24} />
+      </button>
+    </TableCell>
+  </TableRow>
+)
+
+export const TableAccounting: FC = () => {
+  const { data, error, isLoading } = useQuery<TAccount[]>({
+    queryKey: ['get-accounting'],
+    queryFn: async () => {
+      const response = await api.get(`/accouting`)
+      return response.data
+    },
+  })
+
+  if (error) {
+    return <div>Erro ao carregar os dados: {(error as Error).message}</div>
+  }
+
+  const tableContent = isLoading ? (
+    <SkeletonCard />
+  ) : (
+    data?.map(account => <AccountRow key={account.id} account={account} />)
+  )
+
   return (
     <div className="flex flex-col mt-4">
       <Table className="min-w-full py-2 text-sm">
@@ -40,25 +82,7 @@ export const TableAccounting = () => {
             ))}
           </TableRow>
         </TableHeader>
-        <TableBody>
-          {systemsData.map(system => (
-            <TableRow key={system.id}>
-              {Object.values(system).map((value, index) => (
-                <TableCell key={index} className="text-xs items-center">
-                  {value}
-                </TableCell>
-              ))}
-              <TableCell className="flex items-center justify-center w-full h-full space-x-2">
-                <button className="text-blue-500 hover:text-blue-700">
-                  <FaEdit size={24} />
-                </button>
-                <button className="text-red-500 hover:text-red-700">
-                  <FaTrash size={24} />
-                </button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+        <TableBody>{tableContent}</TableBody>
       </Table>
     </div>
   )

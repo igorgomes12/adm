@@ -1,9 +1,15 @@
-
-import { FaBell, FaChartBar, FaCog, FaDesktop, FaDollarSign, FaHeadset, FaUser } from "react-icons/fa";
-import { BsFillPersonPlusFill } from "react-icons/bs";
-import { ImUsers } from "react-icons/im";
-import { ChatBubbleIcon } from "@radix-ui/react-icons";
-
+import {
+  FaBell,
+  FaChartBar,
+  FaCog,
+  FaDesktop,
+  FaDollarSign,
+  FaHeadset,
+  FaUser,
+} from 'react-icons/fa'
+import { BsFillPersonPlusFill } from 'react-icons/bs'
+import { ImUsers } from 'react-icons/im'
+import { ChatBubbleIcon } from '@radix-ui/react-icons'
 
 export const menuNavigation = [
   {
@@ -42,7 +48,7 @@ export const menuNavigation = [
   { id: 'monitoramento', label: 'Monitoramento', link: '#', icon: <FaBell /> },
   { id: 'suporte', label: 'Suporte', link: '#', icon: <FaUser /> },
   { id: 'utilitarios', label: 'Utilitários', link: '#', icon: <ImUsers /> },
-];
+]
 
 export const canaisItems = [
   { label: 'Clientes de Venda', icon: <BsFillPersonPlusFill /> },
@@ -51,25 +57,27 @@ export const canaisItems = [
   { label: 'Sistemas', icon: <FaDesktop /> },
   { label: 'Tipo Estabelecimento', icon: <FaCog /> },
   { label: 'Produtos', icon: <FaChartBar /> },
-];
+]
 
-export const ratItems = [
-  { label: 'Rat', icon: <FaHeadset /> },
-];
+export const ratItems = [{ label: 'Rat', icon: <FaHeadset /> }]
 
-export const relatoriosItems = [
-  { label: 'Relatório', icon: <FaBell /> },
-];
+export const relatoriosItems = [{ label: 'Relatório', icon: <FaBell /> }]
 
-export const admitems = [
-  { label: 'Admin', icon: <FaUser /> },
-];
+export const admitems = [{ label: 'Admin', icon: <FaUser /> }]
 
-export type MenuId = 'canais' | 'rat' | 'relatorios' | 'administracao';
+export type MenuId = 'canais' | 'rat' | 'relatorios' | 'administracao'
 
-export const submenuItems: Record<MenuId, { label: string; icon: JSX.Element }[]> = {
+export const submenuItems: Record<
+  MenuId,
+  { label: string; icon: JSX.Element }[]
+> = {
   canais: canaisItems,
   rat: ratItems,
   relatorios: relatoriosItems,
   administracao: admitems,
-};
+}
+
+export type TError = {
+  status: string
+  message: string
+}

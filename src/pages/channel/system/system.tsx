@@ -3,6 +3,8 @@ import { useSystemZustand } from '@/components/system-components/system-add/zust
 import { TableSystem } from '@/components/system-components/table-system'
 import type { FC } from 'react'
 import { BsPlus } from 'react-icons/bs'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export const SystemComponent: FC = () => {
   const { isOpen, onOpen } = useSystemZustand()
@@ -28,6 +30,7 @@ export const SystemComponent: FC = () => {
       </div>
       <TableSystem />
       {isOpen && <ModalSystemAdd />}
+      <ToastContainer />
     </div>
   )
 }

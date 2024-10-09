@@ -1,46 +1,86 @@
 import { Button } from '@/components/ui/button'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useSystemEditZustand } from './zustand-state/system-edit-zustand'
+import { useForm, FormProvider } from 'react-hook-form'
 import {
   SystemSchemaDto,
   type TSystemSchemaDto,
 } from './zod-types/types-system'
-import { useSystemEditZustand } from './zustand-state/system-edit-zustand'
-import React from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
+import api from '@/components/sing-in/api/interceptors-axios'
+import { toast } from 'react-toastify'
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { useEffect } from 'react'
 
 export const ModalSystemEdit = () => {
   const { id, isOpen, onClose } = useSystemEditZustand()
+  const queryClient = useQueryClient()
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<TSystemSchemaDto>({
+  const form = useForm<TSystemSchemaDto>({
     defaultValues: {
       id: 0,
       name: '',
+      image_url: '',
+      description: '',
+      stable_version: '',
     },
     resolver: zodResolver(SystemSchemaDto),
   })
 
-  const fetchSystemData = (systemId: number) => {
-    return {
-      id: systemId,
-      name: '',
-    }
-  }
+  const { data: systemData, isLoading: isLoadingSystem } = useQuery({
+    queryKey: ['get-system', id],
+    queryFn: async () => {
+      if (id) {
+        const response = await api.get(`/systems`, { params: { id } })
+        return (
+          response.data.find((system: TSystemSchemaDto) => system.id === id) ||
+          null
+        )
+      }
+      return null
+    },
+    enabled: !!id && isOpen,
+  })
 
-  React.useEffect(() => {
-    if (isOpen && id !== null) {
-      const systemData = fetchSystemData(id)
-      reset(systemData)
+  useEffect(() => {
+    if (systemData) {
+      form.reset({
+        id: systemData.id,
+        name: systemData.name,
+        image_url: systemData.image_url,
+        description: systemData.description,
+        stable_version: systemData.stable_version || '',
+      })
     }
-  }, [isOpen, id, reset])
+  }, [systemData, form])
 
-  const submit = (data: TSystemSchemaDto) => {
-    console.log('Submitted data:', data)
-    onClose()
+  // Em ModalSystemEdit.tsx
+  const { mutate, isSuccess: isUpdating } = useMutation({
+    mutationKey: ['patch-system'],
+    mutationFn: async (data: TSystemSchemaDto) => {
+      const res = await api.patch(`/systems`, data, { params: { id: data.id } })
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success('Sistema atualizado com sucesso!')
+      queryClient.invalidateQueries({ queryKey: ['get-systems'] }) // Corrigido para 'get-systems'
+      queryClient.invalidateQueries({ queryKey: ['get-system', id] }) // Invalidar também a query individual
+      onClose()
+    },
+    onError: error => {
+      console.error('Mutation error:', error)
+      toast.error('Erro ao atualizar o sistema. Por favor, tente novamente.')
+    },
+  })
+  const onSubmit = (data: TSystemSchemaDto) => {
+    mutate(data)
   }
 
   if (!isOpen) return null
@@ -51,50 +91,110 @@ export const ModalSystemEdit = () => {
         <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
           Edição de Software
         </h1>
-        <form onSubmit={handleSubmit(submit)} action="">
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Código
-            </label>
-            <input
-              {...register('id')}
-              disabled
-              type="text"
-              className="mt-1 p-2 w-full border border-gray-300 rounded-lg disabled:bg-gray-100"
-            />
-            {errors.id && (
-              <p className="text-xs p-1 flex items-center justify-center text-red-500">
-                {errors.id.message}
-              </p>
-            )}
-          </div>
+        {isLoadingSystem ? (
+          <p>Carregando dados do sistema...</p>
+        ) : (
+          <FormProvider {...form}>
+            <form
+              className="gap-2 flex flex-col"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <FormField
+                control={form.control}
+                name="id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ID</FormLabel>
+                    <FormControl>
+                      <Input {...field} disabled />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Nome
-            </label>
-            <input
-              {...register('name')}
-              type="text"
-              className="mt-1 p-2 w-full border border-gray-300 rounded-lg"
-              placeholder="Digite o nome do software"
-            />
-            {errors.name && (
-              <p className="text-xs p-1 flex items-center justify-center text-red-500">
-                {errors.name.message}
-              </p>
-            )}
-          </div>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome do software</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="flex flex-col sm:flex-row justify-center gap-2">
-            <Button className="w-full" variant="destructive" onClick={onClose}>
-              Fechar
-            </Button>
-            <Button className="w-full" type="submit" variant="success">
-              Salvar
-            </Button>
-          </div>
-        </form>
+              <FormField
+                control={form.control}
+                name="image_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL da imagem</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descrição do software</FormLabel>
+                    <FormControl>
+                      <textarea
+                        className="mt-1 p-2 w-full border border-gray-300 rounded-lg"
+                        rows={3}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="stable_version"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Versão estável</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex flex-col sm:flex-row justify-center gap-2 mt-4">
+                <Button
+                  className="w-full"
+                  variant="destructive"
+                  onClick={onClose}
+                  disabled={isUpdating}
+                  type="button"
+                >
+                  Fechar
+                </Button>
+                <Button
+                  className="w-full"
+                  type="submit"
+                  variant="success"
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? 'Salvando...' : 'Salvar'}
+                </Button>
+              </div>
+            </form>
+          </FormProvider>
+        )}
       </div>
     </div>
   )

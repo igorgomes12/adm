@@ -7,44 +7,50 @@ import { Button } from '../ui/button'
 import { useState } from 'react'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { useMutation } from '@tanstack/react-query'
+import { loginUser } from './api/login'
 
 const signInSchema = z.object({
-  username: z
-    .string()
-    .min(4, { message: 'Necessário digitar a login completo' }),
+  email: z.string().email({ message: 'Email inválido' }),
   password: z
     .string()
-    .min(4, { message: 'Necessário digitar a senha completa' })
-    .max(20),
+    .min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
 })
 
 type SignInForm = z.infer<typeof signInSchema>
 
 export const SignInForm = () => {
+  const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false)
+
   const form = useForm<SignInForm>({
     defaultValues: {
-      username: 'igor gomes',
-      password: '12345',
+      email: 'lideradm@gmail.com',
+      password: '123456Ig',
     },
     resolver: zodResolver(signInSchema),
   })
 
-  const [showPassword, setShowPassword] = useState(false)
-  const navigate = useNavigate()
+  const loginMutation = useMutation({
+    mutationFn: (data: SignInForm) => loginUser(data.email, data.password),
+    onSuccess: () => {
+      toast.success('Login realizado com sucesso!')
+      navigate('/tela-principal')
+    },
+    onError: error => {
+      toast.error('Erro ao realizar login. Verifique suas credenciais.')
+      console.error('Erro de login:', error)
+    },
+  })
 
   const togglePasswordVisibility = () => {
     setShowPassword(prevState => !prevState)
   }
 
   const onSubmit = (data: SignInForm) => {
-    try {
-      if (data) navigate('/tela-principal')
-        toast("Wow so easy!");
-    } catch (error) {
-      toast("Error");
-    }
+    loginMutation.mutate(data)
   }
 
   return (
@@ -55,13 +61,13 @@ export const SignInForm = () => {
       >
         <FormField
           control={form.control}
-          name="username"
+          name="email"
           render={({ field }) => (
             <FormItem className="w-80">
               <FormControl>
                 <Input
                   className="cursor-pointer p-2"
-                  placeholder="login"
+                  placeholder="Email"
                   {...field}
                 />
               </FormControl>
@@ -78,7 +84,7 @@ export const SignInForm = () => {
                 <div className="relative flex items-center">
                   <Input
                     className="cursor-pointer p-2 pr-10"
-                    placeholder="senha"
+                    placeholder="Senha"
                     type={showPassword ? 'text' : 'password'}
                     {...field}
                   />
@@ -95,8 +101,12 @@ export const SignInForm = () => {
           )}
         />
         <div className="w-full flex py-2 items-start justify-center">
-          <Button className="w-full" type="submit">
-            Entrar
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={loginMutation.isSuccess}
+          >
+            {loginMutation.isSuccess ? 'Entrando...' : 'Entrar'}
           </Button>
         </div>
         <ToastContainer />

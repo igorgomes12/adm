@@ -1,20 +1,41 @@
 import { Button } from '@/components/ui/button'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { SystemSchemaDto, TSystemSchemaDto } from './zod-types/types-system'
 import { useSystemDeleteZustand } from './zustand-state/system-del-zustand'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import api from '@/components/sing-in/api/interceptors-axios'
+import { toast } from 'react-toastify'
+import { useState } from 'react'
 
 export const ModalSystemDelete = () => {
-  const { id, onClose } = useSystemDeleteZustand()
+  const { id, isOpen, onClose } = useSystemDeleteZustand()
+  const [isDeleting, setIsDeleting] = useState(false)
+  const queryClient = useQueryClient()
 
-  const { handleSubmit } = useForm<TSystemSchemaDto>({
-    resolver: zodResolver(SystemSchemaDto),
+  const { mutate } = useMutation({
+    mutationKey: ['delete-system'],
+    mutationFn: async () => {
+      const res = await api.delete(`/systems`, { params: { id } })
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success('Sistema excluído com sucesso!')
+      queryClient.invalidateQueries({ queryKey: ['get-systems'] })
+      onClose()
+    },
+    onError: error => {
+      console.error('Erro ao excluir o sistema:', error)
+      toast.error('Erro ao excluir o sistema. Por favor, tente novamente.')
+    },
+    onSettled: () => {
+      setIsDeleting(false)
+    },
   })
 
-  const submit = () => {
-    console.log('Excluindo item com ID:', id)
-    onClose()
+  const handleDelete = () => {
+    setIsDeleting(true)
+    mutate()
   }
+
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 backdrop-blur-sm">
@@ -22,16 +43,28 @@ export const ModalSystemDelete = () => {
         <h1 className="text-lg sm:text-xl font-semibold mb-4 text-center">
           Tem certeza que deseja excluir o software?
         </h1>
-        <form onSubmit={handleSubmit(submit)} action="">
-          <div className="flex w-full flex-col sm:flex-row justify-center gap-2">
-            <Button className="w-full" variant="destructive" onClick={onClose}>
-              Fechar
-            </Button>
-            <Button className="w-full" type="submit" variant="success">
-              Salvar
-            </Button>
-          </div>
-        </form>
+        <p className="text-center mb-4">
+          Esta ação não pode ser desfeita. O software com ID {id} será
+          permanentemente removido.
+        </p>
+        <div className="flex w-full flex-col sm:flex-row justify-center gap-2">
+          <Button
+            className="w-full"
+            variant="outline"
+            onClick={onClose}
+            disabled={isDeleting}
+          >
+            Cancelar
+          </Button>
+          <Button
+            className="w-full"
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? 'Excluindo...' : 'Excluir'}
+          </Button>
+        </div>
       </div>
     </div>
   )

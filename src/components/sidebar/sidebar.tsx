@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { TableClientBuy } from '../tables-client/table-client-buy'
 import { SystemComponent } from '@/pages/channel/system/system'
 import { AccountingComponent } from '@/pages/channel/accounting/accounting'
+import { EstablishmentComponent } from '@/pages/channel/establishment/establishment'
 export default function Sidebar() {
   const [openSubmenus, setOpenSubmenus] = useState<{ [key: string]: boolean }>(
     {},
@@ -95,6 +96,8 @@ export default function Sidebar() {
           <SystemComponent />
         ) : activeComponent === 'Contabilidades' ? (
           <AccountingComponent />
+        ) : activeComponent === 'Tipo Estabelecimento' ? (
+          <EstablishmentComponent />
         ) : (
           <div className="flex flex-col h-full bg-gray-400 w-full items-center justify-center">
             <BlurIn word="Seja bem-vindo!" className="text-md"></BlurIn>

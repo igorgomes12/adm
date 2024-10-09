@@ -1,11 +1,12 @@
 import { create } from 'zustand'
-export type AccountingStore = {
+
+export type TEstablishment = {
   isOpen: boolean
   onOpen: () => void
   onClose: () => void
 }
 
-export const useAccountingStore = create<AccountingStore>(set => ({
+export const useEstablishmentZustand = create<TEstablishment>(set => ({
   isOpen: false,
   onOpen: () => set({ isOpen: true }),
   onClose: () => set({ isOpen: false }),

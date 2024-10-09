@@ -11,6 +11,10 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table'
+import { ModalAccountingDelete } from './modal-accouting/modal-delete-accounting'
+import { ModalAccountingEdit } from './modal-accouting/modal-edit-accouting'
+import { useAccoutingDeleteZustand } from './zustand-accounting/delete-zustand'
+import { useAccoutingEditZustand } from './zustand-accounting/edit-zustand'
 
 const headers = [
   'Cód.',
@@ -33,25 +37,39 @@ export type TAccount = {
   cnpj: string
 }
 
-const AccountRow: FC<{ account: TAccount }> = ({ account }) => (
+const AccountRow: FC<{
+  account: TAccount
+  onOpenDelete: (id: number) => void
+  onOpenEdit: (id: number) => void
+}> = ({ account, onOpenDelete, onOpenEdit }) => (
   <TableRow>
-    {Object.values(account).map((value, index) => (
+    {Object.entries(account).map(([key, value], index) => (
       <TableCell key={index} className="text-xs items-center">
-        {value}
+        {key !== 'id' ? value : account.id}
       </TableCell>
     ))}
     <TableCell className="flex items-center justify-center w-full h-full space-x-2">
-      <button className="text-blue-200 hover:text-blue-500">
+      <button
+        onClick={() => onOpenEdit(account.id)}
+        className="text-blue-200 hover:text-blue-500"
+      >
         <FaEdit size={24} />
       </button>
-      <button className="text-red-200 hover:text-red-500">
+      <button
+        onClick={() => onOpenDelete(account.id)}
+        className="text-red-200 hover:text-red-500"
+      >
         <FaTrash size={24} />
       </button>
     </TableCell>
   </TableRow>
 )
 
-export const TableAccounting: FC = () => {
+export const TableAccounting: FC<{ searchTerm: string }> = ({ searchTerm }) => {
+  const { onOpen: onOpenDelete, isOpen: isOpenDelete } =
+    useAccoutingDeleteZustand()
+  const { onOpen: onOpenEdit, isOpen: isOpenEdit } = useAccoutingEditZustand()
+
   const { data, error, isLoading } = useQuery<TAccount[]>({
     queryKey: ['get-accounting'],
     queryFn: async () => {
@@ -64,10 +82,37 @@ export const TableAccounting: FC = () => {
     return <div>Erro ao carregar os dados: {(error as Error).message}</div>
   }
 
+  const filteredData = data?.filter(account => {
+    const searchTermLower = searchTerm.toLowerCase().trim()
+    const searchWords = searchTermLower.split(/\s+/)
+
+    const matchAllTerms = (value: string) => {
+      return searchWords.every(word => value.toLowerCase().includes(word))
+    }
+
+    if (account.id.toString() === searchTermLower) return true
+
+    if (matchAllTerms(account.name)) return true
+
+    if (matchAllTerms(account.cnpj)) return true
+    if (matchAllTerms(account.contact)) return true
+    if (matchAllTerms(account.email)) return true
+    if (matchAllTerms(account.phone)) return true
+
+    return false
+  })
+
   const tableContent = isLoading ? (
     <SkeletonCard />
   ) : (
-    data?.map(account => <AccountRow key={account.id} account={account} />)
+    filteredData?.map(account => (
+      <AccountRow
+        key={account.id}
+        account={account}
+        onOpenDelete={onOpenDelete}
+        onOpenEdit={onOpenEdit}
+      />
+    ))
   )
 
   return (
@@ -84,6 +129,8 @@ export const TableAccounting: FC = () => {
         </TableHeader>
         <TableBody>{tableContent}</TableBody>
       </Table>
+      {isOpenDelete && <ModalAccountingDelete />}
+      {isOpenEdit && <ModalAccountingEdit />}
     </div>
   )
 }

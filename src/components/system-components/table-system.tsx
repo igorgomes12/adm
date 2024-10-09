@@ -52,7 +52,11 @@ const SystemRow: React.FC<SystemRowProps> = React.memo(
   ),
 )
 
-export const TableSystem: React.FC = () => {
+interface TableSystemProps {
+  searchTerm: string
+}
+
+export const TableSystem: React.FC<TableSystemProps> = ({ searchTerm }) => {
   const { isOpen, onOpen } = useSystemDeleteZustand()
   const { isOpen: isOpenEdit, onOpen: onOpenEdit } = useSystemEditZustand()
   const queryClient = useQueryClient()
@@ -92,6 +96,12 @@ export const TableSystem: React.FC = () => {
     }
   }, [isOpen, queryClient])
 
+  const filteredData = data?.filter(account =>
+    Object.values(account).some(value =>
+      value.toString().toLowerCase().includes(searchTerm.toLowerCase()),
+    ),
+  )
+
   const tableContent = useMemo(() => {
     if (error) {
       return <div>Erro ao carregar os dados: {error.message}</div>
@@ -113,18 +123,19 @@ export const TableSystem: React.FC = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.map(system => (
-            <SystemRow
-              key={system.id}
-              system={system}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          ))}
+          {filteredData &&
+            filteredData.map(system => (
+              <SystemRow
+                key={system.id}
+                system={system}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
         </TableBody>
       </Table>
     )
-  }, [isLoading, error, data, headers, handleEdit, handleDelete])
+  }, [isLoading, error, filteredData, headers, handleEdit, handleDelete])
 
   return (
     <div className="flex flex-col mt-4">

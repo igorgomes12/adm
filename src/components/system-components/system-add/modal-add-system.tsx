@@ -21,7 +21,6 @@ export const ModalSystemAdd = () => {
   const { onClose } = useSystemZustand()
   const queryClient = useQueryClient()
 
-  // Em ModalSystemAdd.tsx
   const { mutate, isSuccess } = useMutation({
     mutationKey: ['post-system'],
     mutationFn: async (data: TSystemSchemaDto) => {
@@ -30,7 +29,7 @@ export const ModalSystemAdd = () => {
     },
     onSuccess: () => {
       toast.success('Sistema adicionado com sucesso!')
-      queryClient.invalidateQueries({ queryKey: ['get-systems'] }) // Corrigido para 'get-systems'
+      queryClient.invalidateQueries({ queryKey: ['get-systems'] })
       onClose()
     },
     onError: error => {

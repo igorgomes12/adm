@@ -1,8 +1,8 @@
+import { ButtonAdd } from '@/components/buttons/buttons-add'
 import { ModalSystemAdd } from '@/components/system-components/system-add/modal-add-system'
 import { useSystemZustand } from '@/components/system-components/system-add/zustand-state/system-add-zustand'
 import { TableSystem } from '@/components/system-components/table-system'
 import type { FC } from 'react'
-import { BsPlus } from 'react-icons/bs'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -19,14 +19,7 @@ export const SystemComponent: FC = () => {
           type="text"
           className="p-2 cursor-text w-full border rounded-lg"
         />
-        <div>
-          <BsPlus
-            className="border rounded-full bg-green-600 font-bold cursor-pointer hover:bg-green-800 text-white"
-            width="bold"
-            size={40}
-            onClick={onOpen}
-          />
-        </div>
+        <ButtonAdd onOpen={onOpen} />
       </div>
       <TableSystem />
       {isOpen && <ModalSystemAdd />}

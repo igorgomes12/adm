@@ -31,16 +31,19 @@ const SystemRow: React.FC<SystemRowProps> = React.memo(
       <TableCell className="text-xs items-center">
         {system.stable_version}
       </TableCell>
+      <TableCell className="text-xs items-center">
+        {system.description}
+      </TableCell>
       <TableCell className="flex items-center justify-center w-full h-full space-x-2">
         <button
           onClick={() => onEdit(system.id || 0)}
-          className="text-blue-500 hover:text-blue-700"
+          className="text-blue-200 hover:text-blue-500"
         >
           <FaEdit size={24} />
         </button>
         <button
           onClick={() => onDelete(system.id || 0)}
-          className="text-red-500 hover:text-red-700"
+          className="text-red-200 hover:text-red-500"
         >
           <FaTrash size={24} />
         </button>
@@ -64,7 +67,10 @@ export const TableSystem: React.FC = () => {
     staleTime: 0,
   })
 
-  const headers = useMemo(() => ['Cód.', 'Nome Software', 'Versão', ''], [])
+  const headers = useMemo(
+    () => ['Cód.', 'Nome Software', 'Versão', 'Descrição ', ''],
+    [],
+  )
 
   const handleEdit = useCallback(
     (id: number) => {

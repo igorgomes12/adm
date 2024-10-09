@@ -1,8 +1,11 @@
 import type { FC } from 'react'
 import { TableAccounting } from '@/components/accounting-components/table-accountig'
-import { BsPlus } from 'react-icons/bs'
+import { ButtonAdd } from '@/components/buttons/buttons-add'
+import { useAccountingStore } from '@/components/accounting-components/zustand-accounting/create-zustand'
+import { ModalAccountingAdd } from '@/components/accounting-components/modal-accouting/modal-accounting-add'
 
 export const AccountingComponent: FC = () => {
+  const { isOpen, onOpen } = useAccountingStore()
   return (
     <div className="flex flex-col w-full">
       <div className="flex items-start justify-start">
@@ -14,15 +17,10 @@ export const AccountingComponent: FC = () => {
           type="text"
           className="p-2 cursor-text w-full border rounded-lg"
         />
-        <div>
-          <BsPlus
-            className="border rounded-full bg-green-600 font-bold cursor-pointer hover:bg-green-800 text-white"
-            width="bold"
-            size={40}
-          />
-        </div>
+        <ButtonAdd onOpen={onOpen} />
       </div>
       <TableAccounting />
+      {isOpen && <ModalAccountingAdd />}
     </div>
   )
 }

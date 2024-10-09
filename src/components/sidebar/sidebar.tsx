@@ -31,7 +31,7 @@ export default function Sidebar() {
     <div className="flex">
       <div
         id="sidebar-menu"
-        className={`flex flex-col h-screen bg-gray-500 overflow-auto text-white transition-all duration-300 ease-in-out ${
+        className={`flex flex-col h-screen bg-foreground/70 overflow-auto text-white transition-all duration-300 ease-in-out ${
           isSidebarOpen ? 'w-64' : 'w-32'
         } relative`}
       >
@@ -47,8 +47,8 @@ export default function Sidebar() {
                 isSidebarOpen ? 'text-lg' : 'text-xs'
               } rounded ${
                 openSubmenus[menu.id]
-                  ? 'bg-white text-black'
-                  : 'hover:bg-gray-300'
+                  ? 'bg-orange-500 text-black'
+                  : 'hover:bg-orange-300'
               }`}
               title={menu.label}
             >
@@ -59,7 +59,7 @@ export default function Sidebar() {
             {openSubmenus[menu.id] &&
               menu.subcategories?.map((subcategory, idx) => (
                 <div key={idx} className="ml-4 mt-2">
-                  <div className="text-sm font-semibold">
+                  <div className="text-sm text-orange-500 uppercase font-bold">
                     {subcategory.title}
                   </div>
                   {subcategory.items.map((item, idx) => (
@@ -67,8 +67,8 @@ export default function Sidebar() {
                       key={idx}
                       className={`flex items-center p-4 rounded-s-2xl cursor-pointer ${
                         activeComponent === item.label
-                          ? 'bg-white text-black'
-                          : 'hover:bg-gray-500'
+                          ? 'bg-orange-400 text-black'
+                          : 'hover:bg-orange-300'
                       }`}
                       onClick={() => handleSubmenuClick(item.label)}
                       title={item.label}

@@ -70,8 +70,8 @@ export const ModalSystemEdit = () => {
     },
     onSuccess: () => {
       toast.success('Sistema atualizado com sucesso!')
-      queryClient.invalidateQueries({ queryKey: ['get-systems'] }) // Corrigido para 'get-systems'
-      queryClient.invalidateQueries({ queryKey: ['get-system', id] }) // Invalidar também a query individual
+      queryClient.invalidateQueries({ queryKey: ['get-systems'] })
+      queryClient.invalidateQueries({ queryKey: ['get-system', id] })
       onClose()
     },
     onError: error => {
@@ -99,20 +99,6 @@ export const ModalSystemEdit = () => {
               className="gap-2 flex flex-col"
               onSubmit={form.handleSubmit(onSubmit)}
             >
-              <FormField
-                control={form.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>ID</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="name"

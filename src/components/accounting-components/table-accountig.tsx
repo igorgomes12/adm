@@ -15,11 +15,11 @@ import {
 const headers = [
   'Cód.',
   'Nome Contabilidade',
-  'Telefone',
-  'Email',
+  'CNPJ',
   'Contato',
   'CRC',
-  'CNPJ',
+  'Email',
+  'Telefone',
   '',
 ]
 
@@ -41,10 +41,10 @@ const AccountRow: FC<{ account: TAccount }> = ({ account }) => (
       </TableCell>
     ))}
     <TableCell className="flex items-center justify-center w-full h-full space-x-2">
-      <button className="text-blue-500 hover:text-blue-700">
+      <button className="text-blue-200 hover:text-blue-500">
         <FaEdit size={24} />
       </button>
-      <button className="text-red-500 hover:text-red-700">
+      <button className="text-red-200 hover:text-red-500">
         <FaTrash size={24} />
       </button>
     </TableCell>

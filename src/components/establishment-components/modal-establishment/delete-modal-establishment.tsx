@@ -1,16 +1,14 @@
+import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import api from '@/components/sing-in/api/interceptors-axios'
-import { toast } from 'react-toastify'
 import { useState } from 'react'
+import { toast } from 'react-toastify'
 import { useEstablishmentDeleteZustand } from '../zustand-establishment/delete-establisment'
 
 export const ModalEstablishmentDelete = () => {
   const { id, isOpen, onClose } = useEstablishmentDeleteZustand()
   const [isDeleting, setIsDeleting] = useState(false)
   const queryClient = useQueryClient()
-
-  console.log('Modal Delete - isOpen:', isOpen, 'id:', id)
 
   const { mutate } = useMutation({
     mutationKey: ['delete-establishement'],
@@ -26,8 +24,10 @@ export const ModalEstablishmentDelete = () => {
       onClose()
     },
     onError: error => {
-      console.error('Erro ao excluir o sistema:', error)
-      toast.error('Erro ao excluir o sistema. Por favor, tente novamente.')
+      toast.error(
+        'Erro ao excluir o sistema. Por favor, tente novamente. ' +
+          error.message,
+      )
     },
     onSettled: () => {
       setIsDeleting(false)

@@ -1,22 +1,23 @@
-import { FormProvider, useForm } from 'react-hook-form'
-import { FormControl, FormField, FormItem, FormMessage } from '../ui/form'
-import { Input } from '../ui/input'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '../ui/button'
+import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { useMutation } from '@tanstack/react-query'
+import { z } from 'zod'
+import { Button } from '../ui/button'
+import { FormControl, FormField, FormItem, FormMessage } from '../ui/form'
+import { Input } from '../ui/input'
 import { loginUser } from './api/login'
 
 const signInSchema = z.object({
-  email: z.string().email({ message: 'Email inválido' }),
-  password: z
+  email: z
     .string()
-    .min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
+    .min(1, { message: 'O email é obrigatório' })
+    .email({ message: 'Email inválido' }),
+  password: z.string().min(1, { message: 'A senha é obrigatória' }),
 })
 
 type SignInForm = z.infer<typeof signInSchema>
@@ -96,6 +97,7 @@ export const SignInForm = () => {
                   </div>
                 </div>
               </FormControl>
+
               <FormMessage />
             </FormItem>
           )}

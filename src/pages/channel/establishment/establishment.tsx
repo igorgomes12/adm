@@ -1,13 +1,13 @@
-import { ModalAccountingAdd } from '@/components/accounting-components/modal-accouting/modal-accounting-add'
-import { useAccountingStore } from '@/components/accounting-components/zustand-accounting/create-zustand'
 import { ButtonAdd } from '@/components/buttons/buttons-add'
+import { AddEstablishmentModal } from '@/components/establishment-components/modal-establishment/add-modal-establishment'
 import { TableEstablishment } from '@/components/establishment-components/table-establishment'
+import { useEstablishmentZustand } from '@/components/establishment-components/zustand-establishment/create-establishment'
 import { useState, type FC } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 export const EstablishmentComponent: FC = () => {
-  const { isOpen, onOpen } = useAccountingStore()
+  const { isOpen, onOpen } = useEstablishmentZustand()
   const [searchTerm, setSearchTerm] = useState('')
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +30,7 @@ export const EstablishmentComponent: FC = () => {
         <ButtonAdd onOpen={onOpen} />
       </div>
       <TableEstablishment searchTerm={searchTerm} />
-      {isOpen && <ModalAccountingAdd />}
+      {isOpen && <AddEstablishmentModal />}
       <ToastContainer />
     </div>
   )

@@ -13,8 +13,8 @@ export const HeaderFirstPage = () => {
 
   const handleConfirmLogout = () => {
     setShowLogoutCard(false)
-    console.log('Usuário saiu')
     navigate('/')
+    window.location.reload()
   }
 
   const handleCancelLogout = () => {

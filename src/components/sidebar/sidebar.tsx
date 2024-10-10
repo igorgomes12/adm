@@ -1,11 +1,7 @@
-import BlurIn from '@/components/magicui/blur-in'
 import { menuNavigation } from '@/utils/interface/first-page'
 import { DashboardIcon, ExitIcon } from '@radix-ui/react-icons'
 import { useState } from 'react'
-import { TableClientBuy } from '../tables-client/table-client-buy'
-import { SystemComponent } from '@/pages/channel/system/system'
-import { AccountingComponent } from '@/pages/channel/accounting/accounting'
-import { EstablishmentComponent } from '@/pages/channel/establishment/establishment'
+import { LocationsAcess } from '../home/main/locations'
 export default function Sidebar() {
   const [openSubmenus, setOpenSubmenus] = useState<{ [key: string]: boolean }>(
     {},
@@ -89,27 +85,7 @@ export default function Sidebar() {
           {isSidebarOpen && <span className="ml-2">Sign out</span>}
         </div>
       </div>
-      <div className="flex-1 p-4">
-        {activeComponent === 'Clientes de Venda' ? (
-          <TableClientBuy />
-        ) : activeComponent === 'Sistemas' ? (
-          <SystemComponent />
-        ) : activeComponent === 'Contabilidades' ? (
-          <AccountingComponent />
-        ) : activeComponent === 'Tipo Estabelecimento' ? (
-          <EstablishmentComponent />
-        ) : (
-          <div className="flex flex-col h-full bg-gray-400 w-full items-center justify-center">
-            <BlurIn word="Seja bem-vindo!" className="text-md"></BlurIn>
-            <p>Lider Admin</p>
-            <img
-              src="https://liderautomacao.s3.amazonaws.com/site/public/logo.png"
-              alt="Lider Automação Logo"
-              className="w-32 md:w-40"
-            />
-          </div>
-        )}
-      </div>
+      <LocationsAcess activeComponent={activeComponent} />
     </div>
   )
 }

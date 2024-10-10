@@ -102,7 +102,7 @@ export const SignInForm = () => {
             </FormItem>
           )}
         />
-        <div className="w-full flex py-2 items-start justify-center">
+        <div className=" w-80 flex py-2 items-start justify-center">
           <Button
             className="w-full"
             type="submit"

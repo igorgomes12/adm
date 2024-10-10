@@ -13,6 +13,8 @@ import {
 } from '../ui/table'
 import { ModalEstablishmentDelete } from './modal-establishment/delete-modal-establishment'
 import { useEstablishmentDeleteZustand } from './zustand-establishment/delete-establisment'
+import { useEstablishmentEditZustand } from './zustand-establishment/edit-establishment'
+import { EditEstablishmentModal } from './modal-establishment/edit-modal-establishment'
 
 const headers = ['Cód.', 'Nome Estabelecimento', 'Status', '']
 
@@ -25,7 +27,8 @@ export type TEstablishment = {
 const EstablishmentRow: FC<{
   establishment: TEstablishment
   onOpenDelete: (id: number) => void
-}> = ({ establishment, onOpenDelete }) => (
+  onOpenEdit: (id: number) => void
+}> = ({ establishment, onOpenDelete, onOpenEdit }) => (
   <TableRow>
     <TableCell className="text-xs items-center">{establishment.id}</TableCell>
     <TableCell className="text-xs items-center">{establishment.name}</TableCell>
@@ -34,7 +37,7 @@ const EstablishmentRow: FC<{
     </TableCell>
     <TableCell className="flex items-center justify-center w-full h-full space-x-2">
       <button
-        // onClick={() => onOpenEdit(establishment.id)}
+        onClick={() => onOpenEdit(establishment.id)}
         className="text-blue-200 hover:text-blue-500"
       >
         <FaEdit size={24} />
@@ -61,6 +64,8 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
   searchTerm,
 }) => {
   const { isOpen, onOpen } = useEstablishmentDeleteZustand()
+  const { isOpen: isOpenEdit, onOpen: onOpenEdit } =
+    useEstablishmentEditZustand()
   const { data, isLoading, error } = useQuery<TEstablishment[], Error>({
     queryKey: ['get-establishment'],
     queryFn: async () => {
@@ -100,6 +105,7 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
 
     return filteredData.map(data => (
       <EstablishmentRow
+        onOpenEdit={onOpenEdit}
         key={data.id}
         establishment={data}
         onOpenDelete={onOpen}
@@ -122,6 +128,7 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
         <TableBody>{tableContent}</TableBody>
       </Table>
       {isOpen && <ModalEstablishmentDelete />}
+      {isOpenEdit && <EditEstablishmentModal />}
     </div>
   )
 }

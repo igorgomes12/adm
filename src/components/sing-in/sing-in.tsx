@@ -5,7 +5,7 @@ export const SignIn = () => {
   return (
     <div className="flex items-center justify-center bg-white w-full h-screen">
       <div className="grid grid-cols-1 md:grid-cols-2 w-full">
-        <div className="hidden md:flex bg-orange-500 flex-col h-screen w-full items-center justify-center">
+        <div className="hidden md:flex bg-colorProject-blue-light flex-col h-screen w-full items-center justify-center">
           <img
             src="https://liderautomacao.s3.amazonaws.com/site/public/logo_icon.png"
             alt="logo"

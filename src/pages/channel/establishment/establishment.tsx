@@ -15,9 +15,9 @@ export const EstablishmentComponent: FC = () => {
   }
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col gap-2 w-full">
       <div className="flex items-start justify-start">
-        <h1 className="text-2xl font-semibold">Cadastro de Estabelecimento</h1>
+        <h1 className="text-2xl font-semibold">Estabelecimento</h1>
       </div>
       <div className="flex gap-2 items-center justify-between w-full">
         <input

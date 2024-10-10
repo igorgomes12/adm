@@ -22,7 +22,7 @@ export const HeaderFirstPage = () => {
   }
 
   return (
-    <div className="relative flex w-full bg-orange-500 h-14 items-center px-4 justify-between">
+    <div className="relative flex w-full bg-colorProject-blue-light h-14 items-center px-4 justify-between">
       <a href="/">
         <img
           src="https://liderautomacao.s3.amazonaws.com/site/public/logo.png"

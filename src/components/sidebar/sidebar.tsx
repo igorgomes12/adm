@@ -32,7 +32,7 @@ export default function Sidebar() {
           isSidebarOpen ? 'w-64' : 'w-32'
         } relative`}
       >
-        <div className="flex cursor-pointer  items-center mb-4 border-b-white border-b-2 justify-center py-2">
+        <div className="flex cursor-pointer items-center mb-4 border-b-white border-b-2 justify-center py-2">
           <DashboardIcon className="w-6 h-6 mr-2" />
           {isSidebarOpen && <span className="text-lg font-bold">Menu</span>}
         </div>
@@ -44,8 +44,8 @@ export default function Sidebar() {
                 isSidebarOpen ? 'text-lg' : 'text-xs'
               } rounded ${
                 openSubmenus[menu.id]
-                  ? 'bg-orange-500 text-black'
-                  : 'hover:bg-orange-300'
+                  ? 'bg-colorProject-blue-light text-black'
+                  : 'hover:bg-colorProject-blue-light'
               }`}
               title={menu.label}
             >
@@ -56,7 +56,7 @@ export default function Sidebar() {
             {openSubmenus[menu.id] &&
               menu.subcategories?.map((subcategory, idx) => (
                 <div key={idx} className="ml-4 mt-2">
-                  <div className="text-sm text-orange-500 uppercase font-bold">
+                  <div className="text-sm text-colorProject.blue-medium uppercase font-bold">
                     {subcategory.title}
                   </div>
                   {subcategory.items.map((item, idx) => (
@@ -64,8 +64,8 @@ export default function Sidebar() {
                       key={idx}
                       className={`flex items-center p-4 rounded-s-2xl cursor-pointer ${
                         activeComponent === item.label
-                          ? 'bg-orange-400 text-black'
-                          : 'hover:bg-orange-300'
+                          ? 'bg-colorProject-blue-light text-black'
+                          : 'hover:bg-colorProject-blue-light'
                       }`}
                       onClick={() => handleSubmenuClick(item.label)}
                       title={item.label}

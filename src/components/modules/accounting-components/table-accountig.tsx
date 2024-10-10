@@ -1,20 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
 import type { FC } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
-import api from '../sing-in/api/interceptors-axios'
-import { SkeletonCard } from '../skeleton-component/skeleton'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../ui/table'
+
 import { ModalAccountingDelete } from './modal-accouting/modal-delete-accounting'
 import { ModalAccountingEdit } from './modal-accouting/modal-edit-accouting'
 import { useAccoutingDeleteZustand } from './zustand-accounting/delete-zustand'
 import { useAccoutingEditZustand } from './zustand-accounting/edit-zustand'
+import api from '@/components/sing-in/api/interceptors-axios'
+import { SkeletonCard } from '@/components/skeleton-component/skeleton'
+import {
+  TableRow,
+  TableCell,
+  Table,
+  TableHeader,
+  TableHead,
+  TableBody,
+} from '@/components/ui/table'
 
 const headers = [
   'Cód.',

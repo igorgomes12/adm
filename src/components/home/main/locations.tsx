@@ -1,8 +1,9 @@
-import { TableClientBuy } from '@/components/tables-client/table-client-buy'
+import { TableClientBuy } from '@/components/modules/tables-client/table-client-buy'
 import GradualSpacing from '@/components/ui/gradual-spacing'
 import { AccountingComponent } from '@/pages/channel/accounting/accounting'
 import { EstablishmentComponent } from '@/pages/channel/establishment/establishment'
 import { SystemComponent } from '@/pages/channel/system/system'
+import { UsersComponent } from '@/pages/channel/user/users'
 import type { FC } from 'react'
 
 interface LocationsProps {
@@ -19,6 +20,8 @@ export const LocationsAcess: FC<LocationsProps> = ({ activeComponent }) => {
         <AccountingComponent />
       ) : activeComponent === 'Tipo Estabelecimento' ? (
         <EstablishmentComponent />
+      ) : activeComponent === 'Usuários' ? (
+        <UsersComponent />
       ) : (
         <div className="flex flex-col h-full bg-gray-400 w-full items-center justify-center">
           <GradualSpacing

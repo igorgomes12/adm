@@ -1,21 +1,22 @@
 import React, { useMemo, useCallback, useEffect } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from '../ui/table'
+
 import { useSystemDeleteZustand } from './system-add/zustand-state/system-del-zustand'
 import { ModalSystemDelete } from './system-add/modal-delete-system'
 import { ModalSystemEdit } from './system-add/modal-edit-system'
 import { useSystemEditZustand } from './system-add/zustand-state/system-edit-zustand'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { TSystemSchemaDto } from './system-add/zod-types/types-system'
-import api from '../sing-in/api/interceptors-axios'
-import { SkeletonCard } from '../skeleton-component/skeleton'
+import api from '@/components/sing-in/api/interceptors-axios'
+import { SkeletonCard } from '@/components/skeleton-component/skeleton'
+import {
+  TableRow,
+  TableCell,
+  Table,
+  TableHeader,
+  TableHead,
+  TableBody,
+} from '@/components/ui/table'
 
 interface SystemRowProps {
   system: TSystemSchemaDto
@@ -52,11 +53,9 @@ const SystemRow: React.FC<SystemRowProps> = React.memo(
   ),
 )
 
-interface TableSystemProps {
-  searchTerm: string
-}
-
-export const TableSystem: React.FC<TableSystemProps> = ({ searchTerm }) => {
+export const TableSystem: React.FC<{ searchTerm: string }> = ({
+  searchTerm,
+}) => {
   const { isOpen, onOpen } = useSystemDeleteZustand()
   const { isOpen: isOpenEdit, onOpen: onOpenEdit } = useSystemEditZustand()
   const queryClient = useQueryClient()

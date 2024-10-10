@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { FC, useMemo } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
-import api from '../sing-in/api/interceptors-axios'
-import { SkeletonCard } from '../skeleton-component/skeleton'
+import api from '../../sing-in/api/interceptors-axios'
+import { SkeletonCard } from '../../skeleton-component/skeleton'
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../ui/table'
+} from '../../ui/table'
 import { ModalEstablishmentDelete } from './modal-establishment/delete-modal-establishment'
 import { useEstablishmentDeleteZustand } from './zustand-establishment/delete-establisment'
 import { useEstablishmentEditZustand } from './zustand-establishment/edit-establishment'

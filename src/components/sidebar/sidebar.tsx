@@ -56,7 +56,7 @@ export default function Sidebar() {
             {openSubmenus[menu.id] &&
               menu.subcategories?.map((subcategory, idx) => (
                 <div key={idx} className="ml-4 mt-2">
-                  <div className="text-sm text-colorProject.blue-medium uppercase font-bold">
+                  <div className="text-sm text-black uppercase font-bold">
                     {subcategory.title}
                   </div>
                   {subcategory.items.map((item, idx) => (

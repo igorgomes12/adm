@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button'
-import { FormProvider, useForm } from 'react-hook-form'
 import api from '@/components/sing-in/api/interceptors-axios'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   FormControl,
   FormField,
@@ -9,19 +9,13 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { useAddUserZustand } from '../zustand/add-zustand'
 import { UserSchemaDto, type TUserSchemaDto } from '../zod-types-user/zod-users'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { useAddUserZustand } from '../zustand/add-zustand'
+import { Switch } from '@/components/ui/switch'
 
 type ProfileType =
   | 'ADMIN'
@@ -81,7 +75,7 @@ export const ModalUserAdd = () => {
         </h1>
         <FormProvider {...form}>
           <form
-            className="w-full gap-5 flex flex-col p-2"
+            className="w-full gap-2 lg:gap-5 flex flex-col p-2"
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <div className="flex gap-2 lg:flex-row flex-col w-full">
@@ -111,7 +105,7 @@ export const ModalUserAdd = () => {
                 )}
               />
             </div>
-            <div className="flex gap-2 lg:flex-row flex-col w-full">
+            <div className="flex gap-2 lg:flex-row flex-col items-center justify-center w-full">
               <FormField
                 control={form.control}
                 name="password"
@@ -125,6 +119,26 @@ export const ModalUserAdd = () => {
                 )}
               />
               <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem className="flex gap-2 w-full items-center justify-between rounded-lg border-2">
+                    <div className="p-2">
+                      <FormLabel className="text-base">Status</FormLabel>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        className="mr-2"
+                        checked={field.value === 'ativo'}
+                        onCheckedChange={checked =>
+                          field.onChange(checked ? 'ativo' : 'inativo')
+                        }
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              {/* <FormField
                 control={form.control}
                 name="channel"
                 render={({ field }) => (
@@ -147,31 +161,13 @@ export const ModalUserAdd = () => {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
 
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value === 'ativo'}
-                      onCheckedChange={checked =>
-                        field.onChange(checked ? 'ativo' : 'inativo')
-                      }
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Usuário Ativo</FormLabel>
-                  </div>
-                </FormItem>
-              )}
-            />
-
             <FormItem>
-              <FormLabel>Perfil de Acesso</FormLabel>
+              <FormLabel className="text-md underline py-1 font-semibold">
+                Perfil de Acesso
+              </FormLabel>
               <div className="lg:grid lg:grid-cols-2 flex flex-col gap-2">
                 {Object.entries(profileMap).map(([key, value]) => (
                   <FormField
@@ -194,7 +190,7 @@ export const ModalUserAdd = () => {
               </div>
             </FormItem>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-2">
+            <div className="flex flex-col sm:flex-row mt-4 justify-center gap-2">
               <Button
                 className="w-full"
                 variant="destructive"

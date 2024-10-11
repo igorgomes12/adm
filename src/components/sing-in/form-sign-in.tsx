@@ -28,8 +28,8 @@ export const SignInForm = () => {
 
   const form = useForm<SignInForm>({
     defaultValues: {
-      email: 'lideradm@gmail.com',
-      password: '123456Ig',
+      email: 'lideradmin@gmail.com',
+      password: '121195Ig.',
     },
     resolver: zodResolver(signInSchema),
   })

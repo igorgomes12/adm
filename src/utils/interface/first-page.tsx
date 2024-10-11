@@ -55,7 +55,21 @@ export const menuNavigation = [
           { label: 'Canais', icon: <FaDollarSign /> },
           { label: 'Unidades', icon: <FaDesktop /> },
           { label: 'Supervisor', icon: <FaCog /> },
-          { label: 'Ações', icon: <FaChartBar /> },
+          {
+            label: 'Ações',
+            icon: <FaChartBar />,
+            subcategories: [
+              {
+                title: 'Versões',
+                items: [
+                  {
+                    label: 'Sistema',
+                    icon: <BsFillPersonPlusFill />,
+                  },
+                ],
+              },
+            ],
+          },
           { label: 'Formas de Pagamento', icon: <FaChartBar /> },
           { label: 'Descrição de Chamados', icon: <FaChartBar /> },
           { label: 'Agendar Telemarketing', icon: <FaChartBar /> },

@@ -49,7 +49,7 @@ export const ModalUserAdd = () => {
   const queryClient = useQueryClient()
 
   const { mutate, isSuccess } = useMutation({
-    mutationKey: ['post-system'],
+    mutationKey: ['post-user'],
     mutationFn: async (data: TUserSchemaDto) => {
       const res = await api.post('/user', data)
       return res.data

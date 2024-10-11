@@ -1,10 +1,6 @@
-import { Button } from '@/components/ui/button'
-import { useUserEditZustand } from '../zustand/edit-zustand'
-import { useForm, FormProvider } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import api from '@/components/sing-in/api/interceptors-axios'
-import { toast } from 'react-toastify'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   FormControl,
   FormField,
@@ -13,20 +9,18 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { FormProvider, useForm } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { toast } from 'react-toastify'
 import {
   UserEditSchemaDto,
   type TUserEditSchemaDto,
 } from '../zod-types-user/zod-edit-ucer'
+import { useUserEditZustand } from '../zustand/edit-zustand'
 
 export const ModalUserEdit = () => {
   const { id, isOpen, onClose } = useUserEditZustand()
@@ -39,15 +33,13 @@ export const ModalUserEdit = () => {
       name: '',
       email: '',
       password: '',
-      channel: undefined,
       status: 'inativo',
-      organization: 'lider',
     },
     resolver: zodResolver(UserEditSchemaDto),
   })
 
   const { data: user, isLoading: isLoadingUser } = useQuery({
-    queryKey: ['get-user', id],
+    queryKey: ['get-users', id],
     queryFn: async () => {
       if (id) {
         const response = await api.get(`/user`, { params: { id } })
@@ -67,9 +59,7 @@ export const ModalUserEdit = () => {
         id: user.id,
         name: user.name,
         status: user.status,
-        channel: user.channel,
         email: user.email,
-        organization: user.organization,
       })
     }
   }, [user, form])
@@ -77,22 +67,18 @@ export const ModalUserEdit = () => {
   const { mutate, isSuccess: isUpdating } = useMutation({
     mutationKey: ['patch-user'],
     mutationFn: async (data: TUserEditSchemaDto) => {
-      const { id, ...dataToSend } = data
-      if (!dataToSend.password || dataToSend.password.trim() === '') {
-        delete dataToSend.password
-      }
-      const res = await api.patch(`/user?id=${id}`, dataToSend)
+      const res = await api.patch(`/user`, data, { params: { id: data.id } })
       return res.data
     },
     onSuccess: () => {
       toast.success('Usuário atualizado com sucesso!')
       queryClient.invalidateQueries({ queryKey: ['get-users'] })
-      queryClient.invalidateQueries({ queryKey: ['get-user', id] })
+      queryClient.invalidateQueries({ queryKey: ['get-users', id] })
       onClose()
     },
     onError: error => {
       console.error('Mutation error:', error)
-      toast.error('Erro ao atualizar o usuário. Por favor, tente novamente.')
+      toast.error('Erro ao atualizar o Usuário. Por favor, tente novamente.')
     },
   })
 
@@ -173,31 +159,6 @@ export const ModalUserEdit = () => {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="channel"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Canal</FormLabel>
-                      <Select
-                        onValueChange={value => field.onChange(Number(value))}
-                        value={field.value?.toString()}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione um canal" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="1">Canal 1</SelectItem>
-                          <SelectItem value="2">Canal 2</SelectItem>
-                          <SelectItem value="3">Canal 3</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
 
               <FormField
@@ -215,25 +176,6 @@ export const ModalUserEdit = () => {
                     </FormControl>
                     <div className="space-y-1 leading-none">
                       <FormLabel>Usuário Ativo</FormLabel>
-                    </div>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="organization"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value === 'lider'}
-                        onCheckedChange={checked =>
-                          field.onChange(checked ? 'lider' : 'Quality')
-                        }
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>Organização</FormLabel>
                     </div>
                   </FormItem>
                 )}

@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, useEffect } from 'react'
-import { FaEdit, FaTrash } from 'react-icons/fa'
+import { FaEdit, FaSortAmountUp, FaTrash } from 'react-icons/fa'
 
 import { useSystemDeleteZustand } from './system-add/zustand-state/system-del-zustand'
 import { ModalSystemDelete } from './system-add/modal-delete-system'
@@ -36,6 +36,12 @@ const SystemRow: React.FC<SystemRowProps> = React.memo(
         {system.description}
       </TableCell>
       <TableCell className="flex items-center justify-center w-full h-full space-x-2">
+        <button
+          onClick={() => onEdit(system.id || 0)}
+          className="text-amber-200 hover:text-amber-500"
+        >
+          <FaSortAmountUp size={24} />
+        </button>
         <button
           onClick={() => onEdit(system.id || 0)}
           className="text-blue-200 hover:text-blue-500"

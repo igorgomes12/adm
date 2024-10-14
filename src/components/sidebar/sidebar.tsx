@@ -150,7 +150,11 @@ export default function Sidebar() {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <div className="flex justify-center  gap-8 items-center p-3">
+        <div
+          className={`flex ${
+            isSidebarCompressed ? 'justify-center' : 'justify-between'
+          } items-center p-4`}
+        >
           <div
             className="cursor-pointer flex items-center gap-2"
             onClick={handleMenuClick}
@@ -184,7 +188,7 @@ export default function Sidebar() {
                 <div className="flex items-center justify-center rounded cursor-pointer">
                   <RxExit
                     onClick={handlePowerOffClick}
-                    className="w-5 h-5 text-red-500 items-center justify-center flex"
+                    className="w-5 h-5 text-red-500 items-center font-bold justify-center flex"
                   />
                 </div>
                 {showLogoutCard && (

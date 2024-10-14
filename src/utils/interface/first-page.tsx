@@ -25,7 +25,6 @@ export const menuNavigation = [
           { label: 'Contabilidades', icon: <FaDollarSign /> },
           { label: 'Sistemas', icon: <FaDesktop /> },
           { label: 'Tipo Estabelecimento', icon: <FaCog /> },
-          { label: 'Produtos', icon: <FaChartBar /> },
         ],
       },
       {

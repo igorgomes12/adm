@@ -98,7 +98,9 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
       return (
         <TableRow>
           <TableCell colSpan={4}>
-            Erro ao carregar os dados: {error.message}
+            <div className="items-center justify-center flex w-full ">
+              Erro ao carregar os dados: Não possui itens na tabela
+            </div>
           </TableCell>
         </TableRow>
       )

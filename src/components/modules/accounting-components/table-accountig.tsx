@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import type { FC } from 'react'
+import { useMemo, type FC } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 
 import { ModalAccountingDelete } from './modal-accouting/modal-delete-accounting'
@@ -92,9 +92,7 @@ export const TableAccounting: FC<{ searchTerm: string }> = ({ searchTerm }) => {
     }
 
     if (account.id.toString() === searchTermLower) return true
-
     if (matchAllTerms(account.name)) return true
-
     if (matchAllTerms(account.cnpj)) return true
     if (matchAllTerms(account.contact)) return true
     if (matchAllTerms(account.email)) return true
@@ -103,35 +101,47 @@ export const TableAccounting: FC<{ searchTerm: string }> = ({ searchTerm }) => {
     return false
   })
 
-  const tableContent = isLoading ? (
-    <SkeletonCard />
-  ) : (
-    filteredData?.map(account => (
-      <AccountRow
-        key={account.id}
-        account={account}
-        onOpenDelete={onOpenDelete}
-        onOpenEdit={onOpenEdit}
-      />
-    ))
-  )
+  const tableContent = useMemo(() => {
+    if (isLoading) {
+      return <SkeletonCard />
+    }
 
-  return (
-    <div className="flex flex-col mt-4">
-      <Table className="min-w-full py-2 text-sm">
-        <TableHeader>
-          <TableRow className="bg-gray-300 w-auto">
-            {headers.map((header, index) => (
-              <TableHead key={index} className="text-black w-auto">
-                {header}
-              </TableHead>
+    return (
+      <div className="flex flex-col mt-4">
+        <Table className="min-w-full py-2 text-sm">
+          <TableHeader>
+            <TableRow className="bg-gray-300 w-auto">
+              {headers.map((header, index) => (
+                <TableHead key={index} className="text-black w-auto">
+                  {header}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredData?.map(account => (
+              <AccountRow
+                key={account.id}
+                account={account}
+                onOpenDelete={onOpenDelete}
+                onOpenEdit={onOpenEdit}
+              />
             ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>{tableContent}</TableBody>
-      </Table>
-      {isOpenDelete && <ModalAccountingDelete />}
-      {isOpenEdit && <ModalAccountingEdit />}
-    </div>
-  )
+          </TableBody>
+        </Table>
+        {isOpenDelete && <ModalAccountingDelete />}
+        {isOpenEdit && <ModalAccountingEdit />}
+      </div>
+    )
+  }, [
+    isLoading,
+    filteredData,
+    headers,
+    onOpenDelete,
+    onOpenEdit,
+    isOpenDelete,
+    isOpenEdit,
+  ])
+
+  return tableContent
 }

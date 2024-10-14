@@ -103,7 +103,11 @@ export const TableSystem: React.FC<{ searchTerm: string }> = ({
 
   const tableContent = useMemo(() => {
     if (error) {
-      return <div>Erro ao carregar os dados: {error.message}</div>
+      return (
+        <div className="items-center justify-center flex w-full ">
+          Erro ao carregar os dados: Não possui itens na tabela
+        </div>
+      )
     }
 
     if (isLoading) {

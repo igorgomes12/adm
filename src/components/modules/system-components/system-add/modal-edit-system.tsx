@@ -17,7 +17,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { TrashIcon } from '@radix-ui/react-icons'
 
 export const ModalSystemEdit = () => {
   const { id, isOpen, onClose } = useSystemEditZustand()
@@ -78,8 +80,20 @@ export const ModalSystemEdit = () => {
       toast.error('Erro ao atualizar o sistema. Por favor, tente novamente.')
     },
   })
+
   const onSubmit = (data: TSystemSchemaDto) => {
     mutate(data)
+  }
+
+  const handleFileSelect = (
+    file: File | null,
+    onChange: (...event: any[]) => void,
+  ) => {
+    if (file) {
+      onChange(file)
+    } else {
+      onChange(undefined)
+    }
   }
 
   if (!isOpen) return null
@@ -117,9 +131,14 @@ export const ModalSystemEdit = () => {
                 name="image_url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>URL da imagem</FormLabel>
+                    <FormLabel>Imagem do software</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <ImageDropzone
+                        onFileSelect={file =>
+                          handleFileSelect(file, field.onChange)
+                        }
+                        value={field.value}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -179,6 +198,64 @@ export const ModalSystemEdit = () => {
               </div>
             </form>
           </FormProvider>
+        )}
+      </div>
+    </div>
+  )
+}
+
+interface ImageDropzoneProps {
+  onFileSelect: (file: File | null) => void
+  value?: File | string
+}
+
+const ImageDropzone: React.FC<ImageDropzoneProps> = ({
+  onFileSelect,
+  value,
+}) => {
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length > 0) {
+        onFileSelect(acceptedFiles[0])
+      }
+    },
+    [onFileSelect],
+  )
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif'],
+    },
+    maxFiles: 1,
+  })
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onFileSelect(null)
+  }
+
+  return (
+    <div {...getRootProps()} className="dropzone">
+      <input {...getInputProps()} />
+      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer">
+        {value ? (
+          <div className="flex flex-col w-full  items-center">
+            <div className="flex items-center justify-center gap-2">
+              <p>{value instanceof File ? value.name : value}</p>
+
+              <TrashIcon
+                onClick={handleDelete}
+                className="w-6 h-6 text-red-500"
+              />
+            </div>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-sm">
+            {isDragActive
+              ? 'Solte a imagem aqui'
+              : 'Arraste e solte para adicionar imagem ou clique para selecionar'}
+          </p>
         )}
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { FC, useMemo } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import api from '../../sing-in/api/interceptors-axios'
@@ -11,10 +11,12 @@ import {
   TableHeader,
   TableRow,
 } from '../../ui/table'
+import { Switch } from '../../ui/switch'
 import { ModalEstablishmentDelete } from './modal-establishment/delete-modal-establishment'
 import { useEstablishmentDeleteZustand } from './zustand-establishment/delete-establisment'
 import { useEstablishmentEditZustand } from './zustand-establishment/edit-establishment'
 import { EditEstablishmentModal } from './modal-establishment/edit-modal-establishment'
+import { toast } from 'react-toastify'
 
 const headers = ['Cód.', 'Nome Estabelecimento', 'Status', '']
 
@@ -28,12 +30,16 @@ const EstablishmentRow: FC<{
   establishment: TEstablishment
   onOpenDelete: (id: number) => void
   onOpenEdit: (id: number) => void
-}> = ({ establishment, onOpenDelete, onOpenEdit }) => (
+  onStatusChange: (id: number, newStatus: boolean) => void
+}> = ({ establishment, onOpenDelete, onOpenEdit, onStatusChange }) => (
   <TableRow>
     <TableCell className="text-xs items-center">{establishment.id}</TableCell>
     <TableCell className="text-xs items-center">{establishment.name}</TableCell>
     <TableCell className="text-xs items-center">
-      {establishment.status ? 'Ativo' : 'Inativo'}
+      <Switch
+        checked={establishment.status}
+        onCheckedChange={checked => onStatusChange(establishment.id, checked)}
+      />
     </TableCell>
     <TableCell className="flex items-center justify-center w-full h-full space-x-2">
       <button
@@ -66,6 +72,8 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
   const { isOpen, onOpen } = useEstablishmentDeleteZustand()
   const { isOpen: isOpenEdit, onOpen: onOpenEdit } =
     useEstablishmentEditZustand()
+  const queryClient = useQueryClient()
+
   const { data, isLoading, error } = useQuery<TEstablishment[], Error>({
     queryKey: ['get-establishment'],
     queryFn: async () => {
@@ -73,6 +81,34 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
       return response.data
     },
   })
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({
+      id,
+      newStatus,
+    }: {
+      id: number
+      newStatus: boolean
+    }) => {
+      const response = await api.patch(
+        `/establishment`,
+        { status: newStatus },
+        { params: { id } },
+      )
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-establishment'] })
+      toast.success('Status atualizado com sucesso!')
+    },
+    onError: () => {
+      toast.error('Erro ao atualizar o status. Por favor, tente novamente.')
+    },
+  })
+
+  const handleStatusChange = (id: number, newStatus: boolean) => {
+    updateStatusMutation.mutate({ id, newStatus })
+  }
 
   const filteredData = useMemo(() => {
     if (!data) return []
@@ -107,13 +143,14 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
 
     return filteredData.map(data => (
       <EstablishmentRow
-        onOpenEdit={onOpenEdit}
         key={data.id}
         establishment={data}
+        onOpenEdit={onOpenEdit}
         onOpenDelete={onOpen}
+        onStatusChange={handleStatusChange}
       />
     ))
-  }, [isLoading, error, filteredData])
+  }, [isLoading, error, filteredData, handleStatusChange])
 
   return (
     <div className="flex flex-col mt-4">

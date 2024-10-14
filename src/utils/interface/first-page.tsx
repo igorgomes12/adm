@@ -9,13 +9,13 @@ import {
 } from 'react-icons/fa'
 import { BsFillPersonPlusFill } from 'react-icons/bs'
 import { ImUsers } from 'react-icons/im'
-import { ChatBubbleIcon } from '@radix-ui/react-icons'
+import { HiOutlineChatBubbleLeftEllipsis } from 'react-icons/hi2'
 
 export const menuNavigation = [
   {
     id: 'canais',
     label: 'Canais',
-    icon: <ChatBubbleIcon />,
+    icon: <HiOutlineChatBubbleLeftEllipsis />,
     subcategories: [
       {
         title: 'Cadastros',

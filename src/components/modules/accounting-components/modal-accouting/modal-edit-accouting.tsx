@@ -96,7 +96,7 @@ export const ModalAccountingEdit = () => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 backdrop-blur-sm">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4 sm:w-2/3 lg:w-1/3">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full mx-4 sm:w-2/3 lg:w-8/12">
         <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
           Edição de Contabilidade
         </h1>
@@ -105,7 +105,7 @@ export const ModalAccountingEdit = () => {
         ) : (
           <FormProvider {...form}>
             <form
-              className="gap-2 flex flex-col"
+              className="gap-2 grid grid-cols-1 sm:grid-cols-2"
               onSubmit={form.handleSubmit(onSubmit)}
             >
               {['name', 'cnpj', 'contact', 'crc', 'email', 'phone'].map(
@@ -134,9 +134,9 @@ export const ModalAccountingEdit = () => {
                 ),
               )}
 
-              <div className="flex flex-col sm:flex-row justify-center gap-2 mt-4">
+              <div className="col-span-full flex flex-col sm:flex-row justify-center items-center gap-2 mt-6">
                 <Button
-                  className="w-full"
+                  className="w-full "
                   variant="destructive"
                   onClick={onClose}
                   disabled={isUpdating}
@@ -145,7 +145,7 @@ export const ModalAccountingEdit = () => {
                   Fechar
                 </Button>
                 <Button
-                  className="w-full"
+                  className="w-full "
                   type="submit"
                   variant="success"
                   disabled={isUpdating}

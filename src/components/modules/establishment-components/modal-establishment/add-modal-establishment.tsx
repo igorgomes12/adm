@@ -17,11 +17,13 @@ import {
   type TSchemaEstablished,
 } from '../zod-types-establishment/zod-establihment'
 import { useEstablishmentZustand } from '../zustand-establishment/create-establishment'
-import { Switch } from '@/components/ui/switch'
 
 type TAddEstablishment = {
   message: string
 }
+
+// Modificamos o tipo para remover o campo status
+type TEstablishmentInput = Omit<TSchemaEstablished, 'status'>
 
 export const AddEstablishmentModal = () => {
   const { onClose } = useEstablishmentZustand()
@@ -29,8 +31,12 @@ export const AddEstablishmentModal = () => {
   const queryClient = useQueryClient()
 
   const { mutateAsync: mutation, isSuccess } = useMutation({
-    mutationFn: async (data: TSchemaEstablished) => {
-      const res = await api.post<TAddEstablishment>('/establishment', data)
+    mutationFn: async (data: TEstablishmentInput) => {
+      // Adicionamos o status true por padrão
+      const res = await api.post<TAddEstablishment>('/establishment', {
+        ...data,
+        status: true,
+      })
       return res.data
     },
     onSuccess: () => {
@@ -46,15 +52,14 @@ export const AddEstablishmentModal = () => {
     },
   })
 
-  const form = useForm<TSchemaEstablished>({
+  const form = useForm<TEstablishmentInput>({
     defaultValues: {
       name: '',
-      status: false,
     },
-    resolver: zodResolver(schemaEstablished),
+    resolver: zodResolver(schemaEstablished.omit({ status: true })),
   })
 
-  const onSubmit = async (data: TSchemaEstablished) => {
+  const onSubmit = async (data: TEstablishmentInput) => {
     await mutation(data)
   }
 
@@ -79,23 +84,6 @@ export const AddEstablishmentModal = () => {
                     <Input placeholder="Nome do estabelecimento" {...field} />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Status</FormLabel>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
                 </FormItem>
               )}
             />

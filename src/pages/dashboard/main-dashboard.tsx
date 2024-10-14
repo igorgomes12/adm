@@ -42,7 +42,7 @@ const data = [
 
 export function MainDashboard() {
   return (
-    <div className="flex flex-col w-full min-h-screen bg-white bg-opacity-20 backdrop-blur-sm p-4">
+    <div className="flex flex-col w-full min-h-screen bg-white bg-opacity-20 backdrop-blur-sm p-2">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {data.map((item, index) => (
           <div

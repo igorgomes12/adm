@@ -16,6 +16,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useCallback } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { GoPaperclip } from 'react-icons/go'
 
 export const ModalSystemAdd = () => {
   const { onClose } = useSystemZustand()
@@ -24,7 +27,18 @@ export const ModalSystemAdd = () => {
   const { mutate, isSuccess } = useMutation({
     mutationKey: ['post-system'],
     mutationFn: async (data: TSystemSchemaDto) => {
-      const res = await api.post('/systems', data)
+      const formData = new FormData()
+      formData.append('name', data.name)
+      formData.append('description', data.description)
+      if (data.image_url instanceof File) {
+        formData.append('image', data.image_url)
+      }
+
+      const res = await api.post('/systems', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       return res.data
     },
     onSuccess: () => {
@@ -41,7 +55,7 @@ export const ModalSystemAdd = () => {
   const form = useForm<TSystemSchemaDto>({
     defaultValues: {
       name: '',
-      image_url: '',
+      image_url: undefined,
       description: '',
     },
     resolver: zodResolver(SystemSchemaDto),
@@ -49,6 +63,17 @@ export const ModalSystemAdd = () => {
 
   const onSubmit = (data: TSystemSchemaDto) => {
     mutate(data)
+  }
+
+  const handleFileSelect = (
+    file: File | null,
+    onChange: (...event: any[]) => void,
+  ) => {
+    if (file) {
+      onChange(file)
+    } else {
+      onChange(undefined)
+    }
   }
 
   return (
@@ -81,7 +106,12 @@ export const ModalSystemAdd = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder="URL da imagem" {...field} />
+                    <ImageDropzone
+                      onFileSelect={file =>
+                        handleFileSelect(file, field.onChange)
+                      }
+                      value={field.value}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -126,6 +156,49 @@ export const ModalSystemAdd = () => {
             </div>
           </form>
         </FormProvider>
+      </div>
+    </div>
+  )
+}
+
+interface ImageDropzoneProps {
+  onFileSelect: (file: File) => void
+  value?: File | string
+}
+
+const ImageDropzone: React.FC<ImageDropzoneProps> = ({
+  onFileSelect,
+  value,
+}) => {
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length > 0) {
+        onFileSelect(acceptedFiles[0])
+      }
+    },
+    [onFileSelect],
+  )
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif'],
+    },
+    maxFiles: 1,
+  })
+
+  return (
+    <div {...getRootProps()} className="dropzone">
+      <input {...getInputProps()} />
+      <div className="border-2 border-dashed border-gray-300 gap-2 rounded-lg p-4 flex text-center cursor-pointer">
+        <GoPaperclip />
+
+        <p className="text-gray-500 text-sm">
+          {!isDragActive && 'Arraste e solte para adicionar imagem'}
+        </p>
+        {value && (
+          <p className="mt-2">{value instanceof File ? value.name : value}</p>
+        )}
       </div>
     </div>
   )

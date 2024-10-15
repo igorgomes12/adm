@@ -1,5 +1,5 @@
 import { TableClientBuy } from '@/components/modules/tables-client/table-client-buy'
-import GradualSpacing from '@/components/ui/gradual-spacing'
+import Ripple from '@/components/ui/ripple'
 import { AccountingComponent } from '@/pages/channel/accounting/accounting'
 import { EstablishmentComponent } from '@/pages/channel/establishment/establishment'
 import { SystemComponent } from '@/pages/channel/system/system'
@@ -23,17 +23,24 @@ export const LocationsAcess: FC<LocationsProps> = ({ activeComponent }) => {
       ) : activeComponent === 'Usuários' ? (
         <UsersComponent />
       ) : (
-        <div className="flex flex-col h-full bg-gray-400 w-full items-center justify-center">
-          <GradualSpacing
-            className="font-display text-center text-xl flex-col font-bold -tracking-widest  text-black dark:text-white md:text-3xl md:leading-[5rem]"
-            text="Portal Administrativo"
-          />
-          <p>Lider Admin</p>
-          <img
-            src="https://liderautomacao.s3.amazonaws.com/site/public/logo.png"
-            alt="Lider Automação Logo"
-            className="w-32 md:w-40"
-          />
+        <div className="flex flex-col bg-white h-full bg-foreground w-full items-center justify-center">
+          <div className="hidden md:flex bg-white  flex-col h-screen w-full items-center justify-center relative">
+            <Ripple
+              className="text-white"
+              mainCircleOpacity={2.24}
+              mainCircleSize={210}
+              numCircles={5}
+            />
+            <img
+              src="https://liderautomacao.s3.amazonaws.com/site/public/logo_icon.png"
+              alt="logo"
+              className="absolute transform -translate-x-1/2 -translate-y-1/2"
+              style={{
+                top: '50%',
+                left: '50%',
+              }}
+            />
+          </div>
         </div>
       )}
     </div>

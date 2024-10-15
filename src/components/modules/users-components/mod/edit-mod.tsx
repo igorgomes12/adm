@@ -1,6 +1,5 @@
 import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   FormControl,
   FormField,
@@ -160,26 +159,6 @@ export const ModalUserEdit = () => {
                   )}
                 />
               </div>
-
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value === 'ativo'}
-                        onCheckedChange={checked =>
-                          field.onChange(checked ? 'ativo' : 'inativo')
-                        }
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>Usuário Ativo</FormLabel>
-                    </div>
-                  </FormItem>
-                )}
-              />
 
               <div className="flex flex-col sm:flex-row justify-center gap-2">
                 <Button

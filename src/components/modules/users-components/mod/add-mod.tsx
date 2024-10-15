@@ -15,7 +15,8 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { UserSchemaDto, type TUserSchemaDto } from '../zod-types-user/zod-users'
 import { useAddUserZustand } from '../zustand/add-zustand'
-import { Switch } from '@/components/ui/switch'
+import { useState } from 'react'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
 
 type ProfileType =
   | 'ADMIN'
@@ -41,6 +42,7 @@ const profileMap: Record<number, ProfileType> = {
 export const ModalUserAdd = () => {
   const { onClose } = useAddUserZustand()
   const queryClient = useQueryClient()
+  const [showPassword, setShowPassword] = useState(false)
 
   const { mutate, isSuccess } = useMutation({
     mutationKey: ['post-user'],
@@ -61,6 +63,13 @@ export const ModalUserAdd = () => {
 
   const form = useForm<TUserSchemaDto>({
     resolver: zodResolver(UserSchemaDto),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      status: 'ativo',
+      profile: [],
+    },
   })
 
   const onSubmit = (data: TUserSchemaDto) => {
@@ -110,58 +119,25 @@ export const ModalUserAdd = () => {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem className="flex gap-2 w-full">
+                  <FormItem className="flex flex-col gap-2 w-full relative">
                     <FormControl>
-                      <Input placeholder="Senha" type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem className="flex gap-2 w-full items-center justify-between rounded-lg border-2">
-                    <div className="p-2">
-                      <FormLabel className="text-base">Status</FormLabel>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        className="mr-2"
-                        checked={field.value === 'ativo'}
-                        onCheckedChange={checked =>
-                          field.onChange(checked ? 'ativo' : 'inativo')
-                        }
+                      <Input
+                        placeholder="Senha"
+                        type={showPassword ? 'text' : 'password'}
+                        {...field}
                       />
                     </FormControl>
-                  </FormItem>
-                )}
-              />
-              {/* <FormField
-                control={form.control}
-                name="channel"
-                render={({ field }) => (
-                  <FormItem className="flex gap-2 w-full">
-                    <Select
-                      onValueChange={value => field.onChange(Number(value))}
-                      value={field.value?.toString()}
+                    <button
+                      type="button"
+                      className="absolute right-3 top-4 transform -translate-y-1/2"
+                      onClick={() => setShowPassword(!showPassword)}
                     >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione um canal" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="1">Canal 1</SelectItem>
-                        <SelectItem value="2">Canal 2</SelectItem>
-                        <SelectItem value="3">Canal 3</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
                     <FormMessage />
                   </FormItem>
                 )}
-              /> */}
+              />
             </div>
 
             <FormItem>

@@ -17,6 +17,7 @@ export const UserSchemaDto = z.object({
     .int()
     .positive({ message: 'O ID do usuário é obrigatório' })
     .optional(),
+
   name: z
     .string()
     .min(1, { message: 'O nome do usuário é obrigatório' })

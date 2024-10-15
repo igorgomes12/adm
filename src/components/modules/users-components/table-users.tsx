@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import type { TUserSchemaDto } from './zod-types-user/zod-users'
@@ -16,12 +16,16 @@ import { useUserDeleteZustand } from './zustand/del-zustand'
 import { useUserEditZustand } from './zustand/edit-zustand'
 import { ModalUserDelete } from './mod/del-mod'
 import { ModalUserEdit } from './mod/edit-mod'
+import { Switch } from '@/components/ui/switch'
+import { toast } from 'react-toastify'
 
 interface UsersRowProps {
   user: TUserSchemaDto
   onEdit: (id: number) => void
   onDelete: (id: number) => void
+  onStatusChange: (id: number, newStatus: boolean) => void
 }
+
 export type ProfileType =
   | 'ADMIN'
   | 'FINANCE'
@@ -42,6 +46,7 @@ const profileMap: Record<ProfileType, string> = {
   SUPPORT: 'Suporte',
   SUPPORT_SUPERVISOR: 'Supervisor de Suporte',
 }
+
 function getProfileNames(
   profiles:
     | ProfileType
@@ -59,10 +64,20 @@ function getProfileNames(
       `Perfil ${profiles}`
     )
   }
+
+  if (typeof profiles === 'string') {
+    return profileMap[profiles as ProfileType] || profiles
+  }
+
+  return Array.isArray(profiles)
+    ? profiles
+        .map(profile => profileMap[profile as ProfileType] || profile)
+        .join(', ')
+    : undefined
 }
 
 const UserRow: React.FC<UsersRowProps> = React.memo(
-  ({ user, onEdit, onDelete }) => (
+  ({ user, onEdit, onDelete, onStatusChange }) => (
     <TableRow key={user.id}>
       <TableCell className="text-xs items-center">{user.id}</TableCell>
       <TableCell className="text-xs items-center">{user.name}</TableCell>
@@ -71,7 +86,10 @@ const UserRow: React.FC<UsersRowProps> = React.memo(
       </TableCell>
       <TableCell className="text-xs items-center">{user.email}</TableCell>
       <TableCell className="text-xs items-center">
-        {user.status === 'ativo' ? 'Ativo' : 'Inativo'}
+        <Switch
+          checked={user.status === 'ativo'}
+          onCheckedChange={checked => onStatusChange(user.id || 0, checked)}
+        />
       </TableCell>
       <TableCell className="flex items-center justify-center w-full h-full space-x-2">
         <button
@@ -107,6 +125,34 @@ export const TableUsers: React.FC<{ searchTerm: string }> = ({
     refetchOnWindowFocus: true,
     staleTime: 0,
   })
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({
+      id,
+      newStatus,
+    }: {
+      id: number
+      newStatus: boolean
+    }) => {
+      const response = await api.patch(
+        '/user',
+        { status: newStatus ? 'ativo' : 'inativo' },
+        { params: { id } },
+      )
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-users'] })
+      toast.success('Status atualizado com sucesso!')
+    },
+    onError: () => {
+      toast.error('Erro ao atualizar o status. Por favor, tente novamente.')
+    },
+  })
+
+  const handleStatusChange = (id: number, newStatus: boolean) => {
+    updateStatusMutation.mutate({ id, newStatus })
+  }
 
   const headers = useMemo(
     () => ['Cód.', 'Nome', 'Perfil', 'Email', 'Status', ''],
@@ -171,12 +217,21 @@ export const TableUsers: React.FC<{ searchTerm: string }> = ({
                 user={user}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
               />
             ))}
         </TableBody>
       </Table>
     )
-  }, [isLoading, error, filteredData, headers])
+  }, [
+    isLoading,
+    error,
+    filteredData,
+    headers,
+    handleEdit,
+    handleDelete,
+    handleStatusChange,
+  ])
 
   return (
     <div className="flex flex-col mt-4">

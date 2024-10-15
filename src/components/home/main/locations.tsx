@@ -1,20 +1,27 @@
-import Ripple from '@/components/ui/ripple'
 import { AccountingComponent } from '@/pages/channel/accounting/accounting'
 import { EstablishmentComponent } from '@/pages/channel/establishment/establishment'
 import { SystemComponent } from '@/pages/channel/system/system'
 import { UsersComponent } from '@/pages/channel/user/users'
-import { ClientComponent } from '@/pages/client/client'
-import { FormClientComponent } from '@/pages/client/form-client'
+import { ClientComponent } from '@/pages/channel/client/client'
+import { FormClientComponent } from '@/pages/channel/client/form-client'
+import Ripple from '@/components/ui/ripple'
 import type { FC } from 'react'
 
 interface LocationsProps {
   activeComponent: string | null
+  setActiveComponent: (component: string | null) => void
 }
-export const LocationsAcess: FC<LocationsProps> = ({ activeComponent }) => {
+
+export const LocationsAcess: FC<LocationsProps> = ({
+  activeComponent,
+  setActiveComponent,
+}) => {
   return (
     <div className="flex-1 p-4">
       {activeComponent === 'Clientes de Venda' ? (
-        <ClientComponent />
+        <ClientComponent
+          onOpenFormClient={() => setActiveComponent('Cadastro Cliente')}
+        />
       ) : activeComponent === 'Cadastro Cliente' ? (
         <FormClientComponent />
       ) : activeComponent === 'Sistemas' ? (

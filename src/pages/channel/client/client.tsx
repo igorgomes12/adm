@@ -1,16 +1,22 @@
 import { FormFilter } from '@/components/form-utils/form-filter/form-filter'
 import { FormHeader } from '@/components/form-utils/form-header/form-header'
 import { TableClientBuy } from '@/components/modules/client/table-client-buy'
-import { useState } from 'react'
+import { useState, type FC } from 'react'
 
-export const ClientComponent = () => {
+interface ClientComponentProps {
+  onOpenFormClient: () => void
+}
+
+export const ClientComponent: FC<ClientComponentProps> = ({
+  onOpenFormClient,
+}) => {
   const [searchTerm, setSearchTerm] = useState('')
 
   return (
     <div className="flex flex-col gap-2 w-full">
       <FormHeader title="Clientes de venda" />
       <FormFilter
-        onOpen={() => {}}
+        onOpen={onOpenFormClient}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />

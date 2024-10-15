@@ -4,8 +4,9 @@ import type { FC } from 'react'
 interface FormFilterProps {
   searchTerm: string
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>
-  onOpen: () => void | undefined
+  onOpen: () => void
 }
+
 export const FormFilter: FC<FormFilterProps> = ({
   searchTerm,
   setSearchTerm,

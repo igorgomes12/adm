@@ -226,7 +226,10 @@ export default function Sidebar() {
       {showDashboard ? (
         <MainDashboard />
       ) : (
-        <LocationsAcess activeComponent={activeComponent} />
+        <LocationsAcess
+          setActiveComponent={setActiveComponent}
+          activeComponent={activeComponent}
+        />
       )}
     </div>
   )

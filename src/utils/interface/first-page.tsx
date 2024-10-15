@@ -20,7 +20,8 @@ export const menuNavigation = [
       {
         title: 'Cadastros',
         items: [
-          { label: 'Clientes de Venda', icon: <BsFillPersonPlusFill /> },
+          { label: 'Clientes de Venda', icon: <FaUser /> },
+          { label: 'Cadastro Cliente', icon: <BsFillPersonPlusFill /> },
           { label: 'Clientes de Visita', icon: <ImUsers /> },
           { label: 'Contabilidades', icon: <FaDollarSign /> },
           { label: 'Sistemas', icon: <FaDesktop /> },

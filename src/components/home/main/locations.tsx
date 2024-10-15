@@ -1,9 +1,10 @@
-import { TableClientBuy } from '@/components/modules/tables-client/table-client-buy'
 import Ripple from '@/components/ui/ripple'
 import { AccountingComponent } from '@/pages/channel/accounting/accounting'
 import { EstablishmentComponent } from '@/pages/channel/establishment/establishment'
 import { SystemComponent } from '@/pages/channel/system/system'
 import { UsersComponent } from '@/pages/channel/user/users'
+import { ClientComponent } from '@/pages/client/client'
+import { FormClientComponent } from '@/pages/client/form-client'
 import type { FC } from 'react'
 
 interface LocationsProps {
@@ -13,7 +14,9 @@ export const LocationsAcess: FC<LocationsProps> = ({ activeComponent }) => {
   return (
     <div className="flex-1 p-4">
       {activeComponent === 'Clientes de Venda' ? (
-        <TableClientBuy />
+        <ClientComponent />
+      ) : activeComponent === 'Cadastro Cliente' ? (
+        <FormClientComponent />
       ) : activeComponent === 'Sistemas' ? (
         <SystemComponent />
       ) : activeComponent === 'Contabilidades' ? (
@@ -24,7 +27,7 @@ export const LocationsAcess: FC<LocationsProps> = ({ activeComponent }) => {
         <UsersComponent />
       ) : (
         <div className="flex flex-col bg-white h-full bg-foreground w-full items-center justify-center">
-          <div className="hidden md:flex bg-white  flex-col h-screen w-full items-center justify-center relative">
+          <div className="hidden md:flex bg-white flex-col h-screen w-full items-center justify-center relative">
             <Ripple
               className="text-white"
               mainCircleOpacity={2.24}

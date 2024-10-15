@@ -1,42 +1,48 @@
-import { ClientNavigationComponent } from '@/components/client-forms/client-navigation-component'
+import {
+  ClientNavigationComponent,
+  navClients,
+} from '@/components/client-forms/client-navigation-component'
 import { useState } from 'react'
+import { EnterpriseForm } from '../../../components/modules/client/forms/enterprise-form'
+import { ContactForm } from '@/components/modules/client/forms/contact-form'
 
 export const FormClientComponent = () => {
-  const [selectedForm, setSelectedForm] = useState<string | null>(null)
+  const [selectedForm, setSelectedForm] = useState<string>('Empresa')
+  const [enabledForms, setEnabledForms] = useState<string[]>(['Empresa'])
+
+  const handleNext = (currentForm: string) => {
+    const nextFormIndex =
+      navClients.findIndex(client => client.title === currentForm) + 1
+    if (nextFormIndex < navClients.length) {
+      const nextFormTitle = navClients[nextFormIndex].title
+      setEnabledForms([...enabledForms, nextFormTitle])
+      setSelectedForm(nextFormTitle)
+    }
+  }
 
   const renderForm = () => {
     switch (selectedForm) {
       case 'Empresa':
-        return <EmpresaForm />
+        return <EnterpriseForm onNext={() => handleNext('Empresa')} />
       case 'Contatos':
-        return <ContasForm />
+        return <ContactForm onNext={() => handleNext('Contatos')} />
       default:
         return <div>Selecione uma opção para ver o formulário.</div>
     }
   }
+
   return (
     <div className="flex h-screen">
       <aside className="w-96 bg-gray-100 items-center flex flex-col space-y-6">
         <h2 className="text-2xl font-semibold p-2">Cadastro cliente</h2>
         <ClientNavigationComponent
           selected={selectedForm}
-          onSelect={setSelectedForm}
+          onSelect={title =>
+            enabledForms.includes(title) && setSelectedForm(title)
+          }
         />
       </aside>
-      <main className="flex-1 p-6 bg-white">{renderForm()}</main>
+      <main className="flex-1 bg-white">{renderForm()}</main>
     </div>
   )
 }
-const EmpresaForm = () => (
-  <div>
-    <h3>Formulário de Empresa</h3>
-    {/* Campos do formulário */}
-  </div>
-)
-
-const ContasForm = () => (
-  <div>
-    <h3>Formulário de Contas</h3>
-    {/* Campos do formulário */}
-  </div>
-)

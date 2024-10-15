@@ -7,11 +7,11 @@ import { FaPersonCirclePlus, FaPersonShelter } from 'react-icons/fa6'
 
 interface INavClient {
   title: string
-  icon: React.ElementType // Use ElementType para componentes de ícone
+  icon: React.ElementType
   description: string
 }
 
-const navClients: INavClient[] = [
+export const navClients: INavClient[] = [
   {
     title: 'Empresa',
     icon: BsFillPersonFill,

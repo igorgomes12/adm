@@ -1,3 +1,4 @@
+import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
 import {
   FormControl,
@@ -14,11 +15,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { FC } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect, type FC } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import type { TSchemaEstablished } from '../../establishment-components/zod-types-establishment/zod-establihment'
 
 export const EnterpriseForm: FC<{ onNext: () => void }> = ({ onNext }) => {
   const form = useForm()
+
+  const { data } = useQuery<TSchemaEstablished[], Error>({
+    queryKey: ['get-establishment'],
+    queryFn: async () => {
+      const response = await api.get(`/establishment`)
+      return response.data
+    },
+  })
+
+  const { setValue } = form
+
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]
+    setValue('Data de cadastro', today)
+  }, [setValue])
 
   return (
     <div className="flex flex-col p-4  w-full h-screen">
@@ -33,8 +51,8 @@ export const EnterpriseForm: FC<{ onNext: () => void }> = ({ onNext }) => {
           className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full "
           action=""
         >
-          <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
-            <FormField
+          {/* <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
+             <FormField
               name="cód"
               render={({ field }) => (
                 <FormItem className="w-full">
@@ -46,18 +64,23 @@ export const EnterpriseForm: FC<{ onNext: () => void }> = ({ onNext }) => {
                 </FormItem>
               )}
             />
+          </div> */}
+          <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
               name="Data de cadastro"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Data Cadastro</FormLabel>
-                  <Input type="date" disabled {...field} />
+                  <Input
+                    className="text-md font-normal"
+                    type="date"
+                    disabled
+                    {...field}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
-          <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
               name="name"
               render={({ field }) => (
@@ -141,9 +164,11 @@ export const EnterpriseForm: FC<{ onNext: () => void }> = ({ onNext }) => {
                         <SelectValue placeholder="Selecione um tipo" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="fixo">Loja</SelectItem>
-                        <SelectItem value="whatsApp">loja1</SelectItem>
-                        <SelectItem value="celular">loja 2</SelectItem>
+                        {data?.map((item: TSchemaEstablished) => (
+                          <SelectItem key={item.id} value={item.id.toString()}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FormControl>

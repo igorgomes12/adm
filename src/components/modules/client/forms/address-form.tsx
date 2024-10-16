@@ -14,8 +14,11 @@ import { useEffect } from 'react'
 import { AddressData, fetchViaCep } from '@/utils/api/fecth-viacep'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { addressSchema, type addressSchemaType } from '../zod-form/zod-address'
+import type { TClient } from '../zod-form/zod_client.schema'
 
-export const AddressForm: FC<{ onNext: () => void }> = ({ onNext }) => {
+export const AddressForm: FC<{ onNext: (data: TClient) => void }> = ({
+  onNext,
+}) => {
   const form = useForm<addressSchemaType>({
     defaultValues: {
       cep: '',
@@ -44,7 +47,7 @@ export const AddressForm: FC<{ onNext: () => void }> = ({ onNext }) => {
   useEffect(() => {
     if (!cep) {
       reset({
-        Endereço: '',
+        street: '',
         bairro: '',
         municipio: '',
         UF: '',
@@ -53,11 +56,11 @@ export const AddressForm: FC<{ onNext: () => void }> = ({ onNext }) => {
     }
 
     if (viaCepData) {
-      setValue('Endereço', viaCepData.logradouro || '')
+      setValue('street', viaCepData.logradouro || '')
       setValue('bairro', viaCepData.bairro || '')
       setValue('municipio', viaCepData.localidade || viaCepData.estado || '')
       setValue('UF', viaCepData.uf || '')
-      clearErrors(['Endereço', 'bairro', 'municipio', 'UF'])
+      clearErrors(['street', 'bairro', 'municipio', 'UF'])
     }
   }, [cep, viaCepData, reset, setValue, clearErrors])
 
@@ -70,6 +73,16 @@ export const AddressForm: FC<{ onNext: () => void }> = ({ onNext }) => {
     )
   }
 
+  const submitForm = async (data: any) => {
+    console.log('Dados do formulário:', data)
+    try {
+      onNext(data as unknown as TClient)
+      console.log('Form enviado com sucesso:', data)
+    } catch (error) {
+      console.error('Erro ao enviar o formulário:', error)
+    }
+  }
+
   return (
     <div className="flex flex-col p-4 w-full h-screen">
       <div className="flex w-full items-start justify-start">
@@ -79,7 +92,7 @@ export const AddressForm: FC<{ onNext: () => void }> = ({ onNext }) => {
       </div>
       <FormProvider {...form}>
         <form
-          onSubmit={handleSubmit(onNext)}
+          onSubmit={handleSubmit(submitForm)}
           className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full"
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
@@ -96,12 +109,12 @@ export const AddressForm: FC<{ onNext: () => void }> = ({ onNext }) => {
               )}
             />
             <FormField
-              name="Endereço"
+              name="street"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Endereço</FormLabel>
-                  <Input {...field} {...register('Endereço')} />
-                  <FormMessage>{errors.Endereço?.message}</FormMessage>
+                  <Input {...field} {...register('street')} />
+                  <FormMessage>{errors.street?.message}</FormMessage>
                 </FormItem>
               )}
             />

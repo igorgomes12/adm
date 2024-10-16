@@ -23,6 +23,7 @@ import {
 } from 'react-hook-form'
 import { FaPlus, FaTrash } from 'react-icons/fa'
 import { Textarea } from '@/components/ui/textarea'
+import type { TClient } from '../zod-form/zod_client.schema'
 
 type FormValues = {
   contato: string
@@ -49,7 +50,9 @@ const applyMask = (value: string, mask: string): string => {
   return formattedValue
 }
 
-export const ContactForm: FC<{ onNext: () => void }> = ({ onNext }) => {
+export const ContactForm: FC<{ onNext: (data: TClient) => void }> = ({
+  onNext,
+}) => {
   const form = useForm<FormValues>({
     defaultValues: {
       contato: '',
@@ -80,6 +83,16 @@ export const ContactForm: FC<{ onNext: () => void }> = ({ onNext }) => {
     }
   }
 
+  const submitForm = async (data: any) => {
+    console.log('Dados do formulário:', data)
+    try {
+      onNext(data as unknown as TClient)
+      console.log('Form enviado com sucesso:', data)
+    } catch (error) {
+      console.error('Erro ao enviar o formulário:', error)
+    }
+  }
+
   return (
     <div className="flex flex-col p-4 w-full h-screen">
       <div className="flex w-full items-start justify-start">
@@ -89,7 +102,7 @@ export const ContactForm: FC<{ onNext: () => void }> = ({ onNext }) => {
       </div>
       <FormProvider {...form}>
         <form
-          onSubmit={form.handleSubmit(onNext)}
+          onSubmit={form.handleSubmit(submitForm)}
           className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full "
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">

@@ -19,11 +19,15 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, type FC } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import type { TSchemaEstablished } from '../../establishment-components/zod-types-establishment/zod-establihment'
+import type { AxiosError } from 'axios'
+import type { TClient } from '../zod-form/zod_client.schema'
 
-export const EnterpriseForm: FC<{ onNext: () => void }> = ({ onNext }) => {
+export const EnterpriseForm: FC<{ onNext: (data: TClient) => void }> = ({
+  onNext,
+}) => {
   const form = useForm()
 
-  const { data } = useQuery<TSchemaEstablished[], Error>({
+  const { data, error } = useQuery<TSchemaEstablished[], AxiosError<Error>>({
     queryKey: ['get-establishment'],
     queryFn: async () => {
       const response = await api.get(`/establishment`)
@@ -31,47 +35,51 @@ export const EnterpriseForm: FC<{ onNext: () => void }> = ({ onNext }) => {
     },
   })
 
-  const { setValue } = form
+  if (error) {
+    return (
+      <div>
+        <p>{`Nenhum estabelecimento encontrado. Por favor, tente novamente. ${error.message}`}</p>
+      </div>
+    )
+  }
+
+  const { setValue, register, handleSubmit } = form
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0]
-    setValue('Data de cadastro', today)
+    setValue('createdAt', today)
   }, [setValue])
 
+  const submitForm = async () => {
+    console.log('Dados do formulário:', data)
+    try {
+      onNext(data as unknown as TClient)
+      console.log('Form enviado com sucesso:', data)
+    } catch (error) {
+      console.error('Erro ao enviar o formulário:', error)
+    }
+  }
   return (
-    <div className="flex flex-col p-4  w-full h-screen">
-      <div className="flex w-full items-start justify-start ">
+    <div className="flex flex-col p-4 w-full h-screen">
+      <div className="flex w-full items-start justify-start">
         <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
           Formulário da Empresa
         </h1>
       </div>
       <FormProvider {...form}>
         <form
-          onSubmit={form.handleSubmit(onNext)}
-          className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full "
+          onSubmit={handleSubmit(submitForm)}
+          className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full"
           action=""
         >
-          {/* <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
-             <FormField
-              name="cód"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Código</FormLabel>
-                  <FormControl>
-                    <Input disabled {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div> */}
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
-              name="Data de cadastro"
+              name="createdAt"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Data Cadastro</FormLabel>
                   <Input
+                    {...register('createdAt')}
                     className="text-md font-normal"
                     type="date"
                     disabled
@@ -82,23 +90,26 @@ export const EnterpriseForm: FC<{ onNext: () => void }> = ({ onNext }) => {
               )}
             />
             <FormField
-              name="name"
+              name="corporate_name"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Razão Social</FormLabel>
+                  <FormLabel>Nome Corporativo</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input
+                      {...field}
+                      {...register('corporate_name', { required: true })}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
-              name="fantasy"
+              name="fantasy_name"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Nome Fantasia</FormLabel>
-                  <Input {...field} />
+                  <Input {...register('fantasy_name')} {...field} />
                   <FormMessage />
                 </FormItem>
               )}
@@ -106,47 +117,47 @@ export const EnterpriseForm: FC<{ onNext: () => void }> = ({ onNext }) => {
           </div>
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
-              name="cnpj"
+              name="cpf_cnpj"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>CNPJ</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} {...register('cpf_cnpj')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          <div className="flex lg:flex-row flex-col  w-full gap-2 items-start justify-between">
+          <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
               name="state_registration"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Incrição Estadual</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} {...register('state_registration')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
-              name="municipal"
+              name="municipal_registration"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Incrição Municipal</FormLabel>
-                  <Input {...field} />
+                  <Input {...field} {...register('municipal_registration')} />
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
-              name="rural_Registration"
+              name="rural_registration"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Incrição Rural</FormLabel>
-                  <Input {...field} />
+                  <Input {...field} {...register('rural_registration')} />
                   <FormMessage />
                 </FormItem>
               )}
@@ -154,12 +165,15 @@ export const EnterpriseForm: FC<{ onNext: () => void }> = ({ onNext }) => {
           </div>
           <div className="flex lg:flex-row flex-col w-full gap-2 items-center justify-between">
             <FormField
-              name={'type_establishment'}
-              render={() => (
+              name={'establishment_typeId'}
+              render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Tipo Estabelecimento</FormLabel>
                   <FormControl>
-                    <Select>
+                    <Select
+                      onValueChange={value => field.onChange(Number(value))}
+                      defaultValue={field.value?.toString()}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione um tipo" />
                       </SelectTrigger>
@@ -176,16 +190,16 @@ export const EnterpriseForm: FC<{ onNext: () => void }> = ({ onNext }) => {
                 </FormItem>
               )}
             />
-            <FormField
-              name="Regime"
+            {/* <FormField
+              name="apuration"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Regime Apuração</FormLabel>
-                  <Input {...field} />
+                  <Input {...field} {...register('')} />
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
           <div className="flex w-full items-center justify-center">
             <Button className="w-full" type="submit" variant="success">

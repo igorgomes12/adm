@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select'
 import type { FC } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import type { TClient } from '../zod-form/zod_client.schema'
 
 type FormValues = {
   representative: string
@@ -22,7 +23,9 @@ type FormValues = {
   accontings: string
 }
 
-export const RepresentativeForm: FC<{ onNext: () => void }> = ({ onNext }) => {
+export const RepresentativeForm: FC<{ onNext: (data: TClient) => void }> = ({
+  onNext,
+}) => {
   const form = useForm<FormValues>({
     defaultValues: {
       representative: '',
@@ -31,6 +34,16 @@ export const RepresentativeForm: FC<{ onNext: () => void }> = ({ onNext }) => {
       accontings: '',
     },
   })
+
+  const submitForm = async (data: any) => {
+    console.log('Dados do formulário:', data)
+    try {
+      onNext(data as unknown as TClient)
+      console.log('Form enviado com sucesso:', data)
+    } catch (error) {
+      console.error('Erro ao enviar o formulário:', error)
+    }
+  }
 
   return (
     <div className="flex flex-col p-4 w-full h-screen">
@@ -41,7 +54,7 @@ export const RepresentativeForm: FC<{ onNext: () => void }> = ({ onNext }) => {
       </div>
       <FormProvider {...form}>
         <form
-          onSubmit={form.handleSubmit(onNext)}
+          onSubmit={form.handleSubmit(submitForm)}
           className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full"
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">

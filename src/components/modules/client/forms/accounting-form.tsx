@@ -9,9 +9,25 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import type { FC } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import type { TClient } from '../zod-form/zod_client.schema'
+import type { TOwner } from '../zod-form/zod_owner.schema'
 
-export const AccoutingForm: FC = () => {
-  const form = useForm()
+export const AccoutingForm: FC<{ onNext: (data: TClient) => void }> = ({
+  onNext,
+}) => {
+  const form = useForm<TOwner>()
+
+  const { handleSubmit, register } = form
+
+  const submitForm = async (data: any) => {
+    console.log('Dados do formulário:', data)
+    try {
+      onNext(data as unknown as TClient)
+      console.log('Form enviado com sucesso:', data)
+    } catch (error) {
+      console.error('Erro ao enviar o formulário:', error)
+    }
+  }
 
   return (
     <div className="flex flex-col p-4 w-full h-screen">
@@ -22,27 +38,27 @@ export const AccoutingForm: FC = () => {
       </div>
       <FormProvider {...form}>
         <form
-          // onSubmit={handleSubmit()}
+          onSubmit={handleSubmit(submitForm)}
           className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full"
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
-              name="proprietario"
+              name="name"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Proprietário</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} {...register('name')} />
                   </FormControl>
                 </FormItem>
               )}
             />
             <FormField
-              name="cpf"
+              name="cpf_cnpj"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>CPF</FormLabel>
-                  <Input {...field} />
+                  <Input {...field} {...register('cpf_cnpj')} />
                 </FormItem>
               )}
             />
@@ -52,7 +68,7 @@ export const AccoutingForm: FC = () => {
                 <FormItem className="w-full">
                   <FormLabel>Data de Nascimento</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Input type="date" {...field} {...register('birth_date')} />
                   </FormControl>
                 </FormItem>
               )}

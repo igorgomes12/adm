@@ -17,7 +17,7 @@ export const LocationsAcess: FC<LocationsProps> = ({
   setActiveComponent,
 }) => {
   return (
-    <div className="flex-1 p-4">
+    <div className="flex-1">
       {activeComponent === 'Clientes de Venda' ? (
         <ClientComponent
           onOpenFormClient={() => setActiveComponent('Cadastro Cliente')}

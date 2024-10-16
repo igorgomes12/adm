@@ -12,7 +12,7 @@ export const EstablishmentComponent: FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
 
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <div className="flex flex-col gap-2 p-4 w-full">
       <FormHeader title="Estabelecimento" />
       <FormFilter
         searchTerm={searchTerm}

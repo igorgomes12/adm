@@ -30,7 +30,7 @@ export const navClients: INavClient[] = [
   {
     title: 'Representante',
     icon: FaPersonCirclePlus,
-    description: 'Cadastrar dados dos representantes.',
+    description: 'Cadastrar dados dos representantes e contabilidade.',
   },
   {
     title: 'Proprietário',

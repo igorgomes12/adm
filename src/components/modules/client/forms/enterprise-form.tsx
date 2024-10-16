@@ -7,6 +7,13 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import type { FC } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
@@ -14,8 +21,8 @@ export const EnterpriseForm: FC<{ onNext: () => void }> = ({ onNext }) => {
   const form = useForm()
 
   return (
-    <div className="flex flex-col p-4 space-x-4 space-y-2 w-full h-screen">
-      <div className="flex w-full items-start justify-start p-4">
+    <div className="flex flex-col p-4  w-full h-screen">
+      <div className="flex w-full items-start justify-start ">
         <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
           Formulário da Empresa
         </h1>
@@ -116,6 +123,39 @@ export const EnterpriseForm: FC<{ onNext: () => void }> = ({ onNext }) => {
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Incrição Rural</FormLabel>
+                  <Input {...field} />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex lg:flex-row flex-col w-full gap-2 items-center justify-between">
+            <FormField
+              name={'type_establishment'}
+              render={() => (
+                <FormItem className="w-full">
+                  <FormLabel>Tipo Estabelecimento</FormLabel>
+                  <FormControl>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione um tipo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="fixo">Loja</SelectItem>
+                        <SelectItem value="whatsApp">loja1</SelectItem>
+                        <SelectItem value="celular">loja 2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="Regime"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Regime Apuração</FormLabel>
                   <Input {...field} />
                   <FormMessage />
                 </FormItem>

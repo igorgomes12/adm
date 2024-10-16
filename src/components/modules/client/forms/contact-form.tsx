@@ -15,12 +15,50 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { FC } from 'react'
-import { FormProvider, useForm, useFieldArray } from 'react-hook-form'
+import {
+  FormProvider,
+  useForm,
+  useFieldArray,
+  Controller,
+} from 'react-hook-form'
 import { FaPlus, FaTrash } from 'react-icons/fa'
 import { Textarea } from '@/components/ui/textarea'
 
+type FormValues = {
+  contato: string
+  email: string
+  description: string
+  telefones: {
+    number: string
+    type: string
+  }[]
+}
+
+const applyMask = (value: string, mask: string): string => {
+  let formattedValue = ''
+  let maskIndex = 0
+  for (let i = 0; i < value.length && maskIndex < mask.length; i++) {
+    if (/\d/.test(value[i])) {
+      while (maskIndex < mask.length && mask[maskIndex] !== '9') {
+        formattedValue += mask[maskIndex++]
+      }
+      formattedValue += value[i]
+      maskIndex++
+    }
+  }
+  return formattedValue
+}
+
 export const ContactForm: FC<{ onNext: () => void }> = ({ onNext }) => {
-  const form = useForm()
+  const form = useForm<FormValues>({
+    defaultValues: {
+      contato: '',
+      email: '',
+      description: '',
+      telefones: [{ number: '', type: '' }],
+    },
+  })
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'telefones',
@@ -37,18 +75,16 @@ export const ContactForm: FC<{ onNext: () => void }> = ({ onNext }) => {
         return '(99) 99999-9999'
       case 'fixo':
         return '(99) 9999-9999'
-      case 'email':
-        return ''
       default:
         return ''
     }
   }
 
   return (
-    <div className="flex flex-col p-4 space-x-4 space-y-2 w-full h-screen">
-      <div className="flex w-full items-start justify-start p-4">
+    <div className="flex flex-col p-4 w-full h-screen">
+      <div className="flex w-full items-start justify-start">
         <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
-          Contatos da Empresa
+          Formulário de Contatos
         </h1>
       </div>
       <FormProvider {...form}>
@@ -61,7 +97,7 @@ export const ContactForm: FC<{ onNext: () => void }> = ({ onNext }) => {
               name="contato"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Contato</FormLabel>
+                  <FormLabel>Nome do contato</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -71,11 +107,17 @@ export const ContactForm: FC<{ onNext: () => void }> = ({ onNext }) => {
             />
             <FormField
               name="email"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem className="w-full">
                   <FormLabel>E-mail</FormLabel>
-                  <Input {...field} />
-                  <FormMessage />
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="email"
+                      placeholder="exemplo@dominio.com"
+                    />
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -86,15 +128,30 @@ export const ContactForm: FC<{ onNext: () => void }> = ({ onNext }) => {
               className="flex lg:flex-row flex-col w-full gap-2 items-center justify-between"
             >
               <FormField
-                name={`telefones[${index}].number`}
-                render={({ field }) => (
+                name={`telefones.${index}.type` as const}
+                render={() => (
                   <FormItem className="w-full">
-                    <FormLabel>Telefone</FormLabel>
+                    <FormLabel>Tipo de Contato</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={getMask(
-                          form.getValues(`telefones[${index}].type`),
+                      <Controller
+                        control={form.control}
+                        name={`telefones.${index}.type` as const}
+                        render={({ field }) => (
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione um tipo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="fixo">
+                                Telefone fixo
+                              </SelectItem>
+                              <SelectItem value="whatsApp">WhatsApp</SelectItem>
+                              <SelectItem value="celular">Celular</SelectItem>
+                            </SelectContent>
+                          </Select>
                         )}
                       />
                     </FormControl>
@@ -103,31 +160,31 @@ export const ContactForm: FC<{ onNext: () => void }> = ({ onNext }) => {
                 )}
               />
               <FormField
-                name={`telefones[${index}].type`}
+                name={`telefones.${index}.number` as const}
                 render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Tipo de Contato</FormLabel>
+                  <FormItem className="w-[95%]">
+                    <FormLabel>Contatos</FormLabel>
                     <FormControl>
-                      <Select {...field}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione um tipo" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="telefone">Telefone</SelectItem>
-                          <SelectItem value="whatsApp">WhatsApp</SelectItem>
-                          <SelectItem value="celular">Celular</SelectItem>
-                          <SelectItem value="email">Email</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Input
+                        {...field}
+                        onChange={e => {
+                          const mask = getMask(
+                            form.getValues(`telefones.${index}.type`),
+                          )
+                          field.onChange(applyMask(e.target.value, mask))
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <FaTrash
-                onClick={() => remove(index)}
-                className="mr-2 w-10 h-10 cursor-pointer text-red-500"
-              />
+              {index > 0 && (
+                <FaTrash
+                  onClick={() => remove(index)}
+                  className=" w-8 h-8 cursor-pointer text-red-500"
+                />
+              )}
             </div>
           ))}
           <Button
@@ -136,7 +193,7 @@ export const ContactForm: FC<{ onNext: () => void }> = ({ onNext }) => {
             variant="secondary"
             className="flex items-center"
           >
-            <FaPlus className="mr-2" /> Adicionar Telefone
+            <FaPlus className="mr-2" /> Adicionar contatos
           </Button>
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField

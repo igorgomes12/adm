@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query'
 import { FC, useMemo, useState } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import Paginations from './pagination'
+import { SkeletonCard } from '@/components/skeleton-component/skeleton'
 import type { Client } from './system-components/system-add/zustand-state/add-client'
 
 export const TableClientBuy: FC<{ searchTerm: string }> = ({ searchTerm }) => {
@@ -18,7 +19,7 @@ export const TableClientBuy: FC<{ searchTerm: string }> = ({ searchTerm }) => {
   const itemsPerPage = 4
 
   // Fetch data using react-query
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading } = useQuery<Client[]>({
     queryKey: ['clients'],
     queryFn: async () => {
       const response = await api.get('/client')
@@ -48,14 +49,61 @@ export const TableClientBuy: FC<{ searchTerm: string }> = ({ searchTerm }) => {
     return filteredData.slice(startIndex, startIndex + itemsPerPage)
   }, [filteredData, currentPage, itemsPerPage])
 
-  if (isLoading) {
-    return <div>Carregando...</div>
-  }
+  const tableContent = useMemo(() => {
+    if (isLoading || !filteredData || filteredData.length === 0) {
+      return (
+        <TableRow>
+          <TableCell colSpan={9}>
+            <SkeletonCard />
+          </TableCell>
+        </TableRow>
+      )
+    }
+
+    return paginatedData.map((item: Client) => (
+      <TableRow
+        key={item.id}
+        className={
+          item.inDebt
+            ? 'bg-rose-100 hover:bg-rose-400 '
+            : 'animate-none hover:bg-gray-100'
+        }
+      >
+        <TableCell className="text-sm items-center">{item.id}</TableCell>
+        <TableCell className="text-sm items-center">
+          <p className="font-bold">{item.fantasyName}</p> - {item.corporateName}
+        </TableCell>
+        <TableCell className="text-sm items-center">{item.cpfCnpj}</TableCell>
+        <TableCell className="text-sm items-center">
+          {item.contacts.flatMap(contact => contact.contact).join(', ')}
+        </TableCell>
+        <TableCell className="text-sm items-center">
+          {item.fantasyName}
+        </TableCell>
+        <TableCell className="text-sm items-center">{item.system}</TableCell>
+        <TableCell className="text-sm items-center">
+          {item.stateRegistration}
+        </TableCell>
+        <TableCell className="text-sm items-center">
+          {item.addresses.flatMap(address => address.street)} -{' '}
+          {item.addresses.flatMap(address => address.municipality_id)}
+        </TableCell>
+        <TableCell className="flex items-center justify-center w-full h-full space-x-2">
+          <button className="text-blue-200 hover:text-blue-500">
+            <FaEdit size={24} />
+          </button>
+          <button className="text-red-200 hover:text-red-500">
+            <FaTrash size={24} />
+          </button>
+        </TableCell>
+      </TableRow>
+    ))
+  }, [isLoading, filteredData, paginatedData])
 
   return (
     <div className="w-full overflow-x-auto">
       <div className="flex flex-col">
-        <Table className="min-w-full py-1 cursor-pointer text-sm">
+        <Table className="min-w-full py-1 cursor-pointer text-md">
           <TableHeader>
             <TableRow className="bg-gray-300 w-auto">
               {[
@@ -75,53 +123,7 @@ export const TableClientBuy: FC<{ searchTerm: string }> = ({ searchTerm }) => {
               ))}
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {paginatedData.map((item: Client) => (
-              <TableRow
-                key={item.id}
-                className={
-                  item.inDebt
-                    ? 'bg-rose-100 hover:bg-rose-400 '
-                    : 'animate-none hover:bg-gray-100'
-                }
-              >
-                <TableCell className="text-xs items-center">
-                  {item.id}
-                </TableCell>
-                <TableCell className="text-xs items-center">
-                  <p className="font-bold">{item.fantasyName}</p> -
-                  {item.corporateName}
-                </TableCell>
-                <TableCell className="text-xs items-center">
-                  {item.cpfCnpj}
-                </TableCell>
-                <TableCell className="text-xs items-center">
-                  {item.contacts.flatMap(contact => contact.contact).join(', ')}
-                </TableCell>
-                <TableCell className="text-xs items-center">
-                  {item.fantasyName}
-                </TableCell>
-                <TableCell className="text-xs items-center">
-                  {item.system}
-                </TableCell>
-                <TableCell className="text-xs items-center">
-                  {item.stateRegistration}
-                </TableCell>
-                <TableCell className="text-xs items-center">
-                  {item.addresses.flatMap(address => address.street)} -{' '}
-                  {item.addresses.flatMap(address => address.municipality_id)}
-                </TableCell>
-                <TableCell className="flex items-center justify-center w-full h-full space-x-2">
-                  <button className="text-blue-200 hover:text-blue-500">
-                    <FaEdit size={24} />
-                  </button>
-                  <button className="text-red-200 hover:text-red-500">
-                    <FaTrash size={24} />
-                  </button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+          <TableBody>{tableContent}</TableBody>
         </Table>
         <div className="flex justify-end mt-2">
           <Paginations

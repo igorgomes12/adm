@@ -6,6 +6,7 @@ import { ClientComponent } from '@/pages/channel/client/client'
 import { FormClientComponent } from '@/pages/channel/client/form-client'
 import Ripple from '@/components/ui/ripple'
 import type { FC } from 'react'
+import { RepresentativeComponent } from '@/pages/channel/representative/representative'
 
 interface LocationsProps {
   activeComponent: string | null
@@ -24,6 +25,8 @@ export const LocationsAcess: FC<LocationsProps> = ({
         />
       ) : activeComponent === 'Cadastro Cliente' ? (
         <FormClientComponent />
+      ) : activeComponent === 'Canais' ? (
+        <RepresentativeComponent />
       ) : activeComponent === 'Sistemas' ? (
         <SystemComponent />
       ) : activeComponent === 'Contabilidades' ? (

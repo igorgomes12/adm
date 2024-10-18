@@ -8,7 +8,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/components/sing-in/api/interceptors-axios'
-import { toast } from 'react-toastify'
+import { Flip, toast } from 'react-toastify'
 import {
   FormControl,
   FormField,
@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input'
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { GoPaperclip } from 'react-icons/go'
+import { FaRocket } from 'react-icons/fa'
 
 export const ModalSystemAdd = () => {
   const { onClose } = useSystemZustand()
@@ -42,7 +43,12 @@ export const ModalSystemAdd = () => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Sistema adicionado com sucesso!')
+      toast.success('Sistema adicionado com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+      })
       queryClient.invalidateQueries({ queryKey: ['get-systems'] })
       onClose()
     },

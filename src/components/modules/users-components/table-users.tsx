@@ -79,13 +79,13 @@ function getProfileNames(
 const UserRow: React.FC<UsersRowProps> = React.memo(
   ({ user, onEdit, onDelete, onStatusChange }) => (
     <TableRow key={user.id}>
-      <TableCell className="text-xs items-center">{user.id}</TableCell>
-      <TableCell className="text-xs items-center">{user.name}</TableCell>
-      <TableCell className="text-xs items-center">
+      <TableCell className="text-sm items-center">{user.id}</TableCell>
+      <TableCell className="text-sm items-center">{user.name}</TableCell>
+      <TableCell className="text-sm items-center">
         {getProfileNames(user.profile)}
       </TableCell>
-      <TableCell className="text-xs items-center">{user.email}</TableCell>
-      <TableCell className="text-xs items-center">
+      <TableCell className="text-sm items-center">{user.email}</TableCell>
+      <TableCell className="text-sm items-center">
         <Switch
           checked={user.status === 'ativo'}
           onCheckedChange={checked => onStatusChange(user.id || 0, checked)}
@@ -199,7 +199,7 @@ export const TableUsers: React.FC<{ searchTerm: string }> = ({
     }
 
     return (
-      <Table className="min-w-full py-2 text-sm">
+      <Table className="min-w-full py-2 text-md">
         <TableHeader>
           <TableRow className="bg-gray-300 w-auto">
             {headers.map((header, index) => (

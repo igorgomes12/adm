@@ -13,8 +13,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { FaEye, FaEyeSlash } from 'react-icons/fa'
-import { toast } from 'react-toastify'
+import { FaEye, FaEyeSlash, FaRocket } from 'react-icons/fa'
+import { Flip, toast } from 'react-toastify'
 import {
   UserEditSchemaDto,
   type TUserEditSchemaDto,
@@ -70,7 +70,12 @@ export const ModalUserEdit = () => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Usuário atualizado com sucesso!')
+      toast.success('Usuário atualizado com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+      })
       queryClient.invalidateQueries({ queryKey: ['get-users'] })
       queryClient.invalidateQueries({ queryKey: ['get-users', id] })
       onClose()

@@ -24,16 +24,8 @@ import {
 import { FaPlus, FaTrash } from 'react-icons/fa'
 import { Textarea } from '@/components/ui/textarea'
 import type { TClient } from '../zod-form/zod_client.schema'
-
-type FormValues = {
-  contato: string
-  email: string
-  description: string
-  telefones: {
-    number: string
-    type: string
-  }[]
-}
+import { ContactSchema, type TContact } from '../zod-form/zod_contact.schema'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 const applyMask = (value: string, mask: string): string => {
   let formattedValue = ''
@@ -53,13 +45,8 @@ const applyMask = (value: string, mask: string): string => {
 export const ContactForm: FC<{ onNext: (data: TClient) => void }> = ({
   onNext,
 }) => {
-  const form = useForm<FormValues>({
-    defaultValues: {
-      contato: '',
-      email: '',
-      description: '',
-      telefones: [{ number: '', type: '' }],
-    },
+  const form = useForm<TContact>({
+    // resolver: zodResolver(ContactSchema),
   })
 
   const { fields, append, remove } = useFieldArray({
@@ -68,7 +55,7 @@ export const ContactForm: FC<{ onNext: (data: TClient) => void }> = ({
   })
 
   const handleAddPhone = () => {
-    append({ number: '', type: '' })
+    append({ number: '', type: 'TELEFONE' })
   }
 
   const getMask = (type: string) => {
@@ -83,11 +70,9 @@ export const ContactForm: FC<{ onNext: (data: TClient) => void }> = ({
     }
   }
 
-  const submitForm = async (data: any) => {
-    console.log('Dados do formulário:', data)
+  const submitForm = async (data: TContact) => {
     try {
       onNext(data as unknown as TClient)
-      console.log('Form enviado com sucesso:', data)
     } catch (error) {
       console.error('Erro ao enviar o formulário:', error)
     }
@@ -107,7 +92,7 @@ export const ContactForm: FC<{ onNext: (data: TClient) => void }> = ({
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
-              name="contato"
+              name="contact"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Nome do contato</FormLabel>

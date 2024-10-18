@@ -8,7 +8,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import api from '@/components/sing-in/api/interceptors-axios'
-import { toast } from 'react-toastify'
+import { Flip, toast } from 'react-toastify'
 import {
   FormControl,
   FormField,
@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input'
 import { useEffect, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { TrashIcon } from '@radix-ui/react-icons'
+import { FaRocket } from 'react-icons/fa'
 
 export const ModalSystemEdit = () => {
   const { id, isOpen, onClose } = useSystemEditZustand()
@@ -70,7 +71,12 @@ export const ModalSystemEdit = () => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Sistema atualizado com sucesso!')
+      toast.success('Sistema atualizado com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+      })
       queryClient.invalidateQueries({ queryKey: ['get-systems'] })
       queryClient.invalidateQueries({ queryKey: ['get-system', id] })
       onClose()

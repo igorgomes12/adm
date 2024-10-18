@@ -1,9 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/components/sing-in/api/interceptors-axios'
-import { toast } from 'react-toastify'
+import { Flip, toast } from 'react-toastify'
 import { useState } from 'react'
 import { useAccoutingDeleteZustand } from '../zustand-accounting/delete-zustand'
+import { IoWarningOutline } from 'react-icons/io5'
+import { FaRocket } from 'react-icons/fa'
 
 export const ModalAccountingDelete = () => {
   const { id, isOpen, onClose } = useAccoutingDeleteZustand()
@@ -21,13 +23,22 @@ export const ModalAccountingDelete = () => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Sistema excluído com sucesso!')
+      toast.success('Sistema excluído com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+      })
       queryClient.invalidateQueries({ queryKey: ['get-accounting'] })
       onClose()
     },
     onError: error => {
       console.error('Erro ao excluir o sistema:', error)
-      toast.error('Erro ao excluir o sistema. Por favor, tente novamente.')
+      toast.error('Erro ao excluir o sistema. Por favor, tente novamente.', {
+        theme: 'colored',
+        icon: <IoWarningOutline />,
+        transition: Flip,
+      })
     },
     onSettled: () => {
       setIsDeleting(false)

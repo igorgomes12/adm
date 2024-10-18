@@ -10,12 +10,15 @@ import { Textarea } from '@/components/ui/textarea'
 import type { FC } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import type { TClient } from '../zod-form/zod_client.schema'
-import type { TOwner } from '../zod-form/zod_owner.schema'
+import { OwnerSchema, type TOwner } from '../zod-form/zod_owner.schema'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 export const AccoutingForm: FC<{ onNext: (data: TClient) => void }> = ({
   onNext,
 }) => {
-  const form = useForm<TOwner>()
+  const form = useForm<TOwner>({
+    resolver: zodResolver(OwnerSchema),
+  })
 
   const { handleSubmit, register } = form
 

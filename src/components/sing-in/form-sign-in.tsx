@@ -2,9 +2,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { FaEye, FaEyeSlash, FaRocket } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify'
+import { Flip, ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { z } from 'zod'
 import { Button } from '../ui/button'
@@ -37,7 +37,12 @@ export const SignInForm = () => {
   const loginMutation = useMutation({
     mutationFn: (data: SignInForm) => loginUser(data.email, data.password),
     onSuccess: () => {
-      toast.success('Login realizado com sucesso!')
+      toast.success('Login realizado com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+      })
       navigate('/tela-principal')
     },
     onError: error => {

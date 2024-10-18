@@ -33,9 +33,9 @@ const EstablishmentRow: FC<{
   onStatusChange: (id: number, newStatus: boolean) => void
 }> = ({ establishment, onOpenDelete, onOpenEdit, onStatusChange }) => (
   <TableRow>
-    <TableCell className="text-xs items-center">{establishment.id}</TableCell>
-    <TableCell className="text-xs items-center">{establishment.name}</TableCell>
-    <TableCell className="text-xs items-center">
+    <TableCell className="text-sm items-center">{establishment.id}</TableCell>
+    <TableCell className="text-sm items-center">{establishment.name}</TableCell>
+    <TableCell className="text-sm items-center">
       <Switch
         checked={establishment.status}
         onCheckedChange={checked => onStatusChange(establishment.id, checked)}
@@ -129,17 +129,20 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
   }, [data, searchTerm])
 
   const tableContent = useMemo(() => {
-    if (isLoading) return <LoadingRow />
-    if (error)
+    if (isLoading || !filteredData || filteredData.length === 0) {
+      return <LoadingRow />
+    }
+    if (error) {
       return (
         <TableRow>
           <TableCell colSpan={4}>
             <div className="items-center justify-center flex w-full ">
-              Erro ao carregar os dados: Não possui itens na tabela
+              Erro ao carregar os dados: {error.message}
             </div>
           </TableCell>
         </TableRow>
       )
+    }
 
     return filteredData.map(data => (
       <EstablishmentRow
@@ -150,11 +153,11 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
         onStatusChange={handleStatusChange}
       />
     ))
-  }, [isLoading, error, filteredData, handleStatusChange])
+  }, [isLoading, error, filteredData, handleStatusChange, onOpenEdit, onOpen])
 
   return (
     <div className="flex flex-col mt-4">
-      <Table className="min-w-full py-2 text-sm">
+      <Table className="min-w-full py-2 text-lg">
         <TableHeader>
           <TableRow className="bg-gray-300 w-auto">
             {headers.map((header, index) => (

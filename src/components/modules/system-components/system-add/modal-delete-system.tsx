@@ -2,8 +2,9 @@ import { Button } from '@/components/ui/button'
 import { useSystemDeleteZustand } from './zustand-state/system-del-zustand'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/components/sing-in/api/interceptors-axios'
-import { toast } from 'react-toastify'
+import { Flip, toast } from 'react-toastify'
 import { useState } from 'react'
+import { FaRocket } from 'react-icons/fa'
 
 export const ModalSystemDelete = () => {
   const { id, isOpen, onClose } = useSystemDeleteZustand()
@@ -17,7 +18,12 @@ export const ModalSystemDelete = () => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Sistema excluído com sucesso!')
+      toast.success('Sistema excluído com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+      })
       queryClient.invalidateQueries({ queryKey: ['get-systems'] })
       onClose()
     },

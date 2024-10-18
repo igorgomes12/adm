@@ -12,12 +12,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { toast } from 'react-toastify'
+import { Flip, toast } from 'react-toastify'
 import {
   SchemaAccoutingDto,
   type TSchemaAccountingDto,
 } from '../zod-types-accounting/zod-accouting'
 import { useAccoutingEditZustand } from '../zustand-accounting/edit-zustand'
+import { FaRocket } from 'react-icons/fa'
 
 export const ModalAccountingEdit = () => {
   const { id, isOpen, onClose } = useAccoutingEditZustand()
@@ -75,7 +76,12 @@ export const ModalAccountingEdit = () => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Contabilidade atualizada com sucesso!')
+      toast.success('Contabilidade atualizada com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+      })
       queryClient.invalidateQueries({ queryKey: ['get-accounting'] })
       queryClient.invalidateQueries({ queryKey: ['get-accounting', id] })
       onClose()

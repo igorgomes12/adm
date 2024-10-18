@@ -12,11 +12,11 @@ import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormProvider, useForm } from 'react-hook-form'
-import { toast } from 'react-toastify'
+import { Flip, toast } from 'react-toastify'
 import { UserSchemaDto, type TUserSchemaDto } from '../zod-types-user/zod-users'
 import { useAddUserZustand } from '../zustand/add-zustand'
 import { useState } from 'react'
-import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { FaEye, FaEyeSlash, FaRocket } from 'react-icons/fa'
 
 type ProfileType =
   | 'ADMIN'
@@ -51,7 +51,12 @@ export const ModalUserAdd = () => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Usuário adicionado com sucesso!')
+      toast.success('Usuário adicionado com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+      })
       queryClient.invalidateQueries({ queryKey: ['get-users'] })
       onClose()
     },

@@ -45,7 +45,7 @@ const AccountRow: FC<{
 }> = ({ account, onOpenDelete, onOpenEdit }) => (
   <TableRow>
     {Object.entries(account).map(([key, value], index) => (
-      <TableCell key={index} className="text-xs items-center">
+      <TableCell key={index} className="text-sm items-center">
         {key !== 'id' ? value : account.id}
       </TableCell>
     ))}
@@ -102,13 +102,13 @@ export const TableAccounting: FC<{ searchTerm: string }> = ({ searchTerm }) => {
   })
 
   const tableContent = useMemo(() => {
-    if (isLoading) {
+    if (isLoading || !filteredData || filteredData.length === 0) {
       return <SkeletonCard />
     }
 
     return (
       <div className="flex flex-col mt-4">
-        <Table className="min-w-full py-2 text-sm">
+        <Table className="min-w-full py-2 text-md">
           <TableHeader>
             <TableRow className="bg-gray-300 w-auto">
               {headers.map((header, index) => (
@@ -119,7 +119,7 @@ export const TableAccounting: FC<{ searchTerm: string }> = ({ searchTerm }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredData?.map(account => (
+            {filteredData.map(account => (
               <AccountRow
                 key={account.id}
                 account={account}

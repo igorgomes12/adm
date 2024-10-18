@@ -18,12 +18,14 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormProvider, useForm } from 'react-hook-form'
-import { toast } from 'react-toastify'
+import { Flip, toast } from 'react-toastify'
 import {
   SchemaAccoutingDto,
   type TSchemaAccountingDto,
 } from '../zod-types-accounting/zod-accouting'
 import { useAccountingStore } from '../zustand-accounting/create-zustand'
+import { FaRocket } from 'react-icons/fa'
+import { IoWarningOutline } from 'react-icons/io5'
 
 type TAddAccouting = {
   message: string
@@ -39,15 +41,26 @@ export const ModalAccountingAdd = () => {
       const res = await api.post<TAddAccouting>('/accouting', data)
       return res.data
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-accounting'] })
-      toast.success('Contabilidade adicionada com sucesso!')
+      toast.success('Contabilidade adicionada com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+      })
       onClose()
     },
     onError: error => {
       console.error('Erro ao adicionar contabilidade:', error)
       toast.error(
         'Ocorreu um erro ao adicionar a contabilidade. Por favor, tente novamente.',
+        {
+          theme: 'colored',
+          icon: <IoWarningOutline />,
+          transition: Flip,
+        },
       )
     },
   })

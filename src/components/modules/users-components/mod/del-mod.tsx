@@ -1,9 +1,10 @@
 import { Button } from '@/components/ui/button'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/components/sing-in/api/interceptors-axios'
-import { toast } from 'react-toastify'
+import { Flip, toast } from 'react-toastify'
 import { useState } from 'react'
 import { useUserDeleteZustand } from '../zustand/del-zustand'
+import { FaRocket } from 'react-icons/fa'
 
 export const ModalUserDelete = () => {
   const { id, isOpen, onClose } = useUserDeleteZustand()
@@ -17,7 +18,12 @@ export const ModalUserDelete = () => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Usuário excluído com sucesso!')
+      toast.success('Usuário excluído com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+      })
       queryClient.invalidateQueries({ queryKey: ['get-users'] })
       onClose()
     },

@@ -11,12 +11,13 @@ import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormProvider, useForm } from 'react-hook-form'
-import { toast } from 'react-toastify'
+import { Flip, toast } from 'react-toastify'
 import {
   schemaEstablished,
   type TSchemaEstablished,
 } from '../zod-types-establishment/zod-establihment'
 import { useEstablishmentZustand } from '../zustand-establishment/create-establishment'
+import { FaRocket } from 'react-icons/fa'
 
 type TAddEstablishment = {
   message: string
@@ -41,7 +42,12 @@ export const AddEstablishmentModal = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-establishment'] })
-      toast.success('Estabelecimento adicionado com sucesso!')
+      toast.success('Estabelecimento adicionado com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+      })
       onClose()
     },
     onError: error => {

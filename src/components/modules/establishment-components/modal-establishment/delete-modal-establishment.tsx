@@ -2,8 +2,10 @@ import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { toast } from 'react-toastify'
+import { Flip, toast } from 'react-toastify'
 import { useEstablishmentDeleteZustand } from '../zustand-establishment/delete-establisment'
+import { FaRocket } from 'react-icons/fa'
+import { IoWarningOutline } from 'react-icons/io5'
 
 export const ModalEstablishmentDelete = () => {
   const { id, isOpen, onClose } = useEstablishmentDeleteZustand()
@@ -19,7 +21,12 @@ export const ModalEstablishmentDelete = () => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Sistema excluído com sucesso!')
+      toast.success('Sistema excluído com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+      })
       queryClient.invalidateQueries({ queryKey: ['get-establishment'] })
       onClose()
     },
@@ -27,6 +34,11 @@ export const ModalEstablishmentDelete = () => {
       toast.error(
         'Erro ao excluir o sistema. Por favor, tente novamente. ' +
           error.message,
+        {
+          theme: 'colored',
+          icon: <IoWarningOutline />,
+          transition: Flip,
+        },
       )
     },
     onSettled: () => {

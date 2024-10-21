@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/components/sing-in/api/interceptors-axios'
 import { Flip, toast } from 'react-toastify'
 import { useState } from 'react'
-import { FaRocket } from 'react-icons/fa'
+import { IoWarningOutline } from 'react-icons/io5'
 
 export const ModalSystemDelete = () => {
   const { id, isOpen, onClose } = useSystemDeleteZustand()
@@ -19,17 +19,19 @@ export const ModalSystemDelete = () => {
     },
     onSuccess: () => {
       toast.success('Sistema excluído com sucesso!', {
-        theme: 'dark',
-        icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
+        theme: 'colored',
+        icon: <IoWarningOutline />,
         transition: Flip,
       })
       queryClient.invalidateQueries({ queryKey: ['get-systems'] })
       onClose()
     },
-    onError: error => {
-      console.error('Erro ao excluir o sistema:', error)
-      toast.error('Erro ao excluir o sistema. Por favor, tente novamente.')
+    onError: (error: Error) => {
+      toast.error(`Error ao excluir o sistema ${error.message}`, {
+        theme: 'colored',
+        icon: <IoWarningOutline />,
+        transition: Flip,
+      })
     },
     onSettled: () => {
       setIsDeleting(false)

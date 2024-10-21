@@ -31,9 +31,9 @@ export const AddEstablishmentModal = () => {
 
   const queryClient = useQueryClient()
 
-  const { mutateAsync: mutation, isSuccess } = useMutation({
+  const { mutate: mutation, isSuccess } = useMutation({
+    mutationKey: ['post-establishment'],
     mutationFn: async (data: TEstablishmentInput) => {
-      // Adicionamos o status true por padrão
       const res = await api.post<TAddEstablishment>('/establishment', {
         ...data,
         status: true,
@@ -51,9 +51,10 @@ export const AddEstablishmentModal = () => {
       onClose()
     },
     onError: error => {
+      console.error('Erro ao adicionar estabelecimento:', error)
       toast.error(
         'Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente.' +
-          error.message,
+          (error.message || ''),
       )
     },
   })
@@ -65,8 +66,16 @@ export const AddEstablishmentModal = () => {
     resolver: zodResolver(schemaEstablished.omit({ status: true })),
   })
 
+  const { register } = form
+
   const onSubmit = async (data: TEstablishmentInput) => {
-    await mutation(data)
+    console.log('Dados enviados:', data)
+    try {
+      await mutation(data)
+      console.log('Requisição enviada com sucesso')
+    } catch (error) {
+      console.error('Erro ao enviar a requisição:', error)
+    }
   }
 
   return (
@@ -77,8 +86,8 @@ export const AddEstablishmentModal = () => {
         </h1>
         <FormProvider {...form}>
           <form
-            className="gap-4 flex flex-col"
             onSubmit={form.handleSubmit(onSubmit)}
+            className="gap-4 flex flex-col"
           >
             <FormField
               control={form.control}
@@ -87,7 +96,11 @@ export const AddEstablishmentModal = () => {
                 <FormItem>
                   <FormLabel>Nome do Estabelecimento</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nome do estabelecimento" {...field} />
+                    <Input
+                      {...register('name')}
+                      placeholder="Nome do estabelecimento"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

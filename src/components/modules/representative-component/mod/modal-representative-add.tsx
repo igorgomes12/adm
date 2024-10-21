@@ -11,16 +11,16 @@ import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { FaRocket } from 'react-icons/fa'
 import { IoWarningOutline } from 'react-icons/io5'
 import { Flip, toast } from 'react-toastify'
 import { translateType } from '../table-representative'
 import { representativeSchemaDto } from '../zod/representative.dto'
-import { representative } from '../zod/types-representative'
 import { useCreateModalRepresentativeZustand } from '../zustand/modal-add-zustand'
 import { Switch } from '@/components/ui/switch'
 import { formatPhone } from '@/utils/regex/phones'
+import { CreateRepresentativeSchemaDto } from '../zod/create-representative.dto'
 
 export const ModalRepresentativeAdd = () => {
   const { onClose } = useCreateModalRepresentativeZustand()
@@ -28,18 +28,46 @@ export const ModalRepresentativeAdd = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
-  const form = useForm<representative>({
+  const form = useForm<CreateRepresentativeSchemaDto>({
     resolver: zodResolver(representativeSchemaDto),
+    defaultValues: {
+      name: '',
+      type: 'REPRESENTATIVE',
+      region: '',
+      supervisor: '',
+      commission: {
+        implantation: 0,
+        mensality: 0,
+      },
+      contact: {
+        cellphone: '',
+        phone: '',
+        email: '',
+      },
+      address: {
+        postal_code: '',
+        street: '',
+        number: '',
+        neighborhood: '',
+        municipality_name: '',
+        state: '',
+      },
+    },
   })
 
   const {
-    register,
     handleSubmit,
     setValue,
     formState: { errors },
   } = form
 
-  const onSubmit = async (data: representative) => {
+  const options: Array<'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'> = [
+    'REPRESENTATIVE',
+    'CONSULTANT',
+    'PARTHER',
+  ]
+
+  const onSubmit = async (data: CreateRepresentativeSchemaDto) => {
     setIsLoading(true)
     setErrorMessage('')
     try {
@@ -85,14 +113,19 @@ export const ModalRepresentativeAdd = () => {
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
+                render={() => (
                   <FormItem className="w-full">
                     <FormLabel>Nome do Representante</FormLabel>
                     <FormControl>
-                      <Input
-                        {...register('name')}
-                        placeholder="Nome do representante"
-                        {...field}
+                      <Controller
+                        name="name"
+                        control={form.control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            placeholder="Nome do representante"
+                          />
+                        )}
                       />
                     </FormControl>
                     <FormMessage>{errors.name?.message}</FormMessage>
@@ -107,27 +140,25 @@ export const ModalRepresentativeAdd = () => {
                     <FormLabel>Tipo</FormLabel>
                     <FormControl>
                       <div className="flex w-full">
-                        {['REPRESENTATIVE', 'CONSULTANT', 'PARTHER'].map(
-                          option => (
-                            <div
-                              key={option}
-                              className="flex items-center gap-2 p-2"
+                        {options.map(option => (
+                          <div
+                            key={option}
+                            className="flex items-center gap-2 p-2"
+                          >
+                            <Switch
+                              id={option}
+                              checked={field.value === option}
+                              onCheckedChange={() => field.onChange(option)}
+                              className="gap-2"
+                            />
+                            <label
+                              htmlFor={option}
+                              className="cursor-pointer text-sm"
                             >
-                              <Switch
-                                id={option}
-                                checked={field.value === option}
-                                onCheckedChange={() => setValue('type', option)}
-                                className="gap-2"
-                              />
-                              <label
-                                htmlFor={option}
-                                className="cursor-pointer text-sm"
-                              >
-                                {translateType(option)}
-                              </label>
-                            </div>
-                          ),
-                        )}
+                              {translateType(option)}
+                            </label>
+                          </div>
+                        ))}
                       </div>
                     </FormControl>
                     <FormMessage>{errors.type?.message}</FormMessage>
@@ -139,14 +170,16 @@ export const ModalRepresentativeAdd = () => {
               <FormField
                 control={form.control}
                 name="region"
-                render={({ field }) => (
+                render={() => (
                   <FormItem className="w-full">
                     <FormLabel>Região de Atuação</FormLabel>
                     <FormControl>
-                      <Input
-                        {...register('region')}
-                        placeholder="Região de Atuação"
-                        {...field}
+                      <Controller
+                        name="region"
+                        control={form.control}
+                        render={({ field }) => (
+                          <Input {...field} placeholder="Região de Atuação" />
+                        )}
                       />
                     </FormControl>
                     <FormMessage>{errors.region?.message}</FormMessage>
@@ -156,14 +189,16 @@ export const ModalRepresentativeAdd = () => {
               <FormField
                 control={form.control}
                 name="supervisor"
-                render={({ field }) => (
+                render={() => (
                   <FormItem className="w-full">
                     <FormLabel>Supervisor</FormLabel>
                     <FormControl>
-                      <Input
-                        {...register('supervisor')}
-                        placeholder="Supervisor"
-                        {...field}
+                      <Controller
+                        name="supervisor"
+                        control={form.control}
+                        render={({ field }) => (
+                          <Input {...field} placeholder="Supervisor" />
+                        )}
                       />
                     </FormControl>
                     <FormMessage>{errors.supervisor?.message}</FormMessage>
@@ -180,16 +215,20 @@ export const ModalRepresentativeAdd = () => {
                   <FormField
                     control={form.control}
                     name="commission.implantation"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem className="w-full">
                         <FormLabel>Implantação</FormLabel>
                         <FormControl>
-                          <Input
-                            {...register('commission.implantation', {
-                              valueAsNumber: true,
-                            })}
-                            type="number"
-                            {...field}
+                          <Controller
+                            name="commission.implantation"
+                            control={form.control}
+                            render={({ field }) => (
+                              <Input
+                                {...field}
+                                type="number"
+                                placeholder="Implantação"
+                              />
+                            )}
                           />
                         </FormControl>
                         <FormMessage>
@@ -201,16 +240,20 @@ export const ModalRepresentativeAdd = () => {
                   <FormField
                     control={form.control}
                     name="commission.mensality"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem className="w-full">
                         <FormLabel>Mensalidade</FormLabel>
                         <FormControl>
-                          <Input
-                            {...register('commission.mensality', {
-                              valueAsNumber: true,
-                            })}
-                            type="number"
-                            {...field}
+                          <Controller
+                            name="commission.mensality"
+                            control={form.control}
+                            render={({ field }) => (
+                              <Input
+                                {...field}
+                                type="number"
+                                placeholder="Mensalidade"
+                              />
+                            )}
                           />
                         </FormControl>
                         <FormMessage>
@@ -228,59 +271,83 @@ export const ModalRepresentativeAdd = () => {
                 <div className="flex w-full gap-2">
                   <FormField
                     control={form.control}
-                    name="cellphone"
-                    render={({ field }) => (
+                    name="contact.cellphone"
+                    render={() => (
                       <FormItem className="w-full">
                         <FormLabel>Celular</FormLabel>
                         <FormControl>
-                          <Input
-                            {...register('cellphone')}
-                            placeholder="(XX) XXXXX-XXXX"
-                            {...field}
-                            onBlur={() =>
-                              setValue('cellphone', formatPhone(field.value))
-                            } // Formata ao perder o foco
+                          <Controller
+                            name="contact.cellphone"
+                            control={form.control}
+                            render={({ field }) => (
+                              <Input
+                                {...field}
+                                placeholder="(XX) XXXXX-XXXX"
+                                onBlur={() =>
+                                  setValue(
+                                    'contact.cellphone',
+                                    formatPhone(field.value),
+                                  )
+                                }
+                              />
+                            )}
                           />
                         </FormControl>
-                        <FormMessage>{errors.cellphone?.message}</FormMessage>
+                        <FormMessage>
+                          {errors.contact?.cellphone?.message}
+                        </FormMessage>
                       </FormItem>
                     )}
                   />
 
                   <FormField
                     control={form.control}
-                    name="phone"
-                    render={({ field }) => (
+                    name="contact.phone"
+                    render={() => (
                       <FormItem className="w-full">
                         <FormLabel>Telefone</FormLabel>
                         <FormControl>
-                          <Input
-                            {...register('phone')}
-                            placeholder="(XX) XXXX-XXXX"
-                            {...field}
-                            onBlur={() =>
-                              setValue('phone', formatPhone(field.value))
-                            } // Formata ao perder o foco
+                          <Controller
+                            name="contact.phone"
+                            control={form.control}
+                            render={({ field }) => (
+                              <Input
+                                {...field}
+                                placeholder="(XX) XXXX-XXXX"
+                                onBlur={() =>
+                                  setValue(
+                                    'contact.phone',
+                                    formatPhone(field.value),
+                                  )
+                                }
+                              />
+                            )}
                           />
                         </FormControl>
-                        <FormMessage>{errors.phone?.message}</FormMessage>
+                        <FormMessage>
+                          {errors.contact?.phone?.message}
+                        </FormMessage>
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
-                    name="email"
-                    render={({ field }) => (
+                    name="contact.email"
+                    render={() => (
                       <FormItem className="w-full">
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input
-                            {...register('email')}
-                            placeholder="Email"
-                            {...field}
+                          <Controller
+                            name="contact.email"
+                            control={form.control}
+                            render={({ field }) => (
+                              <Input {...field} placeholder="Email" />
+                            )}
                           />
                         </FormControl>
-                        <FormMessage>{errors.email?.message}</FormMessage>
+                        <FormMessage>
+                          {errors.contact?.email?.message}
+                        </FormMessage>
                       </FormItem>
                     )}
                   />
@@ -296,14 +363,16 @@ export const ModalRepresentativeAdd = () => {
                   <FormField
                     control={form.control}
                     name="address.postal_code"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem className="w-96">
                         <FormLabel>Cep</FormLabel>
                         <FormControl>
-                          <Input
-                            {...register('address.postal_code')}
-                            placeholder="Cep"
-                            {...field}
+                          <Controller
+                            name="address.postal_code"
+                            control={form.control}
+                            render={({ field }) => (
+                              <Input {...field} placeholder="Cep" />
+                            )}
                           />
                         </FormControl>
                         <FormMessage>
@@ -315,14 +384,16 @@ export const ModalRepresentativeAdd = () => {
                   <FormField
                     control={form.control}
                     name="address.street"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem className="w-full">
-                        <FormLabel>Logadouro</FormLabel>
+                        <FormLabel>Logradouro</FormLabel>
                         <FormControl>
-                          <Input
-                            {...register('address.street')}
-                            placeholder="Logadouro"
-                            {...field}
+                          <Controller
+                            name="address.street"
+                            control={form.control}
+                            render={({ field }) => (
+                              <Input {...field} placeholder="Logradouro" />
+                            )}
                           />
                         </FormControl>
                         <FormMessage>
@@ -334,14 +405,16 @@ export const ModalRepresentativeAdd = () => {
                   <FormField
                     control={form.control}
                     name="address.number"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem className="w-60">
                         <FormLabel>Número</FormLabel>
                         <FormControl>
-                          <Input
-                            {...register('address.number')}
-                            placeholder="Numero"
-                            {...field}
+                          <Controller
+                            name="address.number"
+                            control={form.control}
+                            render={({ field }) => (
+                              <Input {...field} placeholder="Número" />
+                            )}
                           />
                         </FormControl>
                         <FormMessage>
@@ -355,14 +428,16 @@ export const ModalRepresentativeAdd = () => {
                   <FormField
                     control={form.control}
                     name="address.neighborhood"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem className="w-full">
                         <FormLabel>Bairro</FormLabel>
                         <FormControl>
-                          <Input
-                            {...register('address.neighborhood')}
-                            placeholder="Bairro"
-                            {...field}
+                          <Controller
+                            name="address.neighborhood"
+                            control={form.control}
+                            render={({ field }) => (
+                              <Input {...field} placeholder="Bairro" />
+                            )}
                           />
                         </FormControl>
                         <FormMessage>
@@ -374,14 +449,16 @@ export const ModalRepresentativeAdd = () => {
                   <FormField
                     control={form.control}
                     name="address.municipality_name"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem className="w-full">
                         <FormLabel>Município</FormLabel>
                         <FormControl>
-                          <Input
-                            {...register('address.municipality_name')}
-                            placeholder="Municipio"
-                            {...field}
+                          <Controller
+                            name="address.municipality_name"
+                            control={form.control}
+                            render={({ field }) => (
+                              <Input {...field} placeholder="Município" />
+                            )}
                           />
                         </FormControl>
                         <FormMessage>
@@ -393,14 +470,16 @@ export const ModalRepresentativeAdd = () => {
                   <FormField
                     control={form.control}
                     name="address.state"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem className="w-[22rem]">
                         <FormLabel>UF</FormLabel>
                         <FormControl>
-                          <Input
-                            {...register('address.state')}
-                            placeholder="UF"
-                            {...field}
+                          <Controller
+                            name="address.state"
+                            control={form.control}
+                            render={({ field }) => (
+                              <Input {...field} placeholder="UF" />
+                            )}
                           />
                         </FormControl>
                         <FormMessage>

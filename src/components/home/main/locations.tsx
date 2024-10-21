@@ -7,6 +7,7 @@ import { FormClientComponent } from '@/pages/channel/client/form-client'
 import Ripple from '@/components/ui/ripple'
 import type { FC } from 'react'
 import { RepresentativeComponent } from '@/pages/channel/representative/representative'
+import { FormRepresentative } from '@/pages/channel/representative/form-representative'
 
 interface LocationsProps {
   activeComponent: string | null
@@ -26,11 +27,15 @@ export const LocationsAcess: FC<LocationsProps> = ({
       ) : activeComponent === 'Cadastro Cliente' ? (
         <FormClientComponent />
       ) : activeComponent === 'Canais' ? (
-        <RepresentativeComponent />
+        <RepresentativeComponent
+          onOpenFormClient={() => setActiveComponent('Cadastro Representante')}
+        />
       ) : activeComponent === 'Sistemas' ? (
         <SystemComponent />
       ) : activeComponent === 'Contabilidades' ? (
         <AccountingComponent />
+      ) : activeComponent === 'Cadastro Representante' ? (
+        <FormRepresentative />
       ) : activeComponent === 'Tipo Estabelecimento' ? (
         <EstablishmentComponent />
       ) : activeComponent === 'Usuários' ? (

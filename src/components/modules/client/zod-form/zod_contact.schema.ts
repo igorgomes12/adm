@@ -8,15 +8,10 @@ export const PhoneSchema = z.object({
 })
 
 export const ContactSchema = z.object({
-  id: z.number().int().positive().optional(),
-  description: z.string().min(1, 'Descrição é obrigatória'),
+  name: z.string().min(1, 'Descrição é obrigatória'),
   contact: z.string().min(1, 'Contato é obrigatório'),
   telefones: z.array(PhoneSchema),
   main_account: z.boolean(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
-  deletedAt: z.date().nullable().optional(),
-  clientId: z.number().int().positive().optional(),
 })
 
 export type TContact = z.infer<typeof ContactSchema>

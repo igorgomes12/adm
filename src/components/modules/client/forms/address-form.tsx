@@ -7,21 +7,29 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import type { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
 import { AddressData, fetchViaCep } from '@/utils/api/fecth-viacep'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { addressSchema, type addressSchemaType } from '../zod-form/zod-address'
-import type { TClient } from '../zod-form/zod_client.schema'
+import { addressSchema, addressSchemaType } from '../zod-form/zod-address'
+import { TClient } from '../zod-form/zod_client.schema'
+import { useFormStore } from '../../representative-component/zustand/gerenciador-zustand'
+import { HeaderForms } from '@/components/header-forms/header-forms'
 
-export const AddressForm: FC<{ onNext: (data: TClient) => void }> = ({
+export const AddressForm: FC<{ onNext?: (data: TClient) => void }> = ({
   onNext,
 }) => {
+  const { formData, updateFormData } = useFormStore()
   const form = useForm<addressSchemaType>({
     defaultValues: {
-      cep: '',
+      cep: formData.address?.postal_code || '',
+      street: formData.address?.street || '',
+      bairro: formData.address?.neighborhood || '',
+      municipio: formData.address?.municipality_name || '',
+      UF: formData.address?.state || '',
+      number: formData.address?.number || '',
+      complement: formData.address?.complement || '',
     },
     resolver: zodResolver(addressSchema),
   })
@@ -58,7 +66,7 @@ export const AddressForm: FC<{ onNext: (data: TClient) => void }> = ({
     if (viaCepData) {
       setValue('street', viaCepData.logradouro || '')
       setValue('bairro', viaCepData.bairro || '')
-      setValue('municipio', viaCepData.localidade || viaCepData.estado || '')
+      setValue('municipio', viaCepData.localidade || '')
       setValue('UF', viaCepData.uf || '')
       clearErrors(['street', 'bairro', 'municipio', 'UF'])
     }
@@ -73,10 +81,11 @@ export const AddressForm: FC<{ onNext: (data: TClient) => void }> = ({
     )
   }
 
-  const submitForm = async (data: any) => {
+  const submitForm = async (data: addressSchemaType) => {
     console.log('Dados do formulário:', data)
     try {
-      onNext(data as unknown as TClient)
+      updateFormData({ address: data })
+      onNext && onNext(data as unknown as TClient)
       console.log('Form enviado com sucesso:', data)
     } catch (error) {
       console.error('Erro ao enviar o formulário:', error)
@@ -86,9 +95,7 @@ export const AddressForm: FC<{ onNext: (data: TClient) => void }> = ({
   return (
     <div className="flex flex-col p-4 w-full h-screen">
       <div className="flex w-full items-start justify-start">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
-          Formulário de Endereço
-        </h1>
+        <HeaderForms title="Formulários de Endereço" />
       </div>
       <FormProvider {...form}>
         <form

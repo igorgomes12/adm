@@ -10,6 +10,7 @@ import {
 import { BsFillPersonPlusFill } from 'react-icons/bs'
 import { ImUsers } from 'react-icons/im'
 import { HiOutlineChatBubbleLeftEllipsis } from 'react-icons/hi2'
+import { FaPersonBooth } from 'react-icons/fa6'
 
 export const menuNavigation = [
   {
@@ -53,6 +54,7 @@ export const menuNavigation = [
           { label: 'Equipamentos', icon: <BsFillPersonPlusFill /> },
           { label: 'Usuários', icon: <ImUsers /> },
           { label: 'Canais', icon: <FaDollarSign /> },
+          { label: 'Cadastro Representante', icon: <FaPersonBooth /> },
           { label: 'Unidades', icon: <FaDesktop /> },
           { label: 'Supervisor', icon: <FaCog /> },
           {

@@ -14,18 +14,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import type { FC } from 'react'
 import {
-  FormProvider,
-  useForm,
-  useFieldArray,
   Controller,
+  FormProvider,
+  useFieldArray,
+  useForm,
 } from 'react-hook-form'
 import { FaPlus, FaTrash } from 'react-icons/fa'
-import { Textarea } from '@/components/ui/textarea'
-import type { TClient } from '../zod-form/zod_client.schema'
-import { ContactSchema, type TContact } from '../zod-form/zod_contact.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { HeaderForms } from '@/components/header-forms/header-forms'
+import { useFormStore } from '../../representative-component/zustand/gerenciador-zustand'
+import { ContactSchema, type TContact } from '../zod-form/zod_contact.schema'
 
 const applyMask = (value: string, mask: string): string => {
   let formattedValue = ''
@@ -42,11 +43,21 @@ const applyMask = (value: string, mask: string): string => {
   return formattedValue
 }
 
-export const ContactForm: FC<{ onNext: (data: TClient) => void }> = ({
+export const ContactForm: FC<{ onNext?: (data: TContact) => void }> = ({
   onNext,
 }) => {
+  const { formData, updateFormData } = useFormStore()
   const form = useForm<TContact>({
-    // resolver: zodResolver(ContactSchema),
+    resolver: zodResolver(ContactSchema),
+    defaultValues: {
+      name: formData.name || '',
+      contact: formData.contact?.email || '',
+      telefones: [
+        { number: formData.contact?.cellphone || '', type: 'CELULAR' },
+        { number: formData.contact?.phone || '', type: 'TELEFONE' },
+      ],
+      main_account: formData.contact?.main_account || false,
+    },
   })
 
   const { fields, append, remove } = useFieldArray({
@@ -60,10 +71,10 @@ export const ContactForm: FC<{ onNext: (data: TClient) => void }> = ({
 
   const getMask = (type: string) => {
     switch (type) {
-      case 'whatsApp':
-      case 'celular':
+      case 'WHATSAPP':
+      case 'CELULAR':
         return '(99) 99999-9999'
-      case 'fixo':
+      case 'TELEFONE':
         return '(99) 9999-9999'
       default:
         return ''
@@ -72,7 +83,19 @@ export const ContactForm: FC<{ onNext: (data: TClient) => void }> = ({
 
   const submitForm = async (data: TContact) => {
     try {
-      onNext(data as unknown as TClient)
+      const cellphone =
+        data.telefones.find(t => t.type === 'CELULAR')?.number || ''
+      const phone =
+        data.telefones.find(t => t.type === 'TELEFONE')?.number || ''
+
+      updateFormData({
+        contact: {
+          email: data.contact,
+          cellphone,
+          phone,
+        },
+      })
+      onNext && onNext(data)
     } catch (error) {
       console.error('Erro ao enviar o formulário:', error)
     }
@@ -81,18 +104,16 @@ export const ContactForm: FC<{ onNext: (data: TClient) => void }> = ({
   return (
     <div className="flex flex-col p-4 w-full h-screen">
       <div className="flex w-full items-start justify-start">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
-          Formulário de Contatos
-        </h1>
+        <HeaderForms title="Formulários de Contatos" />
       </div>
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit(submitForm)}
-          className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full "
+          className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full"
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
-              name="contact"
+              name="name"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Nome do contato</FormLabel>
@@ -104,16 +125,12 @@ export const ContactForm: FC<{ onNext: (data: TClient) => void }> = ({
               )}
             />
             <FormField
-              name="email"
+              name="contact"
               render={({ field, fieldState }) => (
                 <FormItem className="w-full">
-                  <FormLabel>E-mail</FormLabel>
+                  <FormLabel>Contato</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      type="email"
-                      placeholder="exemplo@dominio.com"
-                    />
+                    <Input {...field} placeholder="exemplo@dominio.com" />
                   </FormControl>
                   <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
@@ -143,11 +160,11 @@ export const ContactForm: FC<{ onNext: (data: TClient) => void }> = ({
                               <SelectValue placeholder="Selecione um tipo" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="fixo">
+                              <SelectItem value="TELEFONE">
                                 Telefone fixo
                               </SelectItem>
-                              <SelectItem value="whatsApp">WhatsApp</SelectItem>
-                              <SelectItem value="celular">Celular</SelectItem>
+                              <SelectItem value="WHATSAPP">WhatsApp</SelectItem>
+                              <SelectItem value="CELULAR">Celular</SelectItem>
                             </SelectContent>
                           </Select>
                         )}
@@ -180,7 +197,7 @@ export const ContactForm: FC<{ onNext: (data: TClient) => void }> = ({
               {index > 0 && (
                 <FaTrash
                   onClick={() => remove(index)}
-                  className=" w-8 h-8 cursor-pointer text-red-500"
+                  className="w-8 h-8 cursor-pointer text-red-500"
                 />
               )}
             </div>

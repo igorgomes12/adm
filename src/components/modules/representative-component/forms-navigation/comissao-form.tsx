@@ -17,6 +17,7 @@ import {
 } from '../zod/commission-representative.dto'
 import { HeaderForms } from '@/components/header-forms/header-forms'
 import { useFormStore } from '../zustand/gerenciador-zustand'
+import { ToastContainer } from 'react-toastify'
 
 export const ComissaoForm: FC<{
   onNext: (data: CommissionRepresentativeDto) => void
@@ -60,7 +61,10 @@ export const ComissaoForm: FC<{
                     <Input
                       {...field}
                       type="number"
-                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                      min={0}
+                      onChange={e =>
+                        field.onChange(parseFloat(e.target.value) || 0)
+                      }
                     />
                   </FormControl>
                   <FormMessage>{errors.implantation?.message}</FormMessage>
@@ -77,7 +81,10 @@ export const ComissaoForm: FC<{
                     <Input
                       {...field}
                       type="number"
-                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                      min={0}
+                      onChange={e =>
+                        field.onChange(parseFloat(e.target.value) || 0)
+                      }
                     />
                   </FormControl>
                   <FormMessage>{errors.mensality?.message}</FormMessage>
@@ -92,6 +99,7 @@ export const ComissaoForm: FC<{
           </div>
         </form>
       </FormProvider>
+      <ToastContainer />
     </section>
   )
 }

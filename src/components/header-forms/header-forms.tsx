@@ -5,19 +5,19 @@ import { Flip, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import type { CreateRepresentativeSchemaDto } from '../modules/representative-component/zod/create-representative.dto'
 import { useFormStore } from '../modules/representative-component/zustand/gerenciador-zustand'
-import { Button } from '../ui/button'
 import api from '../sing-in/api/interceptors-axios'
+import { Button } from '../ui/button'
 
 interface IHeaderFormsProps {
   title: string
-  setActiveComponent: (component: string | null) => void
+  setActiveComponent?: (component: string | null) => void
 }
 
 export const HeaderForms: FC<IHeaderFormsProps> = ({
   title,
   setActiveComponent,
 }) => {
-  const { formData, updateFormData } = useFormStore()
+  const { formData, updateFormData, setMutationSuccess } = useFormStore()
   const queryClient = useQueryClient()
 
   const { mutate: mutation } = useMutation({
@@ -58,7 +58,8 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
           complement: '',
         },
       })
-      setActiveComponent('Canais')
+      setActiveComponent && setActiveComponent('Canais')
+      setMutationSuccess(true)
     },
     onError: (error: Error) => {
       console.error('Erro ao adicionar estabelecimento:', error)
@@ -66,16 +67,19 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
         'Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente.' +
           (error.message || ''),
       )
+      setMutationSuccess(false)
     },
   })
 
   const handleSave = () => {
+    setMutationSuccess(false)
+
     const completeData: CreateRepresentativeSchemaDto = {
       type: formData.type || 'REPRESENTATIVE',
       region: formData.region || 'centro',
-      supervisor: formData.supervisor || '1',
+      supervisor: formData.supervisor || '',
       status: 'ativo',
-      name: formData?.name?.toUpperCase() || 'teste12',
+      name: formData?.name?.toUpperCase() || '',
       commission: {
         implantation: formData.commission?.implantation ?? 0,
         mensality: formData.commission?.mensality ?? 1,
@@ -96,8 +100,6 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
       },
     }
 
-    console.log('Tipo de status:', typeof completeData.status)
-    console.log('Dados completos:', completeData)
     mutation(completeData)
   }
 

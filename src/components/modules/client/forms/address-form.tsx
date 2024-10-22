@@ -16,11 +16,13 @@ import { addressSchema, addressSchemaType } from '../zod-form/zod-address'
 import { TClient } from '../zod-form/zod_client.schema'
 import { useFormStore } from '../../representative-component/zustand/gerenciador-zustand'
 import { HeaderForms } from '@/components/header-forms/header-forms'
+import { ToastContainer } from 'react-toastify'
 
 export const AddressForm: FC<{ onNext?: (data: TClient) => void }> = ({
   onNext,
 }) => {
-  const { formData, updateFormData } = useFormStore()
+  const { formData, updateFormData, isMutationSuccess, setMutationSuccess } =
+    useFormStore()
   const form = useForm<addressSchemaType>({
     defaultValues: {
       cep: formData.address?.postal_code || '',
@@ -87,6 +89,8 @@ export const AddressForm: FC<{ onNext?: (data: TClient) => void }> = ({
       updateFormData({ address: data })
       onNext && onNext(data as unknown as TClient)
       console.log('Form enviado com sucesso:', data)
+      // Reseta o estado de sucesso da mutação após a submissão
+      setMutationSuccess(false)
     } catch (error) {
       console.error('Erro ao enviar o formulário:', error)
     }
@@ -187,12 +191,18 @@ export const AddressForm: FC<{ onNext?: (data: TClient) => void }> = ({
             />
           </div>
           <div className="flex w-full items-center justify-center">
-            <Button className="w-full" type="submit" variant="success">
-              Próximo
+            <Button
+              className="w-full"
+              type="submit"
+              variant="success"
+              disabled={!isMutationSuccess}
+            >
+              Voltar a Tabela
             </Button>
           </div>
         </form>
       </FormProvider>
+      <ToastContainer />
     </div>
   )
 }

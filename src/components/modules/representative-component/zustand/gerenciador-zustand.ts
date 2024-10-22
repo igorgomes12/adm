@@ -15,7 +15,8 @@ export interface FormDataStore {
     cellphone: string
     phone: string
     email: string
-    main_account?: boolean
+    description?: string
+    favorite?: boolean
   }
   address?: {
     postal_code?: string
@@ -31,6 +32,8 @@ export interface FormDataStore {
 interface FormStore {
   formData: FormDataStore
   updateFormData: (data: Partial<FormDataStore>) => void
+  isMutationSuccess: boolean
+  setMutationSuccess: (success: boolean) => void
 }
 
 export const useFormStore = create<FormStore>(set => ({
@@ -46,4 +49,6 @@ export const useFormStore = create<FormStore>(set => ({
     set(state => ({
       formData: { ...state.formData, ...data },
     })),
+  isMutationSuccess: false,
+  setMutationSuccess: success => set({ isMutationSuccess: success }),
 }))

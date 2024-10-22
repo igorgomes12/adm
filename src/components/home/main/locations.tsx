@@ -35,7 +35,9 @@ export const LocationsAcess: FC<LocationsProps> = ({
       ) : activeComponent === 'Contabilidades' ? (
         <AccountingComponent />
       ) : activeComponent === 'Cadastro Representante' ? (
-        <FormRepresentative />
+        <FormRepresentative
+          onOpenFormClient={() => setActiveComponent('Canais')}
+        />
       ) : activeComponent === 'Tipo Estabelecimento' ? (
         <EstablishmentComponent />
       ) : activeComponent === 'Usuários' ? (

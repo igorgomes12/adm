@@ -22,7 +22,7 @@ import {
   useFieldArray,
   useForm,
 } from 'react-hook-form'
-import { FaPlus, FaTrash } from 'react-icons/fa'
+import { FaPlus, FaRegStar, FaStar, FaTrash } from 'react-icons/fa'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { HeaderForms } from '@/components/header-forms/header-forms'
 import { useFormStore } from '../../representative-component/zustand/gerenciador-zustand'
@@ -52,11 +52,19 @@ export const ContactForm: FC<{ onNext?: (data: TContact) => void }> = ({
     defaultValues: {
       name: formData.name || '',
       contact: formData.contact?.email || '',
+      description: formData.contact?.description || '',
       telefones: [
-        { number: formData.contact?.cellphone || '', type: 'CELULAR' },
-        { number: formData.contact?.phone || '', type: 'TELEFONE' },
+        {
+          number: formData.contact?.cellphone || '',
+          type: 'CELULAR',
+          favorite: formData.contact?.favorite || false,
+        },
+        {
+          number: formData.contact?.phone || '',
+          type: 'TELEFONE',
+          favorite: formData.contact?.favorite || false,
+        },
       ],
-      main_account: formData.contact?.main_account || false,
     },
   })
 
@@ -66,7 +74,7 @@ export const ContactForm: FC<{ onNext?: (data: TContact) => void }> = ({
   })
 
   const handleAddPhone = () => {
-    append({ number: '', type: 'TELEFONE' })
+    append({ number: '', type: 'TELEFONE', favorite: false })
   }
 
   const getMask = (type: string) => {
@@ -128,7 +136,7 @@ export const ContactForm: FC<{ onNext?: (data: TContact) => void }> = ({
               name="contact"
               render={({ field, fieldState }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Contato</FormLabel>
+                  <FormLabel>E-mail</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="exemplo@dominio.com" />
                   </FormControl>
@@ -177,18 +185,52 @@ export const ContactForm: FC<{ onNext?: (data: TContact) => void }> = ({
               <FormField
                 name={`telefones.${index}.number` as const}
                 render={({ field }) => (
-                  <FormItem className="w-[95%]">
+                  <FormItem className="w-full relative">
                     <FormLabel>Contatos</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        onChange={e => {
-                          const mask = getMask(
-                            form.getValues(`telefones.${index}.type`),
-                          )
-                          field.onChange(applyMask(e.target.value, mask))
-                        }}
-                      />
+                      <div className="relative flex items-center">
+                        <Input
+                          {...field}
+                          value={field.value || ''} // Garante que o valor inicial não seja undefined
+                          onChange={e => {
+                            const mask = getMask(
+                              form.getValues(`telefones.${index}.type`),
+                            )
+                            field.onChange(applyMask(e.target.value, mask))
+                          }}
+                          className="pr-10" // Espaço para o ícone
+                        />
+                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                          {form.getValues(`telefones.${index}.favorite`) ? (
+                            <FaStar
+                              className="text-yellow-500"
+                              onClick={() => {
+                                form.setValue(
+                                  `telefones.${index}.favorite`,
+                                  false,
+                                )
+                              }}
+                            />
+                          ) : (
+                            <FaRegStar
+                              className="text-gray-500"
+                              onClick={() => {
+                                fields.forEach((_, i) => {
+                                  form.setValue(
+                                    `telefones.${i}.favorite`,
+                                    false,
+                                  )
+                                })
+
+                                form.setValue(
+                                  `telefones.${index}.favorite`,
+                                  true,
+                                )
+                              }}
+                            />
+                          )}
+                        </div>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -1,5 +1,3 @@
-import { HeaderForms } from '@/components/header-forms/header-forms'
-import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
 import {
   FormControl,
@@ -26,6 +24,9 @@ import { translateType } from '../table-representative'
 import { schemaDadosGerais, type TSchemaDadosGerais } from '../zod/dados.zod'
 import type { representative } from '../zod/types-representative'
 import { useFormStore } from '../zustand/gerenciador-zustand'
+import { HeaderForms } from '@/components/header-forms/header-forms'
+import api from '@/components/sing-in/api/interceptors-axios'
+import { ToastContainer } from 'react-toastify'
 
 const options: Array<'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'> = [
   'REPRESENTATIVE',
@@ -35,8 +36,8 @@ const options: Array<'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'> = [
 
 export const DadosGerais: FC<{
   onNext: (data: TSchemaDadosGerais) => void
-  setActiveComponent: (component: string | null) => void
-}> = ({ onNext, setActiveComponent }) => {
+  // setActiveComponent: (component: string | null) => void
+}> = ({ onNext }) => {
   const { formData, updateFormData } = useFormStore()
 
   const form = useForm<TSchemaDadosGerais>({
@@ -72,7 +73,7 @@ export const DadosGerais: FC<{
   return (
     <section className="w-full items-start justify-center p-4 flex flex-col">
       <HeaderForms
-        setActiveComponent={setActiveComponent}
+        // setActiveComponent={setActiveComponent}
         title="Dados Gerais"
       />
       <FormProvider {...form}>
@@ -90,8 +91,8 @@ export const DadosGerais: FC<{
                   <FormControl>
                     <Input
                       {...field}
-                      id="name"
                       placeholder="Nome do representante"
+                      value={field.value || ''}
                     />
                   </FormControl>
                   <FormMessage>{errors.name?.message}</FormMessage>
@@ -105,10 +106,9 @@ export const DadosGerais: FC<{
               name="type"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel htmlFor="type">Tipo</FormLabel>
+                  <FormLabel>Tipo</FormLabel>
                   <FormControl>
                     <RadioGroup
-                      id="type"
                       value={field.value}
                       onValueChange={field.onChange}
                       className="border-2 p-2 rounded-md"
@@ -160,7 +160,7 @@ export const DadosGerais: FC<{
                   <FormLabel htmlFor="supervisor">Supervisor</FormLabel>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
+                      <SelectTrigger id="supervisor">
                         <SelectValue placeholder="Selecione um supervisor" />
                       </SelectTrigger>
                       <SelectContent>
@@ -181,11 +181,12 @@ export const DadosGerais: FC<{
           </div>
           <div className="flex flex-col sm:flex-row justify-center gap-2 mt-4">
             <Button className="w-full" type="submit" variant="success">
-              Proximo
+              Próximo
             </Button>
           </div>
         </form>
       </FormProvider>
+      <ToastContainer />
     </section>
   )
 }

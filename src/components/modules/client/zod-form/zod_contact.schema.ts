@@ -1,17 +1,19 @@
 import { z } from 'zod'
 
-export const TypeEnum = z.enum(['TELEFONE', 'CELULAR', 'EMAIL', 'WHATSAPP'])
-
-export const PhoneSchema = z.object({
-  number: z.string().min(1, 'Número é obrigatório'),
-  type: TypeEnum,
-})
-
 export const ContactSchema = z.object({
-  name: z.string().min(1, 'Descrição é obrigatória'),
-  contact: z.string().min(1, 'Contato é obrigatório'),
-  telefones: z.array(PhoneSchema),
-  main_account: z.boolean(),
+  name: z.string().nonempty('O nome é obrigatório'),
+  contact: z
+    .string()
+    .email('Digite um e-mail válido')
+    .nonempty('O e-mail é obrigatório'),
+  telefones: z.array(
+    z.object({
+      number: z.string().nonempty('O número é obrigatório'),
+      type: z.enum(['TELEFONE', 'WHATSAPP', 'CELULAR']),
+      favorite: z.boolean().default(false),
+    }),
+  ),
+  description: z.string().optional(),
 })
 
 export type TContact = z.infer<typeof ContactSchema>

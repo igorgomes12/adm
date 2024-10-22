@@ -1,11 +1,17 @@
-import { useState } from 'react'
+import { useState, type FC } from 'react'
 import { AddressForm } from '@/components/modules/client/forms/address-form'
 import { ContactForm } from '@/components/modules/client/forms/contact-form'
 import { ComissaoForm } from '@/components/modules/representative-component/forms-navigation/comissao-form'
 import { DadosGerais } from '@/components/modules/representative-component/forms-navigation/dados-gerais'
 import { RepresentativeNavComponent } from '@/components/modules/representative-component/nav/navitgation-form'
 
-export const FormRepresentative = () => {
+interface FormRepresentativeProps {
+  onOpenFormClient: () => void
+}
+
+export const FormRepresentative: FC<FormRepresentativeProps> = ({
+  onOpenFormClient,
+}) => {
   const [selectedForm, setSelectedForm] = useState<string | null>(
     'Dados Gerais',
   )
@@ -34,27 +40,20 @@ export const FormRepresentative = () => {
       setSelectedForm(nextFormTitle)
     } else {
       console.log('Todos os dados foram capturados:', formData)
-      setSelectedForm('Canais') // Ajuste aqui para voltar à seção inicial ou "Canais"
+      onOpenFormClient()
     }
   }
 
   const renderForm = () => {
     switch (selectedForm) {
       case 'Dados Gerais':
-        return (
-          <DadosGerais
-            setActiveComponent={setSelectedForm}
-            onNext={data => handleNext('Dados Gerais', data)}
-          />
-        )
+        return <DadosGerais onNext={data => handleNext('Dados Gerais', data)} />
       case 'Comissão':
         return <ComissaoForm onNext={data => handleNext('Comissão', data)} />
       case 'Contatos':
         return <ContactForm onNext={data => handleNext('Contatos', data)} />
       case 'Endereços':
         return <AddressForm onNext={data => handleNext('Endereços', data)} />
-      case 'Canais':
-        return <div>Você voltou para a seção de Canais.</div>
       default:
         return <div>Selecione uma opção para ver o formulário.</div>
     }

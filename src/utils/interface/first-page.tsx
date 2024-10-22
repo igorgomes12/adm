@@ -41,7 +41,6 @@ export const menuNavigation = [
       },
     ],
   },
-  { id: 'rat', label: 'Rat', link: '#', icon: <FaHeadset /> },
   { id: 'relatorios', label: 'Relatórios', link: '#', icon: <FaChartBar /> },
   {
     id: 'administracao',

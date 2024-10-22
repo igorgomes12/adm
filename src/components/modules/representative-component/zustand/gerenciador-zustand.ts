@@ -1,12 +1,12 @@
 import { create } from 'zustand'
 
-interface FormData {
+export interface FormDataStore {
   id?: number
   name?: string
   type?: 'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'
   region?: string
   supervisor?: string
-  status?: 'ativo' | 'inativo'
+  status: string
   commission?: {
     implantation?: number
     mensality?: number
@@ -26,16 +26,16 @@ interface FormData {
     state?: string
     complement?: string
   }
-  created_at?: Date
 }
 
 interface FormStore {
-  formData: FormData
-  updateFormData: (data: Partial<FormData>) => void
+  formData: FormDataStore
+  updateFormData: (data: Partial<FormDataStore>) => void
 }
 
 export const useFormStore = create<FormStore>(set => ({
   formData: {
+    status: 'ativo',
     contact: {
       cellphone: '',
       phone: '',

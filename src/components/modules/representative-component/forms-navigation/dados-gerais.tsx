@@ -1,3 +1,5 @@
+import { HeaderForms } from '@/components/header-forms/header-forms'
+import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
 import {
   FormControl,
@@ -8,14 +10,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { FC } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { translateType } from '../table-representative'
-import { schemaDadosGerais, type TSchemaDadosGerais } from '../zod/dados.zod'
-import api from '@/components/sing-in/api/interceptors-axios'
-import { useQuery } from '@tanstack/react-query'
-import type { representative } from '../zod/types-representative'
 import {
   Select,
   SelectContent,
@@ -24,7 +18,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { HeaderForms } from '@/components/header-forms/header-forms'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
+import { FC } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { translateType } from '../table-representative'
+import { schemaDadosGerais, type TSchemaDadosGerais } from '../zod/dados.zod'
+import type { representative } from '../zod/types-representative'
 import { useFormStore } from '../zustand/gerenciador-zustand'
 
 const options: Array<'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'> = [
@@ -35,7 +35,8 @@ const options: Array<'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'> = [
 
 export const DadosGerais: FC<{
   onNext: (data: TSchemaDadosGerais) => void
-}> = ({ onNext }) => {
+  setActiveComponent: (component: string | null) => void
+}> = ({ onNext, setActiveComponent }) => {
   const { formData, updateFormData } = useFormStore()
 
   const form = useForm<TSchemaDadosGerais>({
@@ -45,6 +46,7 @@ export const DadosGerais: FC<{
       type: formData.type,
       region: formData.region,
       supervisor: formData.supervisor,
+      status: formData.status,
     },
   })
 
@@ -69,7 +71,10 @@ export const DadosGerais: FC<{
 
   return (
     <section className="w-full items-start justify-center p-4 flex flex-col">
-      <HeaderForms title="Dados Gerais" />
+      <HeaderForms
+        setActiveComponent={setActiveComponent}
+        title="Dados Gerais"
+      />
       <FormProvider {...form}>
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -93,6 +98,8 @@ export const DadosGerais: FC<{
                 </FormItem>
               )}
             />
+          </div>
+          <div className="flex w-full gap-2">
             <FormField
               control={control}
               name="type"

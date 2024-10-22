@@ -1,20 +1,23 @@
-import { FC } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Button } from '../ui/button'
-import api from '@/components/sing-in/api/interceptors-axios'
-import { toast } from 'react-toastify'
+import { FC } from 'react'
 import { FaRocket } from 'react-icons/fa'
-import { Flip } from 'react-toastify'
+import { Flip, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import type { CreateRepresentativeSchemaDto } from '../modules/representative-component/zod/create-representative.dto'
 import { useFormStore } from '../modules/representative-component/zustand/gerenciador-zustand'
+import { Button } from '../ui/button'
+import api from '../sing-in/api/interceptors-axios'
 
 interface IHeaderFormsProps {
   title: string
+  setActiveComponent: (component: string | null) => void
 }
 
-export const HeaderForms: FC<IHeaderFormsProps> = ({ title }) => {
-  const { formData } = useFormStore()
+export const HeaderForms: FC<IHeaderFormsProps> = ({
+  title,
+  setActiveComponent,
+}) => {
+  const { formData, updateFormData } = useFormStore()
   const queryClient = useQueryClient()
 
   const { mutate: mutation } = useMutation({
@@ -24,59 +27,77 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({ title }) => {
         '/representative',
         {
           ...data,
-          status: true,
+          status: 'ativo',
         },
       )
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['get-establishment'] })
+      queryClient.invalidateQueries({ queryKey: ['get-representative'] })
       toast.success('Estabelecimento adicionado com sucesso!', {
         theme: 'dark',
         icon: <FaRocket />,
         progressStyle: { background: '#1f62cf' },
         transition: Flip,
       })
+      updateFormData({
+        name: '',
+        type: 'REPRESENTATIVE',
+        region: '',
+        supervisor: '',
+        status: 'ativo',
+        commission: { implantation: 0, mensality: 1 },
+        contact: { cellphone: '', phone: '', email: '' },
+        address: {
+          postal_code: '',
+          street: '',
+          number: '',
+          neighborhood: '',
+          municipality_name: '',
+          state: '',
+          complement: '',
+        },
+      })
+      setActiveComponent('Canais')
     },
     onError: (error: Error) => {
       console.error('Erro ao adicionar estabelecimento:', error)
-      if (error instanceof Error)
-        toast.error(
-          'Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente.' +
-            (error.message || error.message || ''),
-        )
+      toast.error(
+        'Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente.' +
+          (error.message || ''),
+      )
     },
   })
 
   const handleSave = () => {
     const completeData: CreateRepresentativeSchemaDto = {
-      id: formData.id ?? 0, // Defina um valor padrão para 'id'
       type: formData.type || 'REPRESENTATIVE',
-      region: formData.region || 'BRASIL',
-      supervisor: formData.supervisor || 'ADMINISTRACAO',
-      status: formData.status || 'ativo', // Certifique-se de que é uma string
-      name: formData?.name?.toUpperCase() || '',
+      region: formData.region || 'centro',
+      supervisor: formData.supervisor || '1',
+      status: 'ativo',
+      name: formData?.name?.toUpperCase() || 'teste12',
       commission: {
         implantation: formData.commission?.implantation ?? 0,
-        mensality: formData.commission?.mensality ?? 0,
+        mensality: formData.commission?.mensality ?? 1,
       },
       contact: {
-        email: formData.contact?.email || '',
+        email: formData.contact?.email || 'joao.silva@example.com',
         cellphone: formData.contact?.cellphone || '',
-        phone: formData.contact?.phone || '',
+        phone: formData.contact?.phone || '(11) 3333-3333',
       },
       address: {
-        postal_code: formData.address?.postal_code || '',
-        street: formData.address?.street || '',
-        number: formData.address?.number || '',
-        neighborhood: formData.address?.neighborhood || '',
-        municipality_name: formData.address?.municipality_name || '',
-        state: formData.address?.state || '',
-        complement: formData.address?.complement || '',
+        postal_code: formData.address?.postal_code || '29210250',
+        street: formData.address?.street || 'Rua nova',
+        number: formData.address?.number || '12',
+        neighborhood: formData.address?.neighborhood || 'Itapebussu',
+        municipality_name: formData.address?.municipality_name || 'Guarapari',
+        state: formData.address?.state || 'ES',
+        complement: formData.address?.complement || 'casa',
       },
-      created_at: formData.created_at || new Date(),
     }
 
+    console.log('Tipo de status:', typeof completeData.status)
+    console.log('Dados completos:', completeData)
     mutation(completeData)
   }
 

@@ -20,6 +20,7 @@ export const SystemComponent: FC = () => {
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         onOpen={onOpen}
+        showPrinterButton={true}
       />
       <TableSystem searchTerm={searchTerm} />
       {isOpen && <ModalSystemAdd />}

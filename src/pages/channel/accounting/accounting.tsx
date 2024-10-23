@@ -18,6 +18,7 @@ export const AccountingComponent: FC = () => {
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         onOpen={onOpen}
+        showPrinterButton={true}
       />
       <TableAccounting searchTerm={searchTerm} />
       {isOpen && <ModalAccountingAdd />}

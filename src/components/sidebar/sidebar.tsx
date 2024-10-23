@@ -1,11 +1,11 @@
+import { Separator } from '@/components/ui/separator'
 import { MainDashboard } from '@/pages/dashboard/main-dashboard'
 import { menuNavigation } from '@/utils/interface/first-page'
-import { RxExit } from 'react-icons/rx'
-import { useState, useCallback } from 'react'
-import { LocationsAcess } from '../home/main/locations'
-import { Separator } from '@/components/ui/separator'
+import { useCallback, useState } from 'react'
 import { GoPin } from 'react-icons/go'
+import { RxExit } from 'react-icons/rx'
 import { useNavigate } from 'react-router'
+import { LocationsAcess } from '../home/main/locations'
 import { Logout } from '../logout/logout'
 
 interface Subcategory {
@@ -209,7 +209,7 @@ export default function Sidebar() {
               className="cursor-pointer flex items-center px-8 py-1.5 gap-2 text-lg rounded hover:bg-zinc-700"
               title={menu.label}
             >
-              <div className="w-10 h-8 items-center justify-center flex">
+              <div className="w-10 items-center justify-center flex">
                 <p className="font-bold text-xl">{menu.icon}</p>
               </div>
               {!isSidebarCompressed && (

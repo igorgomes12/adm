@@ -2,20 +2,20 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo, type FC } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 
+import api from '@/components/sing-in/api/interceptors-axios'
+import { SkeletonCard } from '@/components/skeleton-component/skeleton'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { ModalAccountingDelete } from './modal-accouting/modal-delete-accounting'
 import { ModalAccountingEdit } from './modal-accouting/modal-edit-accouting'
 import { useAccoutingDeleteZustand } from './zustand-accounting/delete-zustand'
 import { useAccoutingEditZustand } from './zustand-accounting/edit-zustand'
-import api from '@/components/sing-in/api/interceptors-axios'
-import { SkeletonCard } from '@/components/skeleton-component/skeleton'
-import {
-  TableRow,
-  TableCell,
-  Table,
-  TableHeader,
-  TableHead,
-  TableBody,
-} from '@/components/ui/table'
 
 const headers = [
   'Cód.',
@@ -31,8 +31,8 @@ const headers = [
 export type TAccount = {
   id: number
   name: string
-  phone: string
   email: string
+  phone: string
   contact: string
   crc: string
   cnpj: string
@@ -94,8 +94,8 @@ export const TableAccounting: FC<{ searchTerm: string }> = ({ searchTerm }) => {
     if (account.id.toString() === searchTermLower) return true
     if (matchAllTerms(account.name)) return true
     if (matchAllTerms(account.cnpj)) return true
-    if (matchAllTerms(account.contact)) return true
     if (matchAllTerms(account.email)) return true
+    if (matchAllTerms(account.contact)) return true
     if (matchAllTerms(account.phone)) return true
 
     return false

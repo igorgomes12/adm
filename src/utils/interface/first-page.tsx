@@ -1,3 +1,6 @@
+import { BiBuildingHouse } from 'react-icons/bi'
+import { BsFillPersonPlusFill, BsJournalPlus } from 'react-icons/bs'
+
 import {
   FaBell,
   FaChartBar,
@@ -7,10 +10,9 @@ import {
   FaHeadset,
   FaUser,
 } from 'react-icons/fa'
-import { BsFillPersonPlusFill } from 'react-icons/bs'
-import { ImUsers } from 'react-icons/im'
-import { HiOutlineChatBubbleLeftEllipsis } from 'react-icons/hi2'
 import { FaPersonBooth } from 'react-icons/fa6'
+import { HiOutlineChatBubbleLeftEllipsis } from 'react-icons/hi2'
+import { ImUsers } from 'react-icons/im'
 
 export const menuNavigation = [
   {
@@ -23,21 +25,14 @@ export const menuNavigation = [
         items: [
           { label: 'Clientes de Venda', icon: <FaUser /> },
           { label: 'Cadastro Cliente', icon: <BsFillPersonPlusFill /> },
-          { label: 'Clientes de Visita', icon: <ImUsers /> },
           { label: 'Contabilidades', icon: <FaDollarSign /> },
           { label: 'Sistemas', icon: <FaDesktop /> },
-          { label: 'Tipo Estabelecimento', icon: <FaCog /> },
+          { label: 'Tipo Estabelecimento', icon: <BiBuildingHouse /> },
         ],
       },
       {
         title: 'Lançamentos',
-        items: [
-          { label: 'Orçamentos', icon: <FaChartBar /> },
-          { label: 'Planilha de Venda', icon: <FaChartBar /> },
-          { label: 'Visitas', icon: <FaChartBar /> },
-          { label: 'Agenda', icon: <FaChartBar /> },
-          { label: 'Consignação de Produto', icon: <FaChartBar /> },
-        ],
+        items: [{ label: 'Planilha de Venda', icon: <BsJournalPlus /> }],
       },
     ],
   },
@@ -54,8 +49,6 @@ export const menuNavigation = [
           { label: 'Usuários', icon: <ImUsers /> },
           { label: 'Canais', icon: <FaDollarSign /> },
           { label: 'Cadastro Representante', icon: <FaPersonBooth /> },
-          { label: 'Unidades', icon: <FaDesktop /> },
-          { label: 'Supervisor', icon: <FaCog /> },
           {
             label: 'Ações',
             icon: <FaChartBar />,

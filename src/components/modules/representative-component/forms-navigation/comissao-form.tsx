@@ -11,23 +11,24 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { FC } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import { HeaderForms } from '@/components/header-forms/header-forms'
+import { ToastContainer } from 'react-toastify'
 import {
   commissionRepresentativeSchemaDto,
   type CommissionRepresentativeDto,
 } from '../zod/commission-representative.dto'
-import { HeaderForms } from '@/components/header-forms/header-forms'
 import { useFormStore } from '../zustand/gerenciador-zustand'
-import { ToastContainer } from 'react-toastify'
 
 export const ComissaoForm: FC<{
   onNext: (data: CommissionRepresentativeDto) => void
-}> = ({ onNext }) => {
+  initialValues:CommissionRepresentativeDto
+}> = ({ onNext , initialValues}) => {
   const { formData, updateFormData } = useFormStore()
   const form = useForm<CommissionRepresentativeDto>({
     resolver: zodResolver(commissionRepresentativeSchemaDto),
     defaultValues: {
-      implantation: formData.commission?.implantation || 0,
-      mensality: formData.commission?.mensality || 0,
+      implantation:initialValues.implantation || formData.commission?.implantation || 0,
+      mensality:initialValues.mensality || formData.commission?.mensality || 0,
     },
   })
 

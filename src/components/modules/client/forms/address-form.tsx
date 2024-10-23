@@ -1,3 +1,4 @@
+import { HeaderForms } from '@/components/header-forms/header-forms'
 import { Button } from '@/components/ui/button'
 import {
   FormControl,
@@ -7,31 +8,30 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { FC, useEffect } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { useQuery } from '@tanstack/react-query'
 import { AddressData, fetchViaCep } from '@/utils/api/fecth-viacep'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
+import { FC, useEffect } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { ToastContainer } from 'react-toastify'
+import { useFormStore } from '../../representative-component/zustand/gerenciador-zustand'
 import { addressSchema, addressSchemaType } from '../zod-form/zod-address'
 import { TClient } from '../zod-form/zod_client.schema'
-import { useFormStore } from '../../representative-component/zustand/gerenciador-zustand'
-import { HeaderForms } from '@/components/header-forms/header-forms'
-import { ToastContainer } from 'react-toastify'
 
-export const AddressForm: FC<{ onNext?: (data: TClient) => void }> = ({
-  onNext,
+export const AddressForm: FC<{ onNext?: (data: TClient) => void , initialValues:addressSchemaType }> = ({
+  onNext,initialValues
 }) => {
   const { formData, updateFormData, isMutationSuccess, setMutationSuccess } =
     useFormStore()
   const form = useForm<addressSchemaType>({
     defaultValues: {
-      cep: formData.address?.postal_code || '',
-      street: formData.address?.street || '',
-      bairro: formData.address?.neighborhood || '',
-      municipio: formData.address?.municipality_name || '',
-      UF: formData.address?.state || '',
-      number: formData.address?.number || '',
-      complement: formData.address?.complement || '',
+      cep: initialValues.cep || formData.address?.postal_code || '',
+      street:initialValues.street ||  formData.address?.street || '',
+      bairro:initialValues.bairro || formData.address?.neighborhood || '',
+      municipio:initialValues.municipio || formData.address?.municipality_name || '',
+      UF:initialValues.UF|| formData.address?.state || '',
+      number: initialValues.number || formData.address?.number || '',
+      complement:initialValues.complement || formData.address?.complement || '',
     },
     resolver: zodResolver(addressSchema),
   })

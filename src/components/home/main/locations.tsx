@@ -1,18 +1,19 @@
+import Ripple from '@/components/ui/ripple'
 import { AccountingComponent } from '@/pages/channel/accounting/accounting'
-import { EstablishmentComponent } from '@/pages/channel/establishment/establishment'
-import { SystemComponent } from '@/pages/channel/system/system'
-import { UsersComponent } from '@/pages/channel/user/users'
 import { ClientComponent } from '@/pages/channel/client/client'
 import { FormClientComponent } from '@/pages/channel/client/form-client'
-import Ripple from '@/components/ui/ripple'
-import type { FC } from 'react'
-import { RepresentativeComponent } from '@/pages/channel/representative/representative'
+import { EstablishmentComponent } from '@/pages/channel/establishment/establishment'
 import { FormRepresentative } from '@/pages/channel/representative/form-representative'
+import { RepresentativeComponent } from '@/pages/channel/representative/representative'
+import { SystemComponent } from '@/pages/channel/system/system'
+import { UsersComponent } from '@/pages/channel/user/users'
+import type { FC } from 'react'
 
 interface LocationsProps {
-  activeComponent: string | null
-  setActiveComponent: (component: string | null) => void
+  activeComponent: string | null;
+  setActiveComponent: (component: string | null, id?: number) => void; 
 }
+
 
 export const LocationsAcess: FC<LocationsProps> = ({
   activeComponent,
@@ -28,7 +29,7 @@ export const LocationsAcess: FC<LocationsProps> = ({
         <FormClientComponent />
       ) : activeComponent === 'Canais' ? (
         <RepresentativeComponent
-          onOpenFormClient={() => setActiveComponent('Cadastro Representante')}
+          onOpenFormClient={(id) => setActiveComponent('Cadastro Representante', id)} 
         />
       ) : activeComponent === 'Sistemas' ? (
         <SystemComponent />
@@ -64,5 +65,5 @@ export const LocationsAcess: FC<LocationsProps> = ({
         </div>
       )}
     </div>
-  )
+  );
 }

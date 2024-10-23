@@ -1,3 +1,4 @@
+import { HeaderForms } from '@/components/header-forms/header-forms'
 import { Button } from '@/components/ui/button'
 import {
   FormControl,
@@ -15,6 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { zodResolver } from '@hookform/resolvers/zod'
 import type { FC } from 'react'
 import {
   Controller,
@@ -23,8 +25,6 @@ import {
   useForm,
 } from 'react-hook-form'
 import { FaPlus, FaRegStar, FaStar, FaTrash } from 'react-icons/fa'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { HeaderForms } from '@/components/header-forms/header-forms'
 import { useFormStore } from '../../representative-component/zustand/gerenciador-zustand'
 import { ContactSchema, type TContact } from '../zod-form/zod_contact.schema'
 
@@ -43,27 +43,22 @@ const applyMask = (value: string, mask: string): string => {
   return formattedValue
 }
 
-export const ContactForm: FC<{ onNext?: (data: TContact) => void }> = ({
-  onNext,
+export const ContactForm: FC<{ onNext?: (data: TContact) => void, initialValues:TContact  }> = ({
+  onNext, initialValues
 }) => {
   const { formData, updateFormData } = useFormStore()
   const form = useForm<TContact>({
     resolver: zodResolver(ContactSchema),
     defaultValues: {
-      name: formData.name || '',
-      contact: formData.contact?.email || '',
-      description: formData.contact?.description || '',
+      name:initialValues.name || formData.name || '',
+      contact:initialValues.contact || formData.contact?.email || '',
+      description:initialValues.description ||  formData.contact?.description || '',
       telefones: [
         {
-          number: formData.contact?.cellphone || '',
-          type: 'CELULAR',
-          favorite: formData.contact?.favorite || false,
-        },
-        {
-          number: formData.contact?.phone || '',
-          type: 'TELEFONE',
-          favorite: formData.contact?.favorite || false,
-        },
+          number: initialValues.telefones[0].number || formData.contact?.cellphone || '',
+          type: initialValues.telefones[0].type ||'CELULAR',
+          favorite: initialValues.telefones[0].favorite || formData.contact?.favorite || false,
+        }      
       ],
     },
   })

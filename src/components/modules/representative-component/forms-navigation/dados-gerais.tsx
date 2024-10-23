@@ -1,3 +1,5 @@
+import { HeaderForms } from '@/components/header-forms/header-forms'
+import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
 import {
   FormControl,
@@ -20,13 +22,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { FC } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import { ToastContainer } from 'react-toastify'
 import { translateType } from '../table-representative'
 import { schemaDadosGerais, type TSchemaDadosGerais } from '../zod/dados.zod'
 import type { representative } from '../zod/types-representative'
 import { useFormStore } from '../zustand/gerenciador-zustand'
-import { HeaderForms } from '@/components/header-forms/header-forms'
-import api from '@/components/sing-in/api/interceptors-axios'
-import { ToastContainer } from 'react-toastify'
 
 const options: Array<'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'> = [
   'REPRESENTATIVE',
@@ -36,21 +36,20 @@ const options: Array<'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'> = [
 
 export const DadosGerais: FC<{
   onNext: (data: TSchemaDadosGerais) => void
-  // setActiveComponent: (component: string | null) => void
-}> = ({ onNext }) => {
+  initialValues:TSchemaDadosGerais
+}> = ({ onNext, initialValues }) => {
   const { formData, updateFormData } = useFormStore()
 
   const form = useForm<TSchemaDadosGerais>({
     resolver: zodResolver(schemaDadosGerais),
     defaultValues: {
-      name: formData.name,
-      type: formData.type,
-      region: formData.region,
-      supervisor: formData.supervisor,
-      status: formData.status,
+      name: initialValues.name || formData.name, 
+      type: initialValues.type || formData.type,
+      region: initialValues.region || formData.region,
+      supervisor: initialValues.supervisor || formData.supervisor,
+      status: initialValues.status || formData.status,
     },
   })
-
   const {
     handleSubmit,
     formState: { errors },
@@ -72,8 +71,7 @@ export const DadosGerais: FC<{
 
   return (
     <section className="w-full items-start justify-center p-4 flex flex-col">
-      <HeaderForms
-        // setActiveComponent={setActiveComponent}
+      <HeaderForms      
         title="Dados Gerais"
       />
       <FormProvider {...form}>
@@ -159,7 +157,7 @@ export const DadosGerais: FC<{
                 <FormItem className="w-full">
                   <FormLabel htmlFor="supervisor">Supervisor</FormLabel>
                   <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select value={field.value} onValueChange={field.onChange} disabled={!data}>
                       <SelectTrigger id="supervisor">
                         <SelectValue placeholder="Selecione um supervisor" />
                       </SelectTrigger>

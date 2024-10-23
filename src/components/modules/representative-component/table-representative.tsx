@@ -1,8 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FC, useMemo } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
+import { toast } from 'react-toastify'
 import api from '../../sing-in/api/interceptors-axios'
 import { SkeletonCard } from '../../skeleton-component/skeleton'
+import { Switch } from '../../ui/switch'
 import {
   Table,
   TableBody,
@@ -11,13 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from '../../ui/table'
-import { Switch } from '../../ui/switch'
-import { toast } from 'react-toastify'
+import { ModalRepresentativeDelete } from './mod/modal-representative-delete'
 import type { representative } from './zod/types-representative'
 import { useRepresentativeDeleteZustand } from './zustand/delete-representative'
-import { ModalRepresentativeDelete } from './mod/modal-representative-delete'
-import { useRepresentativeEditZustand } from './zustand/edit-representative'
-// import { EditRepresentative } from './mod/modal-representative-edit'
+
 
 const headers = [
   'Cód.',
@@ -49,12 +48,19 @@ export const translateType = (type: string): string => {
   }
 }
 
+
 const RepresentativeRow: FC<{
-  item: representative
-  onOpenDelete: (id: number) => void
-  onOpenEdit: (id: number) => void
+  item: representative  
+  onOpenDelete: (id: number) => void 
+  onOpenFormClient: (id:number) => void
   onStatusChange: (id: number, newStatus: boolean) => void
-}> = ({ item, onOpenDelete, onOpenEdit, onStatusChange }) => (
+}> = ({ item, onOpenDelete, onOpenFormClient, onStatusChange }) =>{
+  
+  const edit = (id: number) => {
+   onOpenFormClient(id)
+  }
+
+  return (
   <TableRow key={`representative${item.id}`}>
     <TableCell className="text-sm items-center sticky">{item.id}</TableCell>
     <TableCell className="text-sm items-center sticky">{item.name}</TableCell>
@@ -72,7 +78,7 @@ const RepresentativeRow: FC<{
     </TableCell>
     <TableCell className="flex items-center justify-center w-full h-full space-x-2">
       <button
-        onClick={() => onOpenEdit(item.id)}
+        onClick={() => edit(item.id)}
         className="text-blue-200 hover:text-blue-500"
       >
         <FaEdit size={24} />
@@ -86,6 +92,7 @@ const RepresentativeRow: FC<{
     </TableCell>
   </TableRow>
 )
+}
 
 const LoadingRow: FC = () => (
   <TableRow>
@@ -95,15 +102,11 @@ const LoadingRow: FC = () => (
   </TableRow>
 )
 
-export const TableRepresentative: FC<{ searchTerm: string }> = ({
-  searchTerm,
+export const TableRepresentative: FC<{ searchTerm: string, onOpenFormClient: (id: number) => void }> = ({
+  searchTerm, onOpenFormClient
 }) => {
   const { isOpen, onOpen } = useRepresentativeDeleteZustand()
-  const {
-    // isOpen: isOpenEdit,
-    onOpen: onOpenEdit,
-    // id,
-  } = useRepresentativeEditZustand()
+
   const queryClient = useQueryClient()
 
   const { data, isLoading, error } = useQuery<representative[], Error>({
@@ -180,12 +183,13 @@ export const TableRepresentative: FC<{ searchTerm: string }> = ({
       <RepresentativeRow
         key={data.id}
         item={data}
-        onOpenEdit={onOpenEdit}
+     
         onOpenDelete={onOpen}
         onStatusChange={handleStatusChange}
+        onOpenFormClient={onOpenFormClient}
       />
     ))
-  }, [isLoading, error, filteredData, handleStatusChange, onOpenEdit, onOpen])
+  }, [isLoading, error, filteredData, handleStatusChange, onOpen])
 
   return (
     <div className="flex flex-col mt-4">

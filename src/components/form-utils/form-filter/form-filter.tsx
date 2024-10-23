@@ -4,7 +4,7 @@ import type { FC } from 'react'
 interface FormFilterProps {
   searchTerm: string
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>
-  onOpen: () => void
+  onOpen: (id: number) => void  
 }
 
 export const FormFilter: FC<FormFilterProps> = ({
@@ -12,6 +12,12 @@ export const FormFilter: FC<FormFilterProps> = ({
   setSearchTerm,
   onOpen,
 }) => {
+
+  const handleAddClick = () => {
+    const id = 0; 
+    onOpen(id);
+  };
+
   return (
     <div className="flex gap-2 items-center justify-between w-full">
       <input
@@ -21,7 +27,7 @@ export const FormFilter: FC<FormFilterProps> = ({
         value={searchTerm}
         onChange={e => setSearchTerm(e.target.value)}
       />
-      <ButtonAdd onOpen={onOpen} />
+      <ButtonAdd onOpen={handleAddClick} />
     </div>
   )
 }

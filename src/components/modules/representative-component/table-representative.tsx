@@ -17,7 +17,6 @@ import { ModalRepresentativeDelete } from './mod/modal-representative-delete'
 import type { representative } from './zod/types-representative'
 import { useRepresentativeDeleteZustand } from './zustand/delete-representative'
 
-
 const headers = [
   'Cód.',
   'Nome',
@@ -28,12 +27,6 @@ const headers = [
   'Status',
   '',
 ]
-
-export type TEstablishment = {
-  id: number
-  name: string
-  status: boolean
-}
 
 export const translateType = (type: string): string => {
   switch (type) {
@@ -48,50 +41,44 @@ export const translateType = (type: string): string => {
   }
 }
 
-
 const RepresentativeRow: FC<{
-  item: representative  
-  onOpenDelete: (id: number) => void 
-  onOpenFormClient: (id:number) => void
+  item: representative
+  onOpenDelete: (id: number) => void
+  onOpenFormClient: (id: number) => void
   onStatusChange: (id: number, newStatus: boolean) => void
-}> = ({ item, onOpenDelete, onOpenFormClient, onStatusChange }) =>{
-  
-  const edit = (id: number) => {
-   onOpenFormClient(id)
-  }
-
+}> = ({ item, onOpenDelete, onOpenFormClient, onStatusChange }) => {
   return (
-  <TableRow key={`representative${item.id}`}>
-    <TableCell className="text-sm items-center sticky">{item.id}</TableCell>
-    <TableCell className="text-sm items-center sticky">{item.name}</TableCell>
-    <TableCell className="text-sm items-center">{item.cellphone}</TableCell>
-    <TableCell className="text-sm items-center">{item.phone}</TableCell>
-    <TableCell className="text-sm items-center">
-      {translateType(item.type)}
-    </TableCell>
-    <TableCell className="text-sm items-center">{item.region}</TableCell>
-    <TableCell className="text-sm items-center">
-      <Switch
-        checked={item.status === 'ativo'}
-        onCheckedChange={checked => onStatusChange(item.id || 0, checked)}
-      />
-    </TableCell>
-    <TableCell className="flex items-center justify-center w-full h-full space-x-2">
-      <button
-        onClick={() => edit(item.id)}
-        className="text-blue-200 hover:text-blue-500"
-      >
-        <FaEdit size={24} />
-      </button>
-      <button
-        onClick={() => onOpenDelete(item.id)}
-        className="text-red-200 hover:text-red-500"
-      >
-        <FaTrash size={24} />
-      </button>
-    </TableCell>
-  </TableRow>
-)
+    <TableRow key={`representative${item.id}`}>
+      <TableCell className="text-sm items-center sticky">{item.id}</TableCell>
+      <TableCell className="text-sm items-center sticky">{item.name}</TableCell>
+      <TableCell className="text-sm items-center">{item.cellphone}</TableCell>
+      <TableCell className="text-sm items-center">{item.phone}</TableCell>
+      <TableCell className="text-sm items-center">
+        {translateType(item.type)}
+      </TableCell>
+      <TableCell className="text-sm items-center">{item.region}</TableCell>
+      <TableCell className="text-sm items-center">
+        <Switch
+          checked={item.status === 'ativo'}
+          onCheckedChange={checked => onStatusChange(item.id || 0, checked)}
+        />
+      </TableCell>
+      <TableCell className="flex items-center justify-center w-full h-full space-x-2">
+        <button
+          onClick={() => onOpenFormClient(item.id)} // Passa o ID para o formulário
+          className="text-blue-200 hover:text-blue-500"
+        >
+          <FaEdit size={24} />
+        </button>
+        <button
+          onClick={() => onOpenDelete(item.id)}
+          className="text-red-200 hover:text-red-500"
+        >
+          <FaTrash size={24} />
+        </button>
+      </TableCell>
+    </TableRow>
+  )
 }
 
 const LoadingRow: FC = () => (
@@ -102,9 +89,10 @@ const LoadingRow: FC = () => (
   </TableRow>
 )
 
-export const TableRepresentative: FC<{ searchTerm: string, onOpenFormClient: (id: number) => void }> = ({
-  searchTerm, onOpenFormClient
-}) => {
+export const TableRepresentative: FC<{
+  searchTerm: string
+  onOpenFormClient: (id: number) => void
+}> = ({ searchTerm, onOpenFormClient }) => {
   const { isOpen, onOpen } = useRepresentativeDeleteZustand()
 
   const queryClient = useQueryClient()
@@ -133,7 +121,7 @@ export const TableRepresentative: FC<{ searchTerm: string, onOpenFormClient: (id
       return response.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['get-establishment'] })
+      queryClient.invalidateQueries({ queryKey: ['get-representative'] })
       toast.success('Status atualizado com sucesso!')
     },
     onError: () => {
@@ -183,7 +171,6 @@ export const TableRepresentative: FC<{ searchTerm: string, onOpenFormClient: (id
       <RepresentativeRow
         key={data.id}
         item={data}
-     
         onOpenDelete={onOpen}
         onStatusChange={handleStatusChange}
         onOpenFormClient={onOpenFormClient}
@@ -206,7 +193,6 @@ export const TableRepresentative: FC<{ searchTerm: string, onOpenFormClient: (id
         <TableBody>{tableContent}</TableBody>
       </Table>
       {isOpen && <ModalRepresentativeDelete />}
-      {/* {isOpenEdit && <EditRepresentative />} */}
     </div>
   )
 }

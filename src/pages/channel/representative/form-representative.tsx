@@ -6,16 +6,19 @@ import { RepresentativeNavComponent } from '@/components/modules/representative-
 import api from '@/components/sing-in/api/interceptors-axios'
 import { useQuery } from '@tanstack/react-query'
 import { FC, useEffect, useState } from 'react'
+
 interface FormRepresentativeProps {
-  id?: number 
+  id?: number
   onOpenFormClient: () => void
 }
 
 export const FormRepresentative: FC<FormRepresentativeProps> = ({
-  id, 
+  id,
   onOpenFormClient,
 }) => {
-  const [selectedForm, setSelectedForm] = useState<string | null>('Dados Gerais')
+  const [selectedForm, setSelectedForm] = useState<string | null>(
+    'Dados Gerais',
+  )
   const [enabledForms, setEnabledForms] = useState<string[]>(['Dados Gerais'])
   const [formData, setFormData] = useState({
     dadosGerais: {
@@ -25,28 +28,31 @@ export const FormRepresentative: FC<FormRepresentativeProps> = ({
       type: 'REPRESENTATIVE' as 'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER',
     },
     comissao: {
-      implantation: 0, 
+      implantation: 0,
       mensality: 0,
     },
     contatos: {
       name: '',
-      contact:'',
+      contact: '',
       description: '',
-      telefones:[{
-        number:'',
-        type:'CELULAR' as "CELULAR" | "WHATSAPP" | "TELEFONE",
-        favorite:false,
-      }]
+      telefones: [
+        {
+          number: '',
+          type: 'CELULAR' as 'CELULAR' | 'WHATSAPP' | 'TELEFONE',
+          favorite: false,
+        },
+      ],
     },
     enderecos: {
-    cep: '',
-    street: '',
-    bairro: '',
-    municipio: '',
-    UF: '',
-    number: '',
-    complement: '',
-}})
+      cep: '',
+      street: '',
+      bairro: '',
+      municipio: '',
+      UF: '',
+      number: '',
+      complement: '',
+    },
+  })
 
   const { data: representativeData, isLoading } = useQuery({
     queryKey: ['representative', id],
@@ -55,18 +61,17 @@ export const FormRepresentative: FC<FormRepresentativeProps> = ({
       const response = await api.get(`/representative/${id}`)
       return response.data
     },
-    enabled: !!id, 
+    enabled: !!id,
   })
-
 
   useEffect(() => {
     if (representativeData) {
       setFormData({
-        dadosGerais: representativeData.dadosGerais || {   
+        dadosGerais: representativeData.dadosGerais || {
           name: representativeData.dadosGerais?.name || '',
           region: representativeData.dadosGerais?.region || '',
           status: representativeData.dadosGerais?.status || '',
-          type: representativeData.dadosGerais?.type || 'REPRESENTATIVE'
+          type: representativeData.dadosGerais?.type || 'REPRESENTATIVE',
         },
         comissao: representativeData.comissao || {
           implantation: representativeData.comissao?.implantation || 0,
@@ -76,11 +81,13 @@ export const FormRepresentative: FC<FormRepresentativeProps> = ({
           name: representativeData.contatos?.name || '',
           contact: representativeData.contatos?.contact || '',
           description: representativeData.contatos?.description || '',
-          telefones: representativeData.contatos?.telefones || [{
-            number: '',
-            type: "CELULAR",
-            favorite: false
-          }]
+          telefones: representativeData.contatos?.telefones || [
+            {
+              number: '',
+              type: 'CELULAR',
+              favorite: false,
+            },
+          ],
         },
         enderecos: {
           cep: representativeData.enderecos?.cep || '',
@@ -89,12 +96,11 @@ export const FormRepresentative: FC<FormRepresentativeProps> = ({
           municipio: representativeData.enderecos?.municipio || '',
           UF: representativeData.enderecos?.UF || '',
           number: representativeData.enderecos?.number || '',
-          complement: representativeData.enderecos?.complement || ''
-        }
+          complement: representativeData.enderecos?.complement || '',
+        },
       })
     }
   }, [representativeData])
-  
 
   const handleNext = (currentForm: string, data: any) => {
     setFormData(prevData => ({
@@ -155,7 +161,9 @@ export const FormRepresentative: FC<FormRepresentativeProps> = ({
   return (
     <div className="flex px-2">
       <aside className="w-96 bg-gray-100 h-screen items-center flex overscroll-none flex-col space-y-6">
-        <h2 className="text-2xl font-semibold p-2">Cadastro representante</h2>
+        <h2 className="text-2xl font-semibold p-2">
+          {id ? 'Editar Representante' : 'Cadastro Representante'}
+        </h2>
         <RepresentativeNavComponent
           selected={selectedForm}
           onSelect={title => {

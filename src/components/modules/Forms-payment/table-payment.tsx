@@ -16,7 +16,7 @@ import { ModalPaymentDelete } from './models/delete-model'
 import { PaymentModal } from './models/model-payment'
 import { usePaymentZustand } from './zustand-payment/payment-zustand'
 
-const headers = ['Cód.', 'Formas', '']
+const headers = ['Cód.', 'Formas de pagamento', '']
 
 const PaymentRow: FC<{
   payment: TSchemaPayamentDtoForm

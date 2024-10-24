@@ -84,11 +84,11 @@ export default function Sidebar() {
     (subcategories: Subcategory[], depth = 0) => {
       return subcategories.map((subcategory, idx) => (
         <div key={idx} className={`ml-${4 * (depth + 1)} mt-2 w-full gap-2`}>
-          <div className="text-sm text-zinc-400 py-1.5 px-8 uppercase font-bold">
+          <div className="text-lg text-zinc-400 py-1.5 px-8 uppercase font-bold">
             {isSidebarCompressed ? (
               <Separator
                 orientation="horizontal"
-                className="items-center flex justify-center -ml-4 "
+                className="items-center flex justify-center -ml-1 "
               />
             ) : (
               <p>{subcategory.title}</p>
@@ -118,10 +118,12 @@ export default function Sidebar() {
                 }}
                 title={item.label}
               >
-                <p className="text-lg mr-2 items-center justify-center flex">
+                <p className="text-2xl mr-2 items-center justify-center flex">
                   {item.icon}
                 </p>
-                {!isSidebarCompressed && <span className="">{item.label}</span>}
+                {!isSidebarCompressed && (
+                  <span className="text-sm">{item.label}</span>
+                )}
               </div>
               {openSubmenus[item.label] &&
                 item.subcategories &&

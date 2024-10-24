@@ -1,5 +1,6 @@
 import { BiBuildingHouse } from 'react-icons/bi'
 import { BsFillPersonPlusFill, BsJournalPlus } from 'react-icons/bs'
+import { GiTakeMyMoney } from 'react-icons/gi'
 
 import {
   FaBell,
@@ -64,7 +65,7 @@ export const menuNavigation = [
               },
             ],
           },
-          { label: 'Formas de Pagamento', icon: <FaChartBar /> },
+          { label: 'Formas de Pagamento', icon: <GiTakeMyMoney /> },
           { label: 'Descrição de Chamados', icon: <FaChartBar /> },
           { label: 'Agendar Telemarketing', icon: <FaChartBar /> },
         ],

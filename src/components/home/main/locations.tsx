@@ -3,6 +3,7 @@ import { AccountingComponent } from '@/pages/channel/accounting/accounting'
 import { ClientComponent } from '@/pages/channel/client/client'
 import { FormClientComponent } from '@/pages/channel/client/form-client'
 import { EstablishmentComponent } from '@/pages/channel/establishment/establishment'
+import { PaymentComponent } from '@/pages/channel/forms-payment/payment'
 import { FormRepresentative } from '@/pages/channel/representative/form-representative'
 import { RepresentativeComponent } from '@/pages/channel/representative/representative'
 import { SystemComponent } from '@/pages/channel/system/system'
@@ -10,10 +11,9 @@ import { UsersComponent } from '@/pages/channel/user/users'
 import type { FC } from 'react'
 
 interface LocationsProps {
-  activeComponent: string | null;
-  setActiveComponent: (component: string | null, id?: number) => void; 
+  activeComponent: string | null
+  setActiveComponent: (component: string | null, id?: number) => void
 }
-
 
 export const LocationsAcess: FC<LocationsProps> = ({
   activeComponent,
@@ -29,10 +29,14 @@ export const LocationsAcess: FC<LocationsProps> = ({
         <FormClientComponent />
       ) : activeComponent === 'Canais' ? (
         <RepresentativeComponent
-          onOpenFormClient={(id) => setActiveComponent('Cadastro Representante', id)} 
+          onOpenFormClient={id =>
+            setActiveComponent('Cadastro Representante', id)
+          }
         />
       ) : activeComponent === 'Sistemas' ? (
         <SystemComponent />
+      ) : activeComponent === 'Formas de Pagamento' ? (
+        <PaymentComponent />
       ) : activeComponent === 'Contabilidades' ? (
         <AccountingComponent />
       ) : activeComponent === 'Cadastro Representante' ? (
@@ -65,5 +69,5 @@ export const LocationsAcess: FC<LocationsProps> = ({
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -1,8 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FC, useMemo } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
+import { toast } from 'react-toastify'
 import api from '../../sing-in/api/interceptors-axios'
 import { SkeletonCard } from '../../skeleton-component/skeleton'
+import { Switch } from '../../ui/switch'
 import {
   Table,
   TableBody,
@@ -11,12 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from '../../ui/table'
-import { Switch } from '../../ui/switch'
 import { ModalEstablishmentDelete } from './modal-establishment/delete-modal-establishment'
+import { EditEstablishmentModal } from './modal-establishment/edit-modal-establishment'
 import { useEstablishmentDeleteZustand } from './zustand-establishment/delete-establisment'
 import { useEstablishmentEditZustand } from './zustand-establishment/edit-establishment'
-import { EditEstablishmentModal } from './modal-establishment/edit-modal-establishment'
-import { toast } from 'react-toastify'
 
 const headers = ['Cód.', 'Nome Estabelecimento', 'Status', '']
 

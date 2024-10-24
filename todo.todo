@@ -1,12 +1,11 @@
-preciso fazer o sistema:
-  ✔ criar o botão de acesso da versão. @done(24-10-15 09:27)
-  ☐ fazer um modal para criar a versão.
-  ☐ verificar o indice da versão pois o costumer nao é dessa forma
-  ☐ realizar o migrate das deletedAt
-preciso criar o form de cliente venda:
-  ☐ Fazer a tabela
-  ☐ verificar os campos
-  ☐ trazer a condição para que nao possa excluir se tiver em outro local
-  ☐ não excluir do banco
-Siderbar:
-  ☐ criar um menu com um avatar
+CRUD: 
+GET:
+  ☐ Tabela(cod, descrição).
+  ☐ Filtro(cod, descrição).
+  ☐ Imprimir.
+POST:
+  ☐ Criação (cod, descrição).
+DELETE: 
+  ☐ Delete (cod).
+EDIT:
+  ☐ Edit (cod, descrição).

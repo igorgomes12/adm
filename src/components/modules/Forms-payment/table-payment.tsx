@@ -25,7 +25,9 @@ const PaymentRow: FC<{
 }> = ({ payment, onOpenDelete, onOpenEdit }) => (
   <TableRow>
     <TableCell className="text-sm items-center">{payment.id}</TableCell>
-    <TableCell className="text-sm items-center">{payment.name}</TableCell>
+    <TableCell className="text-sm items-center uppercase">
+      {payment.name}
+    </TableCell>
 
     <TableCell className="flex items-center justify-center w-full h-full space-x-2">
       <button

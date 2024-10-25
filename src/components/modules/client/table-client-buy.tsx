@@ -1,4 +1,5 @@
 import api from '@/components/sing-in/api/interceptors-axios'
+import { SkeletonCard } from '@/components/skeleton-component/skeleton'
 import {
   Table,
   TableBody,
@@ -11,15 +12,16 @@ import { useQuery } from '@tanstack/react-query'
 import { FC, useMemo, useState } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import Paginations from './pagination'
-import { SkeletonCard } from '@/components/skeleton-component/skeleton'
-import type { Client } from './system-components/system-add/zustand-state/add-client'
+import { TAddress } from './zod-form/zod_address.schema'
+import { TClient } from './zod-form/zod_client.schema'
+import { TContact } from './zod-form/zod_contact.schema'
 
 export const TableClientBuy: FC<{ searchTerm: string }> = ({ searchTerm }) => {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 4
 
   // Fetch data using react-query
-  const { data, error, isLoading } = useQuery<Client[]>({
+  const { data, error, isLoading } = useQuery<TClient[]>({
     queryKey: ['clients'],
     queryFn: async () => {
       const response = await api.get('/client')
@@ -34,7 +36,7 @@ export const TableClientBuy: FC<{ searchTerm: string }> = ({ searchTerm }) => {
   const filteredData = useMemo(() => {
     if (!data) return []
     const lowerCaseSearchTerm = searchTerm.toLowerCase()
-    return data.filter((item: Client) =>
+    return data.filter((item: TClient) =>
       Object.values(item).some(value => {
         if (typeof value === 'string') {
           return value.toLowerCase().includes(lowerCaseSearchTerm)
@@ -60,7 +62,7 @@ export const TableClientBuy: FC<{ searchTerm: string }> = ({ searchTerm }) => {
       )
     }
 
-    return paginatedData.map((item: Client) => (
+    return paginatedData.map((item: any) => (
       <TableRow
         key={item.id}
         className={
@@ -75,7 +77,9 @@ export const TableClientBuy: FC<{ searchTerm: string }> = ({ searchTerm }) => {
         </TableCell>
         <TableCell className="text-sm items-center">{item.cpfCnpj}</TableCell>
         <TableCell className="text-sm items-center">
-          {item.contacts.flatMap(contact => contact.contact).join(', ')}
+          {item.contacts
+            .flatMap((contact: TContact) => contact.contact)
+            .join(', ')}
         </TableCell>
         <TableCell className="text-sm items-center">
           {item.fantasyName}
@@ -85,8 +89,10 @@ export const TableClientBuy: FC<{ searchTerm: string }> = ({ searchTerm }) => {
           {item.stateRegistration}
         </TableCell>
         <TableCell className="text-sm items-center">
-          {item.addresses.flatMap(address => address.street)} -{' '}
-          {item.addresses.flatMap(address => address.municipality_id)}
+          {item.addresses.flatMap((address: TAddress) => address.street)} -{' '}
+          {item.addresses.flatMap(
+            (address: TAddress) => address.municipality_id,
+          )}
         </TableCell>
         <TableCell className="flex items-center justify-center w-full h-full space-x-2">
           <button className="text-blue-200 hover:text-blue-500">

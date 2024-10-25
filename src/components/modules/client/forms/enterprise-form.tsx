@@ -1,3 +1,4 @@
+import { HeaderForms } from '@/components/header-forms/header-forms'
 import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,10 +17,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useQuery } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 import { useEffect, type FC } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import type { TSchemaEstablished } from '../../establishment-components/zod-types-establishment/zod-establihment'
-import type { AxiosError } from 'axios'
 import type { TClient } from '../zod-form/zod_client.schema'
 
 export const EnterpriseForm: FC<{ onNext: (data: TClient) => void }> = ({
@@ -62,9 +63,7 @@ export const EnterpriseForm: FC<{ onNext: (data: TClient) => void }> = ({
   return (
     <div className="flex flex-col p-4 w-full h-screen">
       <div className="flex w-full items-start justify-start">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
-          Formulário da Empresa
-        </h1>
+        <HeaderForms title="Formulários da Empresa" />
       </div>
       <FormProvider {...form}>
         <form
@@ -179,7 +178,10 @@ export const EnterpriseForm: FC<{ onNext: (data: TClient) => void }> = ({
                       </SelectTrigger>
                       <SelectContent>
                         {data?.map((item: TSchemaEstablished) => (
-                          <SelectItem key={item.id} value={item.id.toString()}>
+                          <SelectItem
+                            key={item.id}
+                            value={item?.id?.toString() || '0'}
+                          >
                             {item.name}
                           </SelectItem>
                         ))}
@@ -190,16 +192,6 @@ export const EnterpriseForm: FC<{ onNext: (data: TClient) => void }> = ({
                 </FormItem>
               )}
             />
-            {/* <FormField
-              name="apuration"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Regime Apuração</FormLabel>
-                  <Input {...field} {...register('')} />
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
           </div>
           <div className="flex w-full items-center justify-center">
             <Button className="w-full" type="submit" variant="success">

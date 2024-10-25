@@ -1,33 +1,23 @@
-import { useState } from 'react'
-import { EnterpriseForm } from '../../../components/modules/client/forms/enterprise-form'
-import { ContactForm } from '@/components/modules/client/forms/contact-form'
-import { AddressForm } from '@/components/modules/client/forms/address-form'
-import { RepresentativeForm } from '@/components/modules/client/forms/representative-form'
-import { AccoutingForm } from '@/components/modules/client/forms/accounting-form'
 import {
   ClientNavigationComponent,
   navClients,
 } from '@/components/client-forms/client-navigation-component'
+import { AccoutingForm } from '@/components/modules/client/forms/accounting-form'
+import { AddressForm } from '@/components/modules/client/forms/address-form'
+import { ContactForm } from '@/components/modules/client/forms/contact-form'
+import { RepresentativeForm } from '@/components/modules/client/forms/representative-form'
+import { useClientFormStore } from '@/components/modules/client/zustand/client-form.zustand'
 import api from '@/components/sing-in/api/interceptors-axios'
-import type { TClient } from '@/components/modules/client/zod-form/zod_client.schema'
+import { useState } from 'react'
+import { EnterpriseForm } from '../../../components/modules/client/forms/enterprise-form'
 
 export const FormClientComponent = () => {
   const [selectedForm, setSelectedForm] = useState<string>('Empresa')
   const [enabledForms, setEnabledForms] = useState<string[]>(['Empresa'])
-
-  const [formData, setFormData] = useState({
-    enterprise: {},
-    contact: {},
-    address: {},
-    representative: {},
-    accounting: {},
-  })
+  const { formData, updateFormData } = useClientFormStore()
 
   const handleNext = (currentForm: string, data: any) => {
-    setFormData(prevData => ({
-      ...prevData,
-      [currentForm.toLowerCase()]: data,
-    }))
+    updateFormData({ [currentForm.toLowerCase()]: data })
 
     const nextFormIndex =
       navClients.findIndex(client => client.title === currentForm) + 1
@@ -59,34 +49,20 @@ export const FormClientComponent = () => {
   const renderForm = () => {
     switch (selectedForm) {
       case 'Empresa':
-        return (
-          <EnterpriseForm
-            onNext={(data: TClient) => handleNext('Empresa', data)}
-          />
-        )
+        return <EnterpriseForm onNext={data => handleNext('Empresa', data)} />
       case 'Contatos':
-        return (
-          <ContactForm
-            onNext={(data: TClient) => handleNext('Contatos', data)}
-          />
-        )
+        return <ContactForm onNext={data => handleNext('Contatos', data)} />
       case 'Endereços':
-        return (
-          <AddressForm
-            onNext={(data: TClient) => handleNext('Endereços', data)}
-          />
-        )
+        return <AddressForm onNext={data => handleNext('Endereços', data)} />
       case 'Representante':
         return (
           <RepresentativeForm
-            onNext={(data: TClient) => handleNext('Representante', data)}
+            onNext={data => handleNext('Representante', data)}
           />
         )
       case 'Proprietário':
         return (
-          <AccoutingForm
-            onNext={(data: TClient) => handleNext('Proprietário', data)}
-          />
+          <AccoutingForm onNext={data => handleNext('Proprietário', data)} />
         )
       default:
         return <div>Selecione uma opção para ver o formulário.</div>

@@ -43,22 +43,30 @@ const applyMask = (value: string, mask: string): string => {
   return formattedValue
 }
 
-export const ContactForm: FC<{ onNext?: (data: TContact) => void, initialValues:TContact  }> = ({
-  onNext, initialValues
-}) => {
+export const ContactForm: FC<{
+  onNext?: (data: TContact) => void
+  initialValues?: TContact
+}> = ({ onNext, initialValues }) => {
   const { formData, updateFormData } = useFormStore()
   const form = useForm<TContact>({
     resolver: zodResolver(ContactSchema),
     defaultValues: {
-      name:initialValues.name || formData.name || '',
-      contact:initialValues.contact || formData.contact?.email || '',
-      description:initialValues.description ||  formData.contact?.description || '',
+      name: initialValues?.name || formData.name || '',
+      contact: initialValues?.contact || formData.contact?.email || '',
+      description:
+        initialValues?.description || formData.contact?.description || '',
       telefones: [
         {
-          number: initialValues.telefones[0].number || formData.contact?.cellphone || '',
-          type: initialValues.telefones[0].type ||'CELULAR',
-          favorite: initialValues.telefones[0].favorite || formData.contact?.favorite || false,
-        }      
+          number:
+            initialValues?.telefones[0].number ||
+            formData.contact?.cellphone ||
+            '',
+          type: initialValues?.telefones[0].type || 'CELULAR',
+          favorite:
+            initialValues?.telefones[0].favorite ||
+            formData.contact?.favorite ||
+            false,
+        },
       ],
     },
   })

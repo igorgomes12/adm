@@ -18,20 +18,23 @@ import { useFormStore } from '../../representative-component/zustand/gerenciador
 import { addressSchema, addressSchemaType } from '../zod-form/zod-address'
 import { TClient } from '../zod-form/zod_client.schema'
 
-export const AddressForm: FC<{ onNext?: (data: TClient) => void , initialValues:addressSchemaType }> = ({
-  onNext,initialValues
-}) => {
+export const AddressForm: FC<{
+  onNext?: (data: TClient) => void
+  initialValues?: addressSchemaType
+}> = ({ onNext, initialValues }) => {
   const { formData, updateFormData, isMutationSuccess, setMutationSuccess } =
     useFormStore()
   const form = useForm<addressSchemaType>({
     defaultValues: {
-      cep: initialValues.cep || formData.address?.postal_code || '',
-      street:initialValues.street ||  formData.address?.street || '',
-      bairro:initialValues.bairro || formData.address?.neighborhood || '',
-      municipio:initialValues.municipio || formData.address?.municipality_name || '',
-      UF:initialValues.UF|| formData.address?.state || '',
-      number: initialValues.number || formData.address?.number || '',
-      complement:initialValues.complement || formData.address?.complement || '',
+      cep: initialValues?.cep || formData.address?.postal_code || '',
+      street: initialValues?.street || formData.address?.street || '',
+      bairro: initialValues?.bairro || formData.address?.neighborhood || '',
+      municipio:
+        initialValues?.municipio || formData.address?.municipality_name || '',
+      UF: initialValues?.UF || formData.address?.state || '',
+      number: initialValues?.number || formData.address?.number || '',
+      complement:
+        initialValues?.complement || formData.address?.complement || '',
     },
     resolver: zodResolver(addressSchema),
   })

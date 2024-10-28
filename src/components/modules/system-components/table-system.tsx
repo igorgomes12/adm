@@ -1,22 +1,22 @@
-import React, { useMemo, useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { FaEdit, FaSortAmountUp, FaTrash } from 'react-icons/fa'
 
-import { useSystemDeleteZustand } from './system-add/zustand-state/system-del-zustand'
-import { ModalSystemDelete } from './system-add/modal-delete-system'
-import { ModalSystemEdit } from './system-add/modal-edit-system'
-import { useSystemEditZustand } from './system-add/zustand-state/system-edit-zustand'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import type { TSystemSchemaDto } from './system-add/zod-types/types-system'
-import api from '@/components/sing-in/api/interceptors-axios'
 import { SkeletonCard } from '@/components/skeleton-component/skeleton'
 import {
-  TableRow,
-  TableCell,
   Table,
-  TableHeader,
-  TableHead,
   TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { ModalSystemDelete } from './system-add/modal-delete-system'
+import { ModalSystemEdit } from './system-add/modal-edit-system'
+import type { TSystemSchemaDto } from './system-add/zod-types/types-system'
+import { useSystemDeleteZustand } from './system-add/zustand-state/system-del-zustand'
+import { useSystemEditZustand } from './system-add/zustand-state/system-edit-zustand'
 
 interface SystemRowProps {
   system: TSystemSchemaDto

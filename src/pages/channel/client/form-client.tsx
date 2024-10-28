@@ -7,7 +7,7 @@ import { AddressForm } from '@/components/modules/client/forms/address-form'
 import { ContactForm } from '@/components/modules/client/forms/contact-form'
 import { RepresentativeForm } from '@/components/modules/client/forms/representative-form'
 import { useClientFormStore } from '@/components/modules/client/zustand/client-form.zustand'
-import api from '@/components/sing-in/api/interceptors-axios'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
 import { useState } from 'react'
 import { EnterpriseForm } from '../../../components/modules/client/forms/enterprise-form'
 

@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo, type FC } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 
-import api from '@/components/sing-in/api/interceptors-axios'
 import { SkeletonCard } from '@/components/skeleton-component/skeleton'
 import {
   Table,
@@ -12,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
 import { ModalAccountingDelete } from './modal-accouting/modal-delete-accounting'
 import { ModalAccountingEdit } from './modal-accouting/modal-edit-accouting'
 import { useAccoutingDeleteZustand } from './zustand-accounting/delete-zustand'

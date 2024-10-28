@@ -1,5 +1,5 @@
-import api from '@/components/sing-in/api/interceptors-axios'
 import { SkeletonCard } from '@/components/skeleton-component/skeleton'
+import { Switch } from '@/components/ui/switch'
 import {
   Table,
   TableBody,
@@ -8,16 +8,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
+import { toast } from 'react-toastify'
+import { ModalUserDelete } from './mod/del-mod'
+import { ModalUserEdit } from './mod/edit-mod'
 import type { TUserSchemaDto } from './zod-types-user/zod-users'
 import { useUserDeleteZustand } from './zustand/del-zustand'
 import { useUserEditZustand } from './zustand/edit-zustand'
-import { ModalUserDelete } from './mod/del-mod'
-import { ModalUserEdit } from './mod/edit-mod'
-import { Switch } from '@/components/ui/switch'
-import { toast } from 'react-toastify'
 
 interface UsersRowProps {
   user: TUserSchemaDto

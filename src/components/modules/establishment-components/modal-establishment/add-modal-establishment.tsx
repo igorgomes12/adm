@@ -1,4 +1,3 @@
-import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
 import {
   FormControl,
@@ -8,16 +7,17 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormProvider, useForm } from 'react-hook-form'
+import { FaRocket } from 'react-icons/fa'
 import { Flip, toast } from 'react-toastify'
 import {
   schemaEstablished,
   type TSchemaEstablished,
 } from '../zod-types-establishment/zod-establihment'
 import { useEstablishmentZustand } from '../zustand-establishment/create-establishment'
-import { FaRocket } from 'react-icons/fa'
 
 type TAddEstablishment = {
   message: string

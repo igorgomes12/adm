@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { FC, useMemo } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
-import api from '../../sing-in/api/interceptors-axios'
+import api from '../../../infra/auth/database/acess-api/interceptors-axios'
 import { SkeletonCard } from '../../skeleton-component/skeleton'
 import {
   Table,

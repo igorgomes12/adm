@@ -1,8 +1,8 @@
-import { AppRoutes } from "./routes/Routes";
+import { AppRoutes } from './routes/Routes'
 export function App() {
   return (
     <div className="flex w-full h-screen">
-      <AppRoutes/>
+      <AppRoutes />
     </div>
-  );
+  )
 }

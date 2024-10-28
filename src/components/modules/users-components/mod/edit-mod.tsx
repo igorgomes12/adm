@@ -1,4 +1,3 @@
-import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
 import {
   FormControl,
@@ -8,6 +7,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'

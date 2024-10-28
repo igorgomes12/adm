@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import api from '@/components/sing-in/api/interceptors-axios'
-import { Flip, toast } from 'react-toastify'
 import { useState } from 'react'
-import { useAccoutingDeleteZustand } from '../zustand-accounting/delete-zustand'
-import { IoWarningOutline } from 'react-icons/io5'
 import { FaRocket } from 'react-icons/fa'
+import { IoWarningOutline } from 'react-icons/io5'
+import { Flip, toast } from 'react-toastify'
+import { useAccoutingDeleteZustand } from '../zustand-accounting/delete-zustand'
 
 export const ModalAccountingDelete = () => {
   const { id, isOpen, onClose } = useAccoutingDeleteZustand()

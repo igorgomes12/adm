@@ -1,5 +1,4 @@
 import { HeaderForms } from '@/components/header-forms/header-forms'
-import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
 import {
   FormControl,
@@ -16,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
 import { useQuery } from '@tanstack/react-query'
 import type { AxiosError } from 'axios'
 import { useEffect, type FC } from 'react'

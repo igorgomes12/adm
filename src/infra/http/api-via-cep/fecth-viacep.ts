@@ -1,4 +1,4 @@
-import api from '@/components/sing-in/api/interceptors-axios'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
 
 export interface AddressData {
   cep: string

@@ -1,14 +1,4 @@
 import { Button } from '@/components/ui/button'
-import { useSystemEditZustand } from './zustand-state/system-edit-zustand'
-import { useForm, FormProvider } from 'react-hook-form'
-import {
-  SystemSchemaDto,
-  type TSystemSchemaDto,
-} from './zod-types/types-system'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
-import api from '@/components/sing-in/api/interceptors-axios'
-import { Flip, toast } from 'react-toastify'
 import {
   FormControl,
   FormField,
@@ -17,10 +7,20 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useEffect, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { TrashIcon } from '@radix-ui/react-icons'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useCallback, useEffect } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { FormProvider, useForm } from 'react-hook-form'
 import { FaRocket } from 'react-icons/fa'
+import { Flip, toast } from 'react-toastify'
+import {
+  SystemSchemaDto,
+  type TSystemSchemaDto,
+} from './zod-types/types-system'
+import { useSystemEditZustand } from './zustand-state/system-edit-zustand'
 
 export const ModalSystemEdit = () => {
   const { id, isOpen, onClose } = useSystemEditZustand()

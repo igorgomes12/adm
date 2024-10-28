@@ -1,5 +1,5 @@
-import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Flip, toast } from 'react-toastify'

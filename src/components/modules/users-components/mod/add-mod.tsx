@@ -1,4 +1,3 @@
-import api from '@/components/sing-in/api/interceptors-axios'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -9,14 +8,15 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import { FaEye, FaEyeSlash, FaRocket } from 'react-icons/fa'
 import { Flip, toast } from 'react-toastify'
 import { UserSchemaDto, type TUserSchemaDto } from '../zod-types-user/zod-users'
 import { useAddUserZustand } from '../zustand/add-zustand'
-import { useState } from 'react'
-import { FaEye, FaEyeSlash, FaRocket } from 'react-icons/fa'
 
 type ProfileType =
   | 'ADMIN'

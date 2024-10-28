@@ -1,9 +1,6 @@
+import { api } from '@/infra/auth/database/acess-api/api'
 import axios from 'axios'
 import { refreshToken } from './refresh-token'
-
-const api = axios.create({
-  baseURL: ' http://localhost:3333',
-})
 
 api.interceptors.request.use(
   config => {
@@ -29,7 +26,6 @@ api.interceptors.response.use(
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + newToken
         return api(originalRequest)
       } catch (refreshError) {
-        // Se o refresh falhar, redirecione para o login
         window.location.href = '/login'
         return Promise.reject(refreshError)
       }

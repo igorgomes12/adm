@@ -3,9 +3,9 @@ import { FC } from 'react'
 import { FaRocket } from 'react-icons/fa'
 import { Flip, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import api from '../../infra/auth/database/acess-api/interceptors-axios'
 import type { CreateRepresentativeSchemaDto } from '../modules/representative-component/zod/create-representative.dto'
 import { useFormStore } from '../modules/representative-component/zustand/gerenciador-zustand'
-import api from '../sing-in/api/interceptors-axios'
 import { Button } from '../ui/button'
 
 interface IHeaderFormsProps {

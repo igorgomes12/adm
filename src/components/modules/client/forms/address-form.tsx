@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { AddressData, fetchViaCep } from '@/utils/api/fecth-viacep'
+import { AddressData, fetchViaCep } from '@/infra/http/api-via-cep/fecth-viacep'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { FC, useEffect } from 'react'

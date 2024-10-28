@@ -3,7 +3,7 @@ import { ContactForm } from '@/components/modules/client/forms/contact-form'
 import { ComissaoForm } from '@/components/modules/representative-component/forms-navigation/comissao-form'
 import { DadosGerais } from '@/components/modules/representative-component/forms-navigation/dados-gerais'
 import { RepresentativeNavComponent } from '@/components/modules/representative-component/nav/navitgation-form'
-import api from '@/components/sing-in/api/interceptors-axios'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
 import { useQuery } from '@tanstack/react-query'
 import { FC, useEffect, useState } from 'react'
 

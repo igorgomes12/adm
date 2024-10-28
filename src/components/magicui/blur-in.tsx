@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/common/lib/utils'
 
 interface BlurIntProps {
   word: string

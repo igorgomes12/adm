@@ -1,7 +1,7 @@
-import axios from 'axios'
+import { api } from '@/infra/auth/database/acess-api/api'
 export const refreshToken = async () => {
   try {
-    const response = await axios.post(`http://localhost:3333/auth/refresh`, {
+    const response = await api.post(`http://localhost:3333/auth/refresh`, {
       refresh_token: localStorage.getItem('refresh_token'),
     })
     const { access_token, refresh_token } = response.data
@@ -10,7 +10,6 @@ export const refreshToken = async () => {
     return access_token
   } catch (error) {
     console.error('Erro ao atualizar o token:', error)
-    // Se falhar, faça logout
     logout()
     throw error
   }
@@ -19,5 +18,4 @@ export const refreshToken = async () => {
 export const logout = () => {
   localStorage.removeItem('access_token')
   localStorage.removeItem('refresh_token')
-  // Redirecione para a página de login ou atualize o estado da aplicação
 }

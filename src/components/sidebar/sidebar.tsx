@@ -1,5 +1,5 @@
+import { menuNavigation } from '@/common/interface/first-page'
 import { Separator } from '@/components/ui/separator'
-import { menuNavigation } from '@/utils/interface/first-page'
 import { useCallback, useState } from 'react'
 import { GoPin } from 'react-icons/go'
 import { RxExit } from 'react-icons/rx'

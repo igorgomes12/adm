@@ -1,3 +1,7 @@
+import {
+  SignInFormDto,
+  signInSchemaDto,
+} from '@/features/sign-in/domain/dto/sign-in.dto'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -6,36 +10,25 @@ import { FaEye, FaEyeSlash, FaRocket } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { Flip, ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { z } from 'zod'
 import { Button } from '../ui/button'
 import { FormControl, FormField, FormItem, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
 import { loginUser } from './api/login'
 
-const signInSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: 'O email é obrigatório' })
-    .email({ message: 'Email inválido' }),
-  password: z.string().min(1, { message: 'A senha é obrigatória' }),
-})
-
-type SignInForm = z.infer<typeof signInSchema>
-
 export const SignInForm = () => {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
 
-  const form = useForm<SignInForm>({
+  const form = useForm<SignInFormDto>({
     defaultValues: {
       email: 'lideradmin@gmail.com',
       password: '121195Ig.',
     },
-    resolver: zodResolver(signInSchema),
+    resolver: zodResolver(signInSchemaDto),
   })
 
   const loginMutation = useMutation({
-    mutationFn: (data: SignInForm) => loginUser(data.email, data.password),
+    mutationFn: (data: SignInFormDto) => loginUser(data.email, data.password),
     onSuccess: () => {
       toast.success('Login realizado com sucesso!', {
         theme: 'dark',
@@ -55,7 +48,7 @@ export const SignInForm = () => {
     setShowPassword(prevState => !prevState)
   }
 
-  const onSubmit = (data: SignInForm) => {
+  const onSubmit = (data: SignInFormDto) => {
     loginMutation.mutate(data)
   }
 

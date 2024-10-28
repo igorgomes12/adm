@@ -81,7 +81,7 @@ export default function Sidebar() {
     (subcategories: Subcategory[], depth = 0) => {
       return subcategories.map((subcategory, idx) => (
         <div key={idx} className={`ml-${4 * (depth + 1)} mt-2 w-full gap-2`}>
-          <div className="text-lg text-zinc-400 py-1.5 px-8 uppercase font-bold">
+          <div className="text-lg text-zinc-400 py-4 px-8 uppercase font-bold">
             {isSidebarCompressed ? (
               <Separator
                 orientation="horizontal"
@@ -199,14 +199,20 @@ export default function Sidebar() {
           <div key={menu.id} className="mb-2">
             <div
               onClick={() => handleToggleSubmenu(menu.id)}
-              className="cursor-pointer flex items-center px-8 py-1.5 gap-2 text-lg rounded hover:bg-zinc-700"
+              className="cursor-pointer flex items-center px-8 py-4 gap-2 text-lg rounded hover:bg-zinc-700"
               title={menu.label}
             >
               <div className="w-10 items-center justify-center flex">
-                <p className="font-bold text-xl">{menu.icon}</p>
+                <p
+                  className={`font-bold ${
+                    isSidebarCompressed ? 'text-4xl' : 'text-2xl'
+                  }`}
+                >
+                  {menu.icon}
+                </p>
               </div>
               {!isSidebarCompressed && (
-                <span className="text-lg">{menu.label}</span>
+                <span className="text-xl">{menu.label}</span>
               )}
             </div>
             {openSubmenus[menu.id] &&

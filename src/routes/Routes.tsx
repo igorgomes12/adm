@@ -9,7 +9,7 @@ import { FormRepresentative } from '@/pages/channel/representative/form-represen
 import { RepresentativeComponent } from '@/pages/channel/representative/representative'
 import { SystemComponent } from '@/pages/channel/system/system'
 import { UsersComponent } from '@/pages/channel/user/users'
-import { MainDashboard } from '@/pages/dashboard/main-dashboard' // Certifique-se de que o caminho esteja correto
+import { MainDashboard } from '@/pages/dashboard/main-dashboard'
 import { Layout } from '@/pages/layout'
 import { TelaPrincipal } from '@/pages/tela-principal/tela-principal'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'

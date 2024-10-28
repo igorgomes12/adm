@@ -6,14 +6,14 @@ interface FormFilterProps {
   searchTerm: string
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>
   onOpen: (id: number) => void
-  showPrinterButton?: boolean // Propriedade opcional para exibir o botão de impressão
+  showPrinterButton?: boolean
 }
 
 export const FormFilter: FC<FormFilterProps> = ({
   searchTerm,
   setSearchTerm,
   onOpen,
-  showPrinterButton = false, // Valor padrão é false
+  showPrinterButton = false,
 }) => {
   const handleAddClick = () => {
     const id = 0

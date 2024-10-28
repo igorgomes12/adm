@@ -1,53 +1,20 @@
-import {
-  SignInFormDto,
-  signInSchemaDto,
-} from '@/features/sign-in/domain/dto/sign-in.dto'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
-import { useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { FaEye, FaEyeSlash, FaRocket } from 'react-icons/fa'
-import { useNavigate } from 'react-router-dom'
-import { Flip, ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { SignInFormDto } from '@/features/sign-in/domain/dto/sign-in.dto'
+import { usePasswordVisibilityStore } from '@/features/sign-in/domain/entity/usePasswordVisibilityStore-zustand.entity'
+import { useSignInForm } from '@/features/sign-in/domain/services/useForms.services'
+import { useLogin } from '@/features/sign-in/domain/usecases/sign-in.usecase'
+import { FormProvider } from 'react-hook-form'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { Button } from '../ui/button'
 import { FormControl, FormField, FormItem, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
-import { loginUser } from './api/login'
 
 export const SignInForm = () => {
-  const navigate = useNavigate()
-  const [showPassword, setShowPassword] = useState(false)
+  const { showPassword, togglePasswordVisibility } =
+    usePasswordVisibilityStore()
 
-  const form = useForm<SignInFormDto>({
-    defaultValues: {
-      email: 'lideradmin@gmail.com',
-      password: '121195Ig.',
-    },
-    resolver: zodResolver(signInSchemaDto),
-  })
+  const form = useSignInForm()
 
-  const loginMutation = useMutation({
-    mutationFn: (data: SignInFormDto) => loginUser(data.email, data.password),
-    onSuccess: () => {
-      toast.success('Login realizado com sucesso!', {
-        theme: 'dark',
-        icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
-        transition: Flip,
-      })
-      navigate('/tela-principal')
-    },
-    onError: error => {
-      toast.error('Erro ao realizar login. Verifique suas credenciais.')
-      console.error('Erro de login:', error)
-    },
-  })
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(prevState => !prevState)
-  }
-
+  const { loginMutation } = useLogin()
   const onSubmit = (data: SignInFormDto) => {
     loginMutation.mutate(data)
   }
@@ -109,7 +76,6 @@ export const SignInForm = () => {
             {loginMutation.isSuccess ? 'Entrando...' : 'Entrar'}
           </Button>
         </div>
-        <ToastContainer />
       </form>
     </FormProvider>
   )

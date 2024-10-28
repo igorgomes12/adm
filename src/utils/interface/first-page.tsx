@@ -46,7 +46,6 @@ export const menuNavigation = [
       {
         title: 'Sistemas',
         items: [
-          { label: 'Equipamentos', icon: <BsFillPersonPlusFill /> },
           { label: 'Usuários', icon: <ImUsers /> },
           { label: 'Canais', icon: <FaDollarSign /> },
           { label: 'Cadastro Representante', icon: <FaPersonBooth /> },

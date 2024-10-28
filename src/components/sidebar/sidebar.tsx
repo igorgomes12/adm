@@ -1,11 +1,9 @@
 import { Separator } from '@/components/ui/separator'
-import { MainDashboard } from '@/pages/dashboard/main-dashboard'
 import { menuNavigation } from '@/utils/interface/first-page'
 import { useCallback, useState } from 'react'
 import { GoPin } from 'react-icons/go'
 import { RxExit } from 'react-icons/rx'
 import { useNavigate } from 'react-router'
-import { LocationsAcess } from '../home/main/locations'
 import { Logout } from '../logout/logout'
 
 interface Subcategory {
@@ -19,15 +17,20 @@ interface MenuItem {
   subcategories?: Subcategory[]
 }
 
+function normalizeString(str: string) {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-')
+    .toLowerCase()
+}
+
 export default function Sidebar() {
   const [openSubmenus, setOpenSubmenus] = useState<{ [key: string]: boolean }>(
     {},
   )
-  const [showDashboard, setShowDashboard] = useState<boolean>(false)
-  const [activeComponent, setActiveComponent] = useState<string | null>(null)
   const [isSidebarCompressed, setIsSidebarCompressed] = useState<boolean>(true)
   const [isSidebarPinned, setIsSidebarPinned] = useState<boolean>(false)
-
   const [showLogoutCard, setShowLogoutCard] = useState(false)
   const navigate = useNavigate()
 
@@ -52,16 +55,10 @@ export default function Sidebar() {
     }))
   }, [])
 
-  const handleSubmenuClick = useCallback((componentId: string) => {
-    setActiveComponent(componentId)
-    setShowDashboard(false)
-  }, [])
-
   const handleMenuClick = useCallback(() => {
     setIsSidebarCompressed(prev => !prev)
-    setShowDashboard(true)
-    setActiveComponent(null)
-  }, [])
+    navigate('/dashboard')
+  }, [navigate])
 
   const handleMouseEnter = useCallback(() => {
     if (!isSidebarPinned) {
@@ -105,7 +102,7 @@ export default function Sidebar() {
             >
               <div
                 className={`flex items-center px-4 py-2 cursor-pointer ${
-                  activeComponent === item.label
+                  window.location.pathname.includes(normalizeString(item.label))
                     ? 'text-sky-500 bg-zinc-600 w-full'
                     : 'hover:bg-zinc-700 w-full'
                 }`}
@@ -113,7 +110,7 @@ export default function Sidebar() {
                   if (item.subcategories) {
                     handleToggleSubmenu(item.label)
                   } else {
-                    handleSubmenuClick(item.label)
+                    navigate(`/${normalizeString(item.label)}`)
                   }
                 }}
                 title={item.label}
@@ -133,13 +130,7 @@ export default function Sidebar() {
         </div>
       ))
     },
-    [
-      isSidebarCompressed,
-      openSubmenus,
-      activeComponent,
-      handleToggleSubmenu,
-      handleSubmenuClick,
-    ],
+    [isSidebarCompressed, openSubmenus, navigate, handleToggleSubmenu],
   )
 
   return (
@@ -224,15 +215,6 @@ export default function Sidebar() {
           </div>
         ))}
       </div>
-
-      {showDashboard ? (
-        <MainDashboard />
-      ) : (
-        <LocationsAcess
-          setActiveComponent={setActiveComponent}
-          activeComponent={activeComponent}
-        />
-      )}
     </div>
   )
 }

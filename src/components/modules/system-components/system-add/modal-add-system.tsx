@@ -6,70 +6,23 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { FormProvider, useForm } from 'react-hook-form'
-import { FaRocket } from 'react-icons/fa'
-import { GoPaperclip } from 'react-icons/go'
-import { Flip, toast } from 'react-toastify'
-import {
-  SystemSchemaDto,
-  type TSystemSchemaDto,
-} from './zod-types/types-system'
-import { useSystemZustand } from './zustand-state/system-add-zustand'
+import { useSystemZustand } from '@/features/system/domain/entity/system.entity'
+import { useSystemForm } from '@/features/system/domain/services/system-form.services'
+import { SystemAdd } from '@/features/system/domain/usecases/system-add.usecase'
+import { FormProvider } from 'react-hook-form'
+import { ImageDropzone } from '../image-dropzone/image-drop'
+import { TSystemSchemaDto } from './zod-types/types-system'
 
 export const ModalSystemAdd = () => {
-  const { onClose } = useSystemZustand()
-  const queryClient = useQueryClient()
+  const { isOpen, onClose } = useSystemZustand()
+  const { mutate, isSuccess } = SystemAdd()
 
-  const { mutate, isSuccess } = useMutation({
-    mutationKey: ['post-system'],
-    mutationFn: async (data: TSystemSchemaDto) => {
-      const formData = new FormData()
-      formData.append('name', data.name)
-      formData.append('description', data.description)
-      if (data.image_url instanceof File) {
-        formData.append('image', data.image_url)
-      }
-
-      const res = await api.post('/systems', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      return res.data
-    },
-    onSuccess: () => {
-      toast.success('Sistema adicionado com sucesso!', {
-        theme: 'dark',
-        icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
-        transition: Flip,
-      })
-      queryClient.invalidateQueries({ queryKey: ['get-systems'] })
-      onClose()
-    },
-    onError: error => {
-      console.error('Mutation error:', error)
-      toast.error('Erro ao salvar o sistema. Por favor, tente novamente.')
-    },
-  })
-
-  const form = useForm<TSystemSchemaDto>({
-    defaultValues: {
-      name: '',
-      image_url: undefined,
-      description: '',
-    },
-    resolver: zodResolver(SystemSchemaDto),
-  })
-
+  const form = useSystemForm()
   const onSubmit = (data: TSystemSchemaDto) => {
     mutate(data)
   }
+
+  if (!isOpen) return null
 
   const handleFileSelect = (
     file: File | null,
@@ -162,49 +115,6 @@ export const ModalSystemAdd = () => {
             </div>
           </form>
         </FormProvider>
-      </div>
-    </div>
-  )
-}
-
-interface ImageDropzoneProps {
-  onFileSelect: (file: File) => void
-  value?: File | string
-}
-
-const ImageDropzone: React.FC<ImageDropzoneProps> = ({
-  onFileSelect,
-  value,
-}) => {
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      if (acceptedFiles.length > 0) {
-        onFileSelect(acceptedFiles[0])
-      }
-    },
-    [onFileSelect],
-  )
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.gif'],
-    },
-    maxFiles: 1,
-  })
-
-  return (
-    <div {...getRootProps()} className="dropzone">
-      <input {...getInputProps()} />
-      <div className="border-2 border-dashed border-gray-300 gap-2 rounded-lg p-4 flex text-center cursor-pointer">
-        <GoPaperclip />
-
-        <p className="text-gray-500 text-sm">
-          {!isDragActive && 'Arraste e solte para adicionar imagem'}
-        </p>
-        {value && (
-          <p className="mt-2">{value instanceof File ? value.name : value}</p>
-        )}
       </div>
     </div>
   )

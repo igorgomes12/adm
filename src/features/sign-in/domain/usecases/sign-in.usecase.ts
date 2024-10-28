@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { SignInFormDto } from '../dto/sign-in.dto'
-import { loginUser } from '@/features/sign-in/domain/usecases/api/login'
+import { loginUser } from '@/infra/http/api-sign-in/login'
 import { showMessageSuccess } from '@/common/messages/Success/toast-success'
 import { showMessageError } from '@/common/messages/Err/toast-err'
 import axios from 'axios'
@@ -12,7 +12,9 @@ export const useLogin = () => {
   const loginMutation = useMutation({
     mutationFn: (data: SignInFormDto) => loginUser(data.email, data.password),
     onSuccess: () => {
-      showMessageSuccess()
+      showMessageSuccess({
+        message: 'Login realizado com sucesso!',
+      })
       navigate('/tela-principal')
     },
     onError: (error: unknown) => {

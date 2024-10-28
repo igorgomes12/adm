@@ -154,7 +154,7 @@ export default function Sidebar() {
           >
             <img
               src="https://liderautomacao.s3.amazonaws.com/site/public/logo_icon.png"
-              className="w-8 h-8"
+              className="w-10 h-10"
               alt=""
             />
             {!isSidebarCompressed && (

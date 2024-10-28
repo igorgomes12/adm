@@ -1,12 +1,13 @@
 import { SignInFormDto } from '@/features/sign-in/domain/dto/sign-in.dto'
-import { usePasswordVisibilityStore } from '@/features/sign-in/domain/entity/usePasswordVisibilityStore-zustand.entity'
-import { useSignInForm } from '@/features/sign-in/domain/services/useForms.services'
+
 import { useLogin } from '@/features/sign-in/domain/usecases/sign-in.usecase'
 import { FormProvider } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { Button } from '../ui/button'
 import { FormControl, FormField, FormItem, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
+import { usePasswordVisibilityStore } from '@/features/sign-in/domain/entity/passwordVisibility.entity'
+import { useSignInForm } from '@/features/sign-in/domain/services/signIn-form.services'
 
 export const SignInForm = () => {
   const { showPassword, togglePasswordVisibility } =

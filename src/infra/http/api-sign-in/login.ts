@@ -1,6 +1,6 @@
-import api from '../../../../../infra/auth/database/acess-api/interceptors-axios'
+import api from '../../auth/database/acess-api/interceptors-axios'
 import { AxiosError } from 'axios'
-import { signInSchemaDto } from '../../dto/sign-in.dto'
+import { signInSchemaDto } from '../../../features/sign-in/domain/dto/sign-in.dto'
 
 export const loginUser = async (email: string, password: string) => {
   const validationResult = signInSchemaDto.safeParse({ email, password })

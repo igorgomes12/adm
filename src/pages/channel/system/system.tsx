@@ -1,17 +1,15 @@
 import { FormFilter } from '@/components/form-utils/form-filter/form-filter'
 import { FormHeader } from '@/components/form-utils/form-header/form-header'
 import { ModalSystemAdd } from '@/components/modules/system-components/system-add/modal-add-system'
-import { useSystemZustand } from '@/components/modules/system-components/system-add/zustand-state/system-add-zustand'
 import { TableSystem } from '@/components/modules/system-components/table-system'
+import { useSystemZustand } from '@/features/system/domain/entity/system.entity'
 
 import type { FC } from 'react'
-import { useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 export const SystemComponent: FC = () => {
-  const { isOpen, onOpen } = useSystemZustand()
-  const [searchTerm, setSearchTerm] = useState('')
+  const { isOpen, onOpen, searchTerm, setSearchTerm } = useSystemZustand()
 
   return (
     <div className="flex flex-col gap-2 p-4 w-full">
@@ -19,7 +17,7 @@ export const SystemComponent: FC = () => {
       <FormFilter
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-        onOpen={onOpen}
+        onOpen={id => onOpen(id, 'add')}
         showPrinterButton={true}
       />
       <TableSystem searchTerm={searchTerm} />

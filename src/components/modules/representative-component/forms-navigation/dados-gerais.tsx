@@ -17,15 +17,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import { FC, useEffect } from 'react'
 import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { ToastContainer } from 'react-toastify'
 import { translateType } from '../table-representative'
 import { schemaDadosGerais, type TSchemaDadosGerais } from '../zod/dados.zod'
 import { useFormStore } from '../zustand/gerenciador-zustand'
-import { api } from '@/infra/auth/database/acess-api/api'
-import { useQuery } from '@tanstack/react-query'
 import type { representative } from '../zod/types-representative'
 
 const options: Array<'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'> = [
@@ -36,13 +36,27 @@ const options: Array<'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'> = [
 
 export const DadosGerais: FC<{
   onNext: (data: TSchemaDadosGerais) => void
-  initialValues: TSchemaDadosGerais & { id: number }
+  initialValues: TSchemaDadosGerais & { id?: number }
 }> = ({ onNext, initialValues }) => {
-  const { updateFormData } = useFormStore()
+  const { formData, updateFormData } = useFormStore()
 
   const form = useForm<TSchemaDadosGerais>({
     resolver: zodResolver(schemaDadosGerais),
-    defaultValues: initialValues,
+    defaultValues: initialValues.id
+      ? {
+          name: initialValues.name || formData.name || '',
+          type: initialValues.type || formData.type || 'REPRESENTATIVE',
+          region: initialValues.region || formData.region || '',
+          supervisor: initialValues.supervisor || formData.supervisor || '',
+          status: initialValues.status || formData.status || '',
+        }
+      : {
+          name: '',
+          type: 'REPRESENTATIVE',
+          region: '',
+          supervisor: '',
+          status: '',
+        },
   })
 
   const {
@@ -52,26 +66,36 @@ export const DadosGerais: FC<{
     reset,
   } = form
 
-  // Atualiza os valores do formulário quando initialValues mudam
   useEffect(() => {
-    reset(initialValues)
+    if (initialValues.id) {
+      reset(initialValues)
+    } else {
+      reset({
+        name: '',
+        type: 'REPRESENTATIVE',
+        region: '',
+        supervisor: '',
+        status: '',
+      })
+    }
   }, [initialValues, reset])
 
-  // Usa o watch para monitorar mudanças nos campos do formulário
-  const watchedFields = useWatch({ control })
+  const watchedFields = useWatch({
+    control,
+    disabled: !initialValues.id,
+  })
 
-  // Atualiza o estado sempre que os campos mudam
   useEffect(() => {
-    updateFormData(watchedFields)
-  }, [watchedFields, updateFormData])
+    if (initialValues.id) {
+      updateFormData(watchedFields)
+    }
+  }, [watchedFields, updateFormData, initialValues.id])
 
   const onSubmit = (data: TSchemaDadosGerais) => {
-    // Atualiza o estado global ou local com os dados do formulário
     updateFormData(data)
     onNext(data)
   }
 
-  // Query para buscar supervisores
   const { data: supervisors } = useQuery<representative[], Error>({
     queryKey: ['get-representative'],
     queryFn: async () => {
@@ -80,7 +104,6 @@ export const DadosGerais: FC<{
     },
   })
 
-  // Filtra os supervisores para excluir o representante atual
   const filteredSupervisors = supervisors?.filter(
     supervisor => supervisor.id !== initialValues.id,
   )
@@ -168,7 +191,7 @@ export const DadosGerais: FC<{
                   <FormLabel htmlFor="supervisor">Supervisor</FormLabel>
                   <FormControl>
                     <Select
-                      value={field.value}
+                      value={field.value || ''}
                       onValueChange={field.onChange}
                       disabled={!filteredSupervisors}
                     >

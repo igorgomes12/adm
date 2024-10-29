@@ -76,8 +76,8 @@ export const FormRepresentative: FC = () => {
         },
         contatos: {
           name: representativeData.name || '',
-          contact: representativeData.description || '',
-          description: '',
+          contact: representativeData.contact || '',
+          description: representativeData.description || '',
           telefones: [
             {
               number: representativeData.cellphone || '',
@@ -98,11 +98,23 @@ export const FormRepresentative: FC = () => {
           municipio: representativeData.address?.municipality_name || '',
           UF: representativeData.address?.state || '',
           number: representativeData.address?.number || '',
-          complement: representativeData.address?.complement || '', // Assegure-se de que o complemento está sendo mapeado corretamente
+          complement: representativeData.address?.complement || '',
         },
       })
     }
   }, [representativeData, id])
+
+  const createRepresentativeMutation = useMutation({
+    mutationFn: async (newData: any) => {
+      return await api.post(`/representative`, newData)
+    },
+    onSuccess: () => {
+      toast.success('Representante criado com sucesso!')
+    },
+    onError: () => {
+      toast.error('Erro ao criar o representante.')
+    },
+  })
 
   const updateRepresentativeMutation = useMutation({
     mutationFn: async (updatedData: any) => {
@@ -131,7 +143,11 @@ export const FormRepresentative: FC = () => {
       }
       setSelectedForm(nextFormTitle)
     } else {
-      updateRepresentativeMutation.mutate(formData)
+      if (id) {
+        updateRepresentativeMutation.mutate(formData)
+      } else {
+        createRepresentativeMutation.mutate(formData)
+      }
     }
   }
 

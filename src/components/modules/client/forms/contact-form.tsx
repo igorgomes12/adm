@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { zodResolver } from '@hookform/resolvers/zod'
-import type { FC } from 'react'
+import { useEffect, type FC } from 'react'
 import {
   Controller,
   FormProvider,
@@ -47,32 +47,26 @@ export const ContactForm: FC<{
   onNext?: (data: TContact) => void
   initialValues?: TContact
 }> = ({ onNext, initialValues }) => {
-  const { formData, updateFormData } = useFormStore()
+  const { updateFormData } = useFormStore()
   const form = useForm<TContact>({
     resolver: zodResolver(ContactSchema),
-    defaultValues: {
-      name: initialValues?.name || formData.name || '',
-      contact: initialValues?.contact || formData.contact?.email || '',
-      description:
-        initialValues?.description || formData.contact?.description || '',
-      telefones: [
-        {
-          number:
-            initialValues?.telefones[0].number ||
-            formData.contact?.cellphone ||
-            '',
-          type: initialValues?.telefones[0].type || 'CELULAR',
-          favorite:
-            initialValues?.telefones[0].favorite ||
-            formData.contact?.favorite ||
-            false,
-        },
-      ],
-    },
+    defaultValues: initialValues, // Use os initialValues diretamente
   })
 
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset,
+  } = form
+
+  // Atualiza os valores do formulário quando initialValues mudam
+  useEffect(() => {
+    reset(initialValues)
+  }, [initialValues, reset])
+
   const { fields, append, remove } = useFieldArray({
-    control: form.control,
+    control,
     name: 'telefones',
   })
 
@@ -119,11 +113,12 @@ export const ContactForm: FC<{
       </div>
       <FormProvider {...form}>
         <form
-          onSubmit={form.handleSubmit(submitForm)}
+          onSubmit={handleSubmit(submitForm)}
           className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full"
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
+              control={control}
               name="name"
               render={({ field }) => (
                 <FormItem className="w-full">
@@ -131,11 +126,12 @@ export const ContactForm: FC<{
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>{errors.name?.message}</FormMessage>
                 </FormItem>
               )}
             />
             <FormField
+              control={control}
               name="contact"
               render={({ field, fieldState }) => (
                 <FormItem className="w-full">
@@ -154,13 +150,14 @@ export const ContactForm: FC<{
               className="flex lg:flex-row flex-col w-full gap-2 items-center justify-between"
             >
               <FormField
+                control={control}
                 name={`telefones.${index}.type` as const}
                 render={() => (
                   <FormItem className="w-full">
                     <FormLabel>Tipo de Contato</FormLabel>
                     <FormControl>
                       <Controller
-                        control={form.control}
+                        control={control}
                         name={`telefones.${index}.type` as const}
                         render={({ field }) => (
                           <Select
@@ -186,6 +183,7 @@ export const ContactForm: FC<{
                 )}
               />
               <FormField
+                control={control}
                 name={`telefones.${index}.number` as const}
                 render={({ field }) => (
                   <FormItem className="w-full relative">
@@ -257,6 +255,7 @@ export const ContactForm: FC<{
           </Button>
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
+              control={control}
               name="description"
               render={({ field }) => (
                 <FormItem className="w-full">

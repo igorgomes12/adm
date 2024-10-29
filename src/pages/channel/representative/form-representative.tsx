@@ -4,28 +4,23 @@ import { ComissaoForm } from '@/components/modules/representative-component/form
 import { DadosGerais } from '@/components/modules/representative-component/forms-navigation/dados-gerais'
 import { RepresentativeNavComponent } from '@/components/modules/representative-component/nav/navitgation-form'
 import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { FC, useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
-interface FormRepresentativeProps {
-  id?: number
-  onOpenFormClient: () => void
-}
-
-export const FormRepresentative: FC<FormRepresentativeProps> = ({
-  id,
-  onOpenFormClient,
-}) => {
-  const [selectedForm, setSelectedForm] = useState<string | null>(
-    'Dados Gerais',
-  )
+export const FormRepresentative: FC = () => {
+  const { id } = useParams<{ id: string }>()
+  const [selectedForm, setSelectedForm] = useState<string>('Dados Gerais')
   const [enabledForms, setEnabledForms] = useState<string[]>(['Dados Gerais'])
   const [formData, setFormData] = useState({
     dadosGerais: {
+      id: id ? parseInt(id) : 0,
       name: '',
       region: '',
       status: '',
       type: 'REPRESENTATIVE' as 'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER',
+      supervisor: '',
     },
     comissao: {
       implantation: 0,
@@ -54,7 +49,7 @@ export const FormRepresentative: FC<FormRepresentativeProps> = ({
     },
   })
 
-  const { data: representativeData, isLoading } = useQuery({
+  const { data: representativeData, isLoading } = useQuery<any>({
     queryKey: ['representative', id],
     queryFn: async () => {
       if (!id) return null
@@ -67,40 +62,59 @@ export const FormRepresentative: FC<FormRepresentativeProps> = ({
   useEffect(() => {
     if (representativeData) {
       setFormData({
-        dadosGerais: representativeData.dadosGerais || {
-          name: representativeData.dadosGerais?.name || '',
-          region: representativeData.dadosGerais?.region || '',
-          status: representativeData.dadosGerais?.status || '',
-          type: representativeData.dadosGerais?.type || 'REPRESENTATIVE',
+        dadosGerais: {
+          id: representativeData.id,
+          name: representativeData.name || '',
+          region: representativeData.region || '',
+          status: representativeData.status || '',
+          type: representativeData.type || 'REPRESENTATIVE',
+          supervisor: representativeData.supervisor || '',
         },
-        comissao: representativeData.comissao || {
-          implantation: representativeData.comissao?.implantation || 0,
-          mensality: representativeData.comissao?.mensality || 0,
+        comissao: {
+          implantation: representativeData.commission?.implantation || 0,
+          mensality: representativeData.commission?.mensality || 0,
         },
-        contatos: representativeData.contatos || {
-          name: representativeData.contatos?.name || '',
-          contact: representativeData.contatos?.contact || '',
-          description: representativeData.contatos?.description || '',
-          telefones: representativeData.contatos?.telefones || [
+        contatos: {
+          name: representativeData.name || '',
+          contact: representativeData.description || '',
+          description: '',
+          telefones: [
             {
-              number: '',
+              number: representativeData.cellphone || '',
               type: 'CELULAR',
+              favorite: false,
+            },
+            {
+              number: representativeData.phone || '',
+              type: 'TELEFONE',
               favorite: false,
             },
           ],
         },
         enderecos: {
-          cep: representativeData.enderecos?.cep || '',
-          street: representativeData.enderecos?.street || '',
-          bairro: representativeData.enderecos?.bairro || '',
-          municipio: representativeData.enderecos?.municipio || '',
-          UF: representativeData.enderecos?.UF || '',
-          number: representativeData.enderecos?.number || '',
-          complement: representativeData.enderecos?.complement || '',
+          cep: representativeData.address?.postal_code || '',
+          street: representativeData.address?.street || '',
+          bairro: representativeData.address?.neighborhood || '',
+          municipio: representativeData.address?.municipality_name || '',
+          UF: representativeData.address?.state || '',
+          number: representativeData.address?.number || '',
+          complement: representativeData.address?.complement || '', // Assegure-se de que o complemento está sendo mapeado corretamente
         },
       })
     }
-  }, [representativeData])
+  }, [representativeData, id])
+
+  const updateRepresentativeMutation = useMutation({
+    mutationFn: async (updatedData: any) => {
+      return await api.patch(`/representative`, updatedData, { params: { id } })
+    },
+    onSuccess: () => {
+      toast.success('Representante atualizado com sucesso!')
+    },
+    onError: () => {
+      toast.error('Erro ao atualizar o representante.')
+    },
+  })
 
   const handleNext = (currentForm: string, data: any) => {
     setFormData(prevData => ({
@@ -117,7 +131,7 @@ export const FormRepresentative: FC<FormRepresentativeProps> = ({
       }
       setSelectedForm(nextFormTitle)
     } else {
-      onOpenFormClient()
+      updateRepresentativeMutation.mutate(formData)
     }
   }
 

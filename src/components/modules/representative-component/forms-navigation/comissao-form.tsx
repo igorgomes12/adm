@@ -8,9 +8,8 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-
 import { HeaderForms } from '@/components/header-forms/header-forms'
 import { ToastContainer } from 'react-toastify'
 import {
@@ -21,22 +20,25 @@ import { useFormStore } from '../zustand/gerenciador-zustand'
 
 export const ComissaoForm: FC<{
   onNext: (data: CommissionRepresentativeDto) => void
-  initialValues:CommissionRepresentativeDto
-}> = ({ onNext , initialValues}) => {
-  const { formData, updateFormData } = useFormStore()
+  initialValues: CommissionRepresentativeDto
+}> = ({ onNext, initialValues }) => {
+  const { updateFormData } = useFormStore()
+
   const form = useForm<CommissionRepresentativeDto>({
     resolver: zodResolver(commissionRepresentativeSchemaDto),
-    defaultValues: {
-      implantation:initialValues.implantation || formData.commission?.implantation || 0,
-      mensality:initialValues.mensality || formData.commission?.mensality || 0,
-    },
+    defaultValues: initialValues,
   })
 
   const {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = form
+
+  useEffect(() => {
+    reset(initialValues)
+  }, [initialValues, reset])
 
   const onSubmit = (data: CommissionRepresentativeDto) => {
     updateFormData({ commission: data })
@@ -63,6 +65,7 @@ export const ComissaoForm: FC<{
                       {...field}
                       type="number"
                       min={0}
+                      value={field.value}
                       onChange={e =>
                         field.onChange(parseFloat(e.target.value) || 0)
                       }
@@ -83,6 +86,7 @@ export const ComissaoForm: FC<{
                       {...field}
                       type="number"
                       min={0}
+                      value={field.value}
                       onChange={e =>
                         field.onChange(parseFloat(e.target.value) || 0)
                       }
@@ -95,7 +99,7 @@ export const ComissaoForm: FC<{
           </div>
           <div className="flex flex-col sm:flex-row justify-center gap-2 mt-4">
             <Button className="w-full" type="submit" variant="success">
-              Proximo
+              Próximo
             </Button>
           </div>
         </form>

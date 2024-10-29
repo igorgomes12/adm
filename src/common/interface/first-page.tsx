@@ -11,7 +11,6 @@ import {
   FaHeadset,
   FaUser,
 } from 'react-icons/fa'
-import { FaPersonBooth } from 'react-icons/fa6'
 import { HiOutlineChatBubbleLeftEllipsis } from 'react-icons/hi2'
 import { ImUsers } from 'react-icons/im'
 
@@ -47,7 +46,7 @@ export const menuNavigation = [
         items: [
           { label: 'Usuários', icon: <ImUsers /> },
           { label: 'Canais', icon: <FaDollarSign /> },
-          { label: 'Cadastro Representante', icon: <FaPersonBooth /> },
+
           {
             label: 'Ações',
             icon: <FaChartBar />,

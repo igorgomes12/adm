@@ -16,8 +16,7 @@ export const FormFilter: FC<FormFilterProps> = ({
   showPrinterButton = false,
 }) => {
   const handleAddClick = () => {
-    const id = 0
-    onOpen(id)
+    onOpen(0)
   }
 
   return (

@@ -17,16 +17,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
-import { FC } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FC, useEffect } from 'react'
+import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { ToastContainer } from 'react-toastify'
 import { translateType } from '../table-representative'
 import { schemaDadosGerais, type TSchemaDadosGerais } from '../zod/dados.zod'
-import type { representative } from '../zod/types-representative'
 import { useFormStore } from '../zustand/gerenciador-zustand'
+import { api } from '@/infra/auth/database/acess-api/api'
+import { useQuery } from '@tanstack/react-query'
+import type { representative } from '../zod/types-representative'
 
 const options: Array<'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'> = [
   'REPRESENTATIVE',
@@ -36,27 +36,43 @@ const options: Array<'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'> = [
 
 export const DadosGerais: FC<{
   onNext: (data: TSchemaDadosGerais) => void
-  initialValues: TSchemaDadosGerais
+  initialValues: TSchemaDadosGerais & { id: number }
 }> = ({ onNext, initialValues }) => {
-  const { formData, updateFormData } = useFormStore()
+  const { updateFormData } = useFormStore()
 
   const form = useForm<TSchemaDadosGerais>({
     resolver: zodResolver(schemaDadosGerais),
-    defaultValues: {
-      name: initialValues.name || formData.name,
-      type: initialValues.type || formData.type,
-      region: initialValues.region || formData.region,
-      supervisor: initialValues.supervisor || formData.supervisor,
-      status: initialValues.status || formData.status,
-    },
+    defaultValues: initialValues,
   })
+
   const {
     handleSubmit,
     formState: { errors },
     control,
+    reset,
   } = form
 
-  const { data } = useQuery<representative[], Error>({
+  // Atualiza os valores do formulário quando initialValues mudam
+  useEffect(() => {
+    reset(initialValues)
+  }, [initialValues, reset])
+
+  // Usa o watch para monitorar mudanças nos campos do formulário
+  const watchedFields = useWatch({ control })
+
+  // Atualiza o estado sempre que os campos mudam
+  useEffect(() => {
+    updateFormData(watchedFields)
+  }, [watchedFields, updateFormData])
+
+  const onSubmit = (data: TSchemaDadosGerais) => {
+    // Atualiza o estado global ou local com os dados do formulário
+    updateFormData(data)
+    onNext(data)
+  }
+
+  // Query para buscar supervisores
+  const { data: supervisors } = useQuery<representative[], Error>({
     queryKey: ['get-representative'],
     queryFn: async () => {
       const response = await api.get('/representative')
@@ -64,10 +80,10 @@ export const DadosGerais: FC<{
     },
   })
 
-  const onSubmit = (data: TSchemaDadosGerais) => {
-    updateFormData(data)
-    onNext(data)
-  }
+  // Filtra os supervisores para excluir o representante atual
+  const filteredSupervisors = supervisors?.filter(
+    supervisor => supervisor.id !== initialValues.id,
+  )
 
   return (
     <section className="w-full items-start justify-center p-4 flex flex-col">
@@ -85,11 +101,7 @@ export const DadosGerais: FC<{
                 <FormItem className="w-full">
                   <FormLabel htmlFor="name">Nome do Representante</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Nome do representante"
-                      value={field.value || ''}
-                    />
+                    <Input {...field} placeholder="Nome do representante" />
                   </FormControl>
                   <FormMessage>{errors.name?.message}</FormMessage>
                 </FormItem>
@@ -158,14 +170,14 @@ export const DadosGerais: FC<{
                     <Select
                       value={field.value}
                       onValueChange={field.onChange}
-                      disabled={!data}
+                      disabled={!filteredSupervisors}
                     >
                       <SelectTrigger id="supervisor">
                         <SelectValue placeholder="Selecione um supervisor" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {data?.map((item, i: number) => (
+                          {filteredSupervisors?.map((item, i: number) => (
                             <SelectItem key={i} value={item.id.toString()}>
                               {item.name}
                             </SelectItem>

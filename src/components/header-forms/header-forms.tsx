@@ -7,6 +7,7 @@ import api from '../../infra/auth/database/acess-api/interceptors-axios'
 import type { CreateRepresentativeSchemaDto } from '../modules/representative-component/zod/create-representative.dto'
 import { useFormStore } from '../modules/representative-component/zustand/gerenciador-zustand'
 import { Button } from '../ui/button'
+import { useNavigate, useParams } from 'react-router-dom'
 
 interface IHeaderFormsProps {
   title: string
@@ -19,8 +20,10 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
 }) => {
   const { formData, updateFormData, setMutationSuccess } = useFormStore()
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>()
 
-  const { mutate: mutation } = useMutation({
+  const createMutation = useMutation({
     mutationKey: ['post-representative'],
     mutationFn: async (data: CreateRepresentativeSchemaDto) => {
       const res = await api.post<CreateRepresentativeSchemaDto>(
@@ -39,25 +42,10 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
         icon: <FaRocket />,
         progressStyle: { background: '#1f62cf' },
         transition: Flip,
+        autoClose: 1000,
+        onClose: () => navigate('/canais'),
       })
-      updateFormData({
-        name: '',
-        type: 'REPRESENTATIVE',
-        region: '',
-        supervisor: '',
-        status: 'ativo',
-        commission: { implantation: 0, mensality: 1 },
-        contact: { cellphone: '', phone: '', email: '' },
-        address: {
-          postal_code: '',
-          street: '',
-          number: '',
-          neighborhood: '',
-          municipality_name: '',
-          state: '',
-          complement: '',
-        },
-      })
+      resetFormData()
       setActiveComponent && setActiveComponent('Canais')
       setMutationSuccess(true)
     },
@@ -71,6 +59,37 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
     },
   })
 
+  const updateMutation = useMutation({
+    mutationFn: async (data: CreateRepresentativeSchemaDto) => {
+      const res = await api.patch(`/representative`, data, {
+        params: { id },
+      })
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-representative'] })
+      toast.success('Representante atualizado com sucesso!', {
+        theme: 'dark',
+        icon: <FaRocket />,
+        progressStyle: { background: '#1f62cf' },
+        transition: Flip,
+        autoClose: 1000,
+        onClose: () => navigate('/canais'),
+      })
+      resetFormData()
+      setActiveComponent && setActiveComponent('Canais')
+      setMutationSuccess(true)
+    },
+    onError: (error: Error) => {
+      console.error('Erro ao atualizar representante:', error)
+      toast.error(
+        'Ocorreu um erro ao atualizar o representante. Por favor, tente novamente.' +
+          (error.message || ''),
+      )
+      setMutationSuccess(false)
+    },
+  })
+
   const handleSave = () => {
     setMutationSuccess(false)
 
@@ -78,11 +97,11 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
       type: formData.type || 'REPRESENTATIVE',
       region: formData.region || 'centro',
       supervisor: formData.supervisor || '',
-      status: 'ativo',
+      status: formData.status || 'ativo',
       name: formData?.name?.toUpperCase() || '',
       commission: {
-        implantation: formData.commission?.implantation ?? 0,
-        mensality: formData.commission?.mensality ?? 1,
+        implantation: formData.commission?.implantation,
+        mensality: formData.commission?.mensality,
       },
       contact: {
         email: formData.contact?.email || 'joao.silva@example.com',
@@ -100,7 +119,32 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
       },
     }
 
-    mutation(completeData)
+    if (id) {
+      updateMutation.mutate(completeData)
+    } else {
+      createMutation.mutate(completeData)
+    }
+  }
+
+  const resetFormData = () => {
+    updateFormData({
+      name: '',
+      type: 'REPRESENTATIVE',
+      region: '',
+      supervisor: '',
+      status: 'ativo',
+      commission: { implantation: 0, mensality: 1 },
+      contact: { cellphone: '', phone: '', email: '' },
+      address: {
+        postal_code: '',
+        street: '',
+        number: '',
+        neighborhood: '',
+        municipality_name: '',
+        state: '',
+        complement: '',
+      },
+    })
   }
 
   return (

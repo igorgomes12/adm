@@ -1,5 +1,4 @@
 import { HeaderForms } from '@/components/header-forms/header-forms'
-import { Button } from '@/components/ui/button'
 import {
   FormControl,
   FormField,
@@ -13,17 +12,20 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { FC, useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { ToastContainer } from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { useFormStore } from '../../representative-component/zustand/gerenciador-zustand'
 import { addressSchema, addressSchemaType } from '../zod-form/zod-address'
 import { TClient } from '../zod-form/zod_client.schema'
+import { useNavigate } from 'react-router-dom'
 
 export const AddressForm: FC<{
   onNext?: (data: TClient) => void
   initialValues?: addressSchemaType
 }> = ({ onNext, initialValues }) => {
-  const { formData, updateFormData, isMutationSuccess, setMutationSuccess } =
-    useFormStore()
+  const { formData, updateFormData, setMutationSuccess } = useFormStore()
+  const navigate = useNavigate()
+
   const form = useForm<addressSchemaType>({
     defaultValues: {
       cep: initialValues?.cep || formData.address?.postal_code || '',
@@ -87,15 +89,17 @@ export const AddressForm: FC<{
   }
 
   const submitForm = async (data: addressSchemaType) => {
-    console.log('Dados do formulário:', data)
     try {
       updateFormData({ address: data })
       onNext && onNext(data as unknown as TClient)
-      console.log('Form enviado com sucesso:', data)
-      // Reseta o estado de sucesso da mutação após a submissão
-      setMutationSuccess(false)
+      setMutationSuccess(true)
+      toast.success('Formulário enviado com sucesso!', {
+        onClose: () => navigate('/canais'), // Navega para a tela de canais após o toast
+        autoClose: 2000, // Fecha o toast após 2 segundos
+      })
     } catch (error) {
       console.error('Erro ao enviar o formulário:', error)
+      toast.error('Erro ao enviar o formulário. Tente novamente.')
     }
   }
 
@@ -192,16 +196,6 @@ export const AddressForm: FC<{
                 </FormItem>
               )}
             />
-          </div>
-          <div className="flex w-full items-center justify-center">
-            <Button
-              className="w-full"
-              type="submit"
-              variant="success"
-              disabled={!isMutationSuccess}
-            >
-              Voltar a Tabela
-            </Button>
           </div>
         </form>
       </FormProvider>

@@ -1,7 +1,9 @@
+import { showMessageError } from '@/common/messages/Err/toast-err'
+import { showMessageSuccess } from '@/common/messages/Success/toast-success'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import axios from 'axios'
 import { FC, useMemo } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
-import { toast } from 'react-toastify'
 import api from '../../../infra/auth/database/acess-api/interceptors-axios'
 import { SkeletonCard } from '../../skeleton-component/skeleton'
 import { Switch } from '../../ui/switch'
@@ -65,7 +67,7 @@ const RepresentativeRow: FC<{
       </TableCell>
       <TableCell className="flex items-center justify-center w-full h-full space-x-2">
         <button
-          onClick={() => onOpenFormClient(item.id)} // Passa o ID para o formulário
+          onClick={() => onOpenFormClient(item.id)}
           className="text-blue-200 hover:text-blue-500"
         >
           <FaEdit size={24} />
@@ -83,7 +85,7 @@ const RepresentativeRow: FC<{
 
 const LoadingRow: FC = () => (
   <TableRow>
-    <TableCell colSpan={4}>
+    <TableCell colSpan={8}>
       <SkeletonCard />
     </TableCell>
   </TableRow>
@@ -115,17 +117,26 @@ export const TableRepresentative: FC<{
     }) => {
       const response = await api.patch(
         `/representative`,
-        { status: newStatus },
+        { status: newStatus ? 'ativo' : 'inativo' },
         { params: { id } },
       )
       return response.data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-representative'] })
-      toast.success('Status atualizado com sucesso!')
+      showMessageSuccess({
+        message: 'Status atualizado com sucesso!',
+      })
     },
-    onError: () => {
-      toast.error('Erro ao atualizar o status. Por favor, tente novamente.')
+    onError: (error: unknown) => {
+      let errorMessage = 'Verifique suas credenciais.'
+
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || errorMessage
+      }
+
+      showMessageError(errorMessage)
+      console.error('Erro de login:', error)
     },
   })
 
@@ -158,7 +169,7 @@ export const TableRepresentative: FC<{
     if (error) {
       return (
         <TableRow>
-          <TableCell colSpan={4}>
+          <TableCell colSpan={8}>
             <div className="items-center justify-center flex w-full ">
               Erro ao carregar os dados: {error.message}
             </div>

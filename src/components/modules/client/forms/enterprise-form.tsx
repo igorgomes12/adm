@@ -1,5 +1,6 @@
 import { HeaderForms } from '@/components/header-forms/header-forms'
 import { Button } from '@/components/ui/button'
+import { AxiosError } from 'axios'
 import {
   FormControl,
   FormField,
@@ -17,7 +18,7 @@ import {
 } from '@/components/ui/select'
 import api from '@/infra/auth/database/acess-api/interceptors-axios'
 import { useQuery } from '@tanstack/react-query'
-import type { AxiosError } from 'axios'
+
 import { useEffect, type FC } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import type { TSchemaEstablished } from '../../establishment-components/zod-types-establishment/zod-establihment'
@@ -52,12 +53,17 @@ export const EnterpriseForm: FC<{ onNext: (data: TClient) => void }> = ({
   }, [setValue])
 
   const submitForm = async () => {
-    console.log('Dados do formulário:', data)
     try {
       onNext(data as unknown as TClient)
-      console.log('Form enviado com sucesso:', data)
     } catch (error) {
-      console.error('Erro ao enviar o formulário:', error)
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 400)
+          throw new Error('Formulário inválido')
+        if (error.response?.status === 401)
+          throw new Error('Usuário não autorizado')
+        if (error.response?.status === 404)
+          throw new Error('Usuário não encontrado')
+      }
     }
   }
   return (

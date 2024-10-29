@@ -1,4 +1,3 @@
-// AppRoutes.js
 import { SignIn } from '@/components/sing-in/sing-in'
 import { AccountingComponent } from '@/pages/channel/accounting/accounting'
 import { ClientComponent } from '@/pages/channel/client/client'
@@ -29,7 +28,7 @@ export const AppRoutes = () => {
           <Route path="/canais" element={<RepresentativeComponent />} />
           <Route path="/formas-de-pagamento" element={<PaymentComponent />} />
           <Route
-            path="/cadastro-representante"
+            path="/cadastro-representante/:id?"
             element={<FormRepresentative />}
           />
           <Route

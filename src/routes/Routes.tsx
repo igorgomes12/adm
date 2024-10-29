@@ -24,7 +24,10 @@ export const AppRoutes = () => {
           <Route path="/sistemas" element={<SystemComponent />} />
           <Route path="/contabilidades" element={<AccountingComponent />} />
           <Route path="/clientes-de-venda" element={<ClientComponent />} />
-          <Route path="/cadastro-cliente" element={<FormClientComponent />} />
+          <Route
+            path="/cadastro-cliente/:id?"
+            element={<FormClientComponent />}
+          />
           <Route path="/canais" element={<RepresentativeComponent />} />
           <Route path="/formas-de-pagamento" element={<PaymentComponent />} />
           <Route

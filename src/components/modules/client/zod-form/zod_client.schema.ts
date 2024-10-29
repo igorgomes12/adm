@@ -10,6 +10,7 @@ export const ClientSchema = z.object({
         "O campo 'id' é obrigatório e deve ser um número inteiro positivo.",
     })
     .optional(),
+  inDebt: z.boolean().optional(),
 
   identifier: z
     .string()

@@ -191,7 +191,7 @@ export const TableRepresentative: FC<{
 
   return (
     <div className="flex flex-col mt-4">
-      <Table className="min-w-full py-2 text-lg">
+      <Table className="min-w-full py-2 cursor-pointer text-lg">
         <TableHeader>
           <TableRow className="bg-gray-300 w-auto">
             {headers.map((header, index) => (

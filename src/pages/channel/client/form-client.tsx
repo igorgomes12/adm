@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   ClientNavigationComponent,
   navClients,
@@ -6,19 +7,22 @@ import { AccoutingForm } from '@/components/modules/client/forms/accounting-form
 import { AddressForm } from '@/components/modules/client/forms/address-form'
 import { ContactForm } from '@/components/modules/client/forms/contact-form'
 import { RepresentativeForm } from '@/components/modules/client/forms/representative-form'
+import { EnterpriseForm } from '../../../components/modules/client/forms/enterprise-form'
 import { useClientFormStore } from '@/components/modules/client/zustand/client-form.zustand'
 import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { useState } from 'react'
-import { EnterpriseForm } from '../../../components/modules/client/forms/enterprise-form'
+import { useParams } from 'react-router'
 
 export const FormClientComponent = () => {
+  const { id } = useParams<{ id: string }>()
   const [selectedForm, setSelectedForm] = useState<string>('Empresa')
   const [enabledForms, setEnabledForms] = useState<string[]>(['Empresa'])
   const { formData, updateFormData } = useClientFormStore()
 
   const handleNext = (currentForm: string, data: any) => {
+    // Atualiza os dados do formulário atual no estado global
     updateFormData({ [currentForm.toLowerCase()]: data })
 
+    // Determina o próximo formulário a ser exibido
     const nextFormIndex =
       navClients.findIndex(client => client.title === currentForm) + 1
     if (nextFormIndex < navClients.length) {
@@ -72,7 +76,9 @@ export const FormClientComponent = () => {
   return (
     <div className="flex px-2">
       <aside className="w-96 bg-gray-100 items-center flex overscroll-none flex-col space-y-6">
-        <h2 className="text-2xl font-semibold p-2">Cadastro cliente</h2>
+        <h2 className="text-2xl font-semibold p-2">
+          {id ? 'Editar cliente' : ' Cadastro cliente'}
+        </h2>
         <ClientNavigationComponent
           selected={selectedForm}
           onSelect={title =>

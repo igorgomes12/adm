@@ -1,6 +1,4 @@
-import { HeaderForms } from '@/components/header-forms/header-forms'
 import { Button } from '@/components/ui/button'
-import { AxiosError } from 'axios'
 import {
   FormControl,
   FormField,
@@ -18,15 +16,19 @@ import {
 } from '@/components/ui/select'
 import api from '@/infra/auth/database/acess-api/interceptors-axios'
 import { useQuery } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
 
-import { useEffect, type FC } from 'react'
+import { useEffect, FC } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import type { TSchemaEstablished } from '../../establishment-components/zod-types-establishment/zod-establihment'
-import type { TClient } from '../zod-form/zod_client.schema'
+import { TSchemaEstablished } from '../../establishment-components/zod-types-establishment/zod-establihment'
+import { HeaderClientForms } from '../header-client'
+import { TClient } from '../zod-form/zod_client.schema'
 
-export const EnterpriseForm: FC<{ onNext: (data: TClient) => void }> = ({
-  onNext,
-}) => {
+interface IEnterpriseFormProps {
+  onNext: (data: TClient) => void
+}
+
+export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
   const form = useForm()
 
   const { data, error } = useQuery<TSchemaEstablished[], AxiosError<Error>>({
@@ -69,7 +71,7 @@ export const EnterpriseForm: FC<{ onNext: (data: TClient) => void }> = ({
   return (
     <div className="flex flex-col p-4 w-full h-screen">
       <div className="flex w-full items-start justify-start">
-        <HeaderForms title="Formulários da Empresa" />
+        <HeaderClientForms title="Formulários da Empresa" />
       </div>
       <FormProvider {...form}>
         <form

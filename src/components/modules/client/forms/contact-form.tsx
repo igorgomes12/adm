@@ -1,39 +1,39 @@
-import { HeaderForms } from '@/components/header-forms/header-forms'
-import { Button } from '@/components/ui/button'
+import { HeaderForms } from "@/components/header-forms/header-forms"
+import { Button } from "@/components/ui/button"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, type FC } from 'react'
+} from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useEffect, type FC } from "react"
 import {
   Controller,
   FormProvider,
   useFieldArray,
   useForm,
-} from 'react-hook-form'
-import { FaPlus, FaRegStar, FaStar, FaTrash } from 'react-icons/fa'
-import { useFormStore } from '../../representative-component/zustand/gerenciador-zustand'
-import { ContactSchema, type TContact } from '../zod-form/zod_contact.schema'
+} from "react-hook-form"
+import { FaPlus, FaRegStar, FaStar, FaTrash } from "react-icons/fa"
+import { useFormStore } from "../../representative-component/zustand/gerenciador-zustand"
+import { ContactSchema, type TContact } from "../zod-form/zod_contact.schema"
 
 const applyMask = (value: string, mask: string): string => {
-  let formattedValue = ''
+  let formattedValue = ""
   let maskIndex = 0
   for (let i = 0; i < value.length && maskIndex < mask.length; i++) {
     if (/\d/.test(value[i])) {
-      while (maskIndex < mask.length && mask[maskIndex] !== '9') {
+      while (maskIndex < mask.length && mask[maskIndex] !== "9") {
         formattedValue += mask[maskIndex++]
       }
       formattedValue += value[i]
@@ -67,31 +67,31 @@ export const ContactForm: FC<{
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'telefones',
+    name: "telefones",
   })
 
   const handleAddPhone = () => {
-    append({ number: '', type: 'TELEFONE', favorite: false })
+    append({ number: "", type: "TELEFONE", favorite: false })
   }
 
   const getMask = (type: string) => {
     switch (type) {
-      case 'WHATSAPP':
-      case 'CELULAR':
-        return '(99) 99999-9999'
-      case 'TELEFONE':
-        return '(99) 9999-9999'
+      case "WHATSAPP":
+      case "CELULAR":
+        return "(99) 99999-9999"
+      case "TELEFONE":
+        return "(99) 9999-9999"
       default:
-        return ''
+        return ""
     }
   }
 
   const submitForm = async (data: TContact) => {
     try {
       const cellphone =
-        data.telefones.find(t => t.type === 'CELULAR')?.number || ''
+        data.telefones.find(t => t.type === "CELULAR")?.number || ""
       const phone =
-        data.telefones.find(t => t.type === 'TELEFONE')?.number || ''
+        data.telefones.find(t => t.type === "TELEFONE")?.number || ""
 
       updateFormData({
         contact: {
@@ -100,9 +100,9 @@ export const ContactForm: FC<{
           phone,
         },
       })
-      onNext && onNext(data)
+      onNext?.(data)
     } catch (error) {
-      console.error('Erro ao enviar o formulário:', error)
+      console.error("Erro ao enviar o formulário:", error)
     }
   }
 
@@ -192,10 +192,10 @@ export const ContactForm: FC<{
                       <div className="relative flex items-center">
                         <Input
                           {...field}
-                          value={field.value || ''} // Garante que o valor inicial não seja undefined
+                          value={field.value || ""} // Garante que o valor inicial não seja undefined
                           onChange={e => {
                             const mask = getMask(
-                              form.getValues(`telefones.${index}.type`),
+                              form.getValues(`telefones.${index}.type`)
                             )
                             field.onChange(applyMask(e.target.value, mask))
                           }}
@@ -208,7 +208,7 @@ export const ContactForm: FC<{
                               onClick={() => {
                                 form.setValue(
                                   `telefones.${index}.favorite`,
-                                  false,
+                                  false
                                 )
                               }}
                             />
@@ -219,13 +219,13 @@ export const ContactForm: FC<{
                                 fields.forEach((_, i) => {
                                   form.setValue(
                                     `telefones.${i}.favorite`,
-                                    false,
+                                    false
                                   )
                                 })
 
                                 form.setValue(
                                   `telefones.${index}.favorite`,
-                                  true,
+                                  true
                                 )
                               }}
                             />

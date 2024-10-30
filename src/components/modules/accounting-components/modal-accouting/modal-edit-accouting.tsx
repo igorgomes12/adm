@@ -1,24 +1,24 @@
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { FaRocket } from 'react-icons/fa'
-import { Flip, toast } from 'react-toastify'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useEffect } from "react"
+import { FormProvider, useForm } from "react-hook-form"
+import { FaRocket } from "react-icons/fa"
+import { Flip, toast } from "react-toastify"
 import {
   SchemaAccoutingDto,
   type TSchemaAccountingDto,
-} from '../zod-types-accounting/zod-accouting'
-import { useAccoutingEditZustand } from '../zustand-accounting/edit-zustand'
+} from "../zod-types-accounting/zod-accouting"
+import { useAccoutingEditZustand } from "../zustand-accounting/edit-zustand"
 
 export const ModalAccountingEdit = () => {
   const { id, isOpen, onClose } = useAccoutingEditZustand()
@@ -27,24 +27,24 @@ export const ModalAccountingEdit = () => {
   const form = useForm<TSchemaAccountingDto>({
     defaultValues: {
       id: 0,
-      name: '',
-      phone: '',
-      email: '',
-      contact: '',
-      crc: '',
-      cnpj: '',
+      name: "",
+      phone: "",
+      email: "",
+      contact: "",
+      crc: "",
+      cnpj: "",
     },
     resolver: zodResolver(SchemaAccoutingDto),
   })
 
   const { data: accountingData, isLoading: isLoadingAccounting } = useQuery({
-    queryKey: ['get-accounting', id],
+    queryKey: ["get-accounting", id],
     queryFn: async () => {
       if (id) {
-        const response = await api.get(`/accouting`, { params: { id } })
+        const response = await api.get("/accouting", { params: { id } })
         return (
           response.data.find(
-            (system: TSchemaAccountingDto) => system.id === id,
+            (system: TSchemaAccountingDto) => system.id === id
           ) || null
         )
       }
@@ -68,28 +68,28 @@ export const ModalAccountingEdit = () => {
   }, [accountingData, form])
 
   const { mutate, isSuccess: isUpdating } = useMutation({
-    mutationKey: ['patch-accounting'],
+    mutationKey: ["patch-accounting"],
     mutationFn: async (data: TSchemaAccountingDto) => {
-      const res = await api.patch(`/accouting`, data, {
+      const res = await api.patch("/accouting", data, {
         params: { id: data.id },
       })
       return res.data
     },
     onSuccess: () => {
-      toast.success('Contabilidade atualizada com sucesso!', {
-        theme: 'dark',
+      toast.success("Contabilidade atualizada com sucesso!", {
+        theme: "dark",
         icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
+        progressStyle: { background: "#1f62cf" },
         transition: Flip,
       })
-      queryClient.invalidateQueries({ queryKey: ['get-accounting'] })
-      queryClient.invalidateQueries({ queryKey: ['get-accounting', id] })
+      queryClient.invalidateQueries({ queryKey: ["get-accounting"] })
+      queryClient.invalidateQueries({ queryKey: ["get-accounting", id] })
       onClose()
     },
     onError: error => {
-      console.error('Mutation error:', error)
+      console.error("Mutation error:", error)
       toast.error(
-        'Erro ao atualizar a contabilidade. Por favor, tente novamente.',
+        "Erro ao atualizar a contabilidade. Por favor, tente novamente."
       )
     },
   })
@@ -114,7 +114,7 @@ export const ModalAccountingEdit = () => {
               className="gap-2 grid grid-cols-1 sm:grid-cols-2"
               onSubmit={form.handleSubmit(onSubmit)}
             >
-              {['name', 'cnpj', 'contact', 'crc', 'email', 'phone'].map(
+              {["name", "cnpj", "contact", "crc", "email", "phone"].map(
                 field => (
                   <FormField
                     key={field}
@@ -130,14 +130,14 @@ export const ModalAccountingEdit = () => {
                               onChange(e)
                               form.trigger(field as keyof TSchemaAccountingDto)
                             }}
-                            type={field === 'email' ? 'email' : 'text'}
+                            type={field === "email" ? "email" : "text"}
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                ),
+                )
               )}
 
               <div className="col-span-full flex flex-col sm:flex-row justify-center items-center gap-2 mt-6">
@@ -156,7 +156,7 @@ export const ModalAccountingEdit = () => {
                   variant="success"
                   disabled={isUpdating}
                 >
-                  {isUpdating ? 'Salvando...' : 'Salvar'}
+                  {isUpdating ? "Salvando..." : "Salvar"}
                 </Button>
               </div>
             </form>
@@ -169,12 +169,12 @@ export const ModalAccountingEdit = () => {
 
 function getFieldLabel(field: string): string {
   const labels: Record<string, string> = {
-    name: 'Nome da Contabilidade',
-    cnpj: 'CNPJ',
-    contact: 'Contato',
-    crc: 'CRC',
-    email: 'Email',
-    phone: 'Telefone',
+    name: "Nome da Contabilidade",
+    cnpj: "CNPJ",
+    contact: "Contato",
+    crc: "CRC",
+    email: "Email",
+    phone: "Telefone",
   }
   return labels[field] || field
 }

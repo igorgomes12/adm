@@ -1,28 +1,28 @@
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { useQuery } from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+} from "@/components/ui/select"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { useQuery } from "@tanstack/react-query"
+import { AxiosError } from "axios"
 
-import { useEffect, FC } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { TSchemaEstablished } from '../../establishment-components/zod-types-establishment/zod-establihment'
-import { HeaderClientForms } from '../header-client'
-import { TClient } from '../zod-form/zod_client.schema'
+import { useEffect, type FC } from "react"
+import { FormProvider, useForm } from "react-hook-form"
+import type { TSchemaEstablished } from "../../establishment-components/zod-types-establishment/zod-establihment"
+import { HeaderClientForms } from "../header-client"
+import type { TClient } from "../zod-form/zod_client.schema"
 
 interface IEnterpriseFormProps {
   onNext: (data: TClient) => void
@@ -32,9 +32,9 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
   const form = useForm()
 
   const { data, error } = useQuery<TSchemaEstablished[], AxiosError<Error>>({
-    queryKey: ['get-establishment'],
+    queryKey: ["get-establishment"],
     queryFn: async () => {
-      const response = await api.get(`/establishment`)
+      const response = await api.get("/establishment")
       return response.data
     },
   })
@@ -50,8 +50,8 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
   const { setValue, register, handleSubmit } = form
 
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0]
-    setValue('createdAt', today)
+    const today = new Date().toISOString().split("T")[0]
+    setValue("createdAt", today)
   }, [setValue])
 
   const submitForm = async () => {
@@ -60,11 +60,11 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response?.status === 400)
-          throw new Error('Formulário inválido')
+          throw new Error("Formulário inválido")
         if (error.response?.status === 401)
-          throw new Error('Usuário não autorizado')
+          throw new Error("Usuário não autorizado")
         if (error.response?.status === 404)
-          throw new Error('Usuário não encontrado')
+          throw new Error("Usuário não encontrado")
       }
     }
   }
@@ -86,7 +86,7 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
                 <FormItem className="w-full">
                   <FormLabel>Data Cadastro</FormLabel>
                   <Input
-                    {...register('createdAt')}
+                    {...register("createdAt")}
                     className="text-md font-normal"
                     type="date"
                     disabled
@@ -104,7 +104,7 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
                   <FormControl>
                     <Input
                       {...field}
-                      {...register('corporate_name', { required: true })}
+                      {...register("corporate_name", { required: true })}
                     />
                   </FormControl>
                   <FormMessage />
@@ -116,7 +116,7 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Nome Fantasia</FormLabel>
-                  <Input {...register('fantasy_name')} {...field} />
+                  <Input {...register("fantasy_name")} {...field} />
                   <FormMessage />
                 </FormItem>
               )}
@@ -129,7 +129,7 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
                 <FormItem className="w-full">
                   <FormLabel>CNPJ</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register('cpf_cnpj')} />
+                    <Input {...field} {...register("cpf_cnpj")} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -143,7 +143,7 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
                 <FormItem className="w-full">
                   <FormLabel>Incrição Estadual</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register('state_registration')} />
+                    <Input {...field} {...register("state_registration")} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -154,7 +154,7 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Incrição Municipal</FormLabel>
-                  <Input {...field} {...register('municipal_registration')} />
+                  <Input {...field} {...register("municipal_registration")} />
                   <FormMessage />
                 </FormItem>
               )}
@@ -164,7 +164,7 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Incrição Rural</FormLabel>
-                  <Input {...field} {...register('rural_registration')} />
+                  <Input {...field} {...register("rural_registration")} />
                   <FormMessage />
                 </FormItem>
               )}
@@ -172,7 +172,7 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
           </div>
           <div className="flex lg:flex-row flex-col w-full gap-2 items-center justify-between">
             <FormField
-              name={'establishment_typeId'}
+              name={"establishment_typeId"}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Tipo Estabelecimento</FormLabel>
@@ -188,7 +188,7 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
                         {data?.map((item: TSchemaEstablished) => (
                           <SelectItem
                             key={item.id}
-                            value={item?.id?.toString() || '0'}
+                            value={item?.id?.toString() || "0"}
                           >
                             {item.name}
                           </SelectItem>

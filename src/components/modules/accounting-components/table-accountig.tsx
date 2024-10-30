@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
-import { useMemo, type FC } from 'react'
-import { FaEdit, FaTrash } from 'react-icons/fa'
+import { useQuery } from "@tanstack/react-query"
+import { useMemo, type FC } from "react"
+import { FaEdit, FaTrash } from "react-icons/fa"
 
-import { SkeletonCard } from '@/components/skeleton-component/skeleton'
+import { SkeletonCard } from "@/components/skeleton-component/skeleton"
 import {
   Table,
   TableBody,
@@ -10,22 +10,22 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { ModalAccountingDelete } from './modal-accouting/modal-delete-accounting'
-import { ModalAccountingEdit } from './modal-accouting/modal-edit-accouting'
-import { useAccoutingDeleteZustand } from './zustand-accounting/delete-zustand'
-import { useAccoutingEditZustand } from './zustand-accounting/edit-zustand'
+} from "@/components/ui/table"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { ModalAccountingDelete } from "./modal-accouting/modal-delete-accounting"
+import { ModalAccountingEdit } from "./modal-accouting/modal-edit-accouting"
+import { useAccoutingDeleteZustand } from "./zustand-accounting/delete-zustand"
+import { useAccoutingEditZustand } from "./zustand-accounting/edit-zustand"
 
 const headers = [
-  'Cód.',
-  'Nome Contabilidade',
-  'CNPJ',
-  'Contato',
-  'CRC',
-  'Email',
-  'Telefone',
-  '',
+  "Cód.",
+  "Nome Contabilidade",
+  "CNPJ",
+  "Contato",
+  "CRC",
+  "Email",
+  "Telefone",
+  "",
 ]
 
 export type TAccount = {
@@ -44,19 +44,21 @@ const AccountRow: FC<{
   onOpenEdit: (id: number) => void
 }> = ({ account, onOpenDelete, onOpenEdit }) => (
   <TableRow>
-    {Object.entries(account).map(([key, value], index) => (
-      <TableCell key={index} className="text-sm items-center">
-        {key !== 'id' ? value : account.id}
+    {Object.entries(account).map(([key, value]) => (
+      <TableCell key={value} className="text-sm items-center">
+        {key !== "id" ? value : account.id}
       </TableCell>
     ))}
     <TableCell className="flex items-center justify-center w-full h-full space-x-2">
       <button
+        type="button"
         onClick={() => onOpenEdit(account.id)}
         className="text-blue-200 hover:text-blue-500"
       >
         <FaEdit size={24} />
       </button>
       <button
+        type="button"
         onClick={() => onOpenDelete(account.id)}
         className="text-red-200 hover:text-red-500"
       >
@@ -72,9 +74,9 @@ export const TableAccounting: FC<{ searchTerm: string }> = ({ searchTerm }) => {
   const { onOpen: onOpenEdit, isOpen: isOpenEdit } = useAccoutingEditZustand()
 
   const { data, error, isLoading } = useQuery<TAccount[]>({
-    queryKey: ['get-accounting'],
+    queryKey: ["get-accounting"],
     queryFn: async () => {
-      const response = await api.get(`/accouting`)
+      const response = await api.get("/accouting")
       return response.data
     },
   })
@@ -111,8 +113,8 @@ export const TableAccounting: FC<{ searchTerm: string }> = ({ searchTerm }) => {
         <Table className="min-w-full py-2 text-md">
           <TableHeader>
             <TableRow className="bg-gray-300 w-auto">
-              {headers.map((header, index) => (
-                <TableHead key={index} className="text-black w-auto">
+              {headers.map(header => (
+                <TableHead key={header} className="text-black w-auto">
                   {header}
                 </TableHead>
               ))}
@@ -136,7 +138,7 @@ export const TableAccounting: FC<{ searchTerm: string }> = ({ searchTerm }) => {
   }, [
     isLoading,
     filteredData,
-    headers,
+
     onOpenDelete,
     onOpenEdit,
     isOpenDelete,

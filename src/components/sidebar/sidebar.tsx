@@ -1,10 +1,10 @@
-import { menuNavigation } from '@/common/interface/first-page'
-import { Separator } from '@/components/ui/separator'
-import { useCallback, useState } from 'react'
-import { GoPin } from 'react-icons/go'
-import { RxExit } from 'react-icons/rx'
-import { useNavigate } from 'react-router'
-import { Logout } from '../logout/logout'
+import { menuNavigation } from "@/common/interface/first-page"
+import { Separator } from "@/components/ui/separator"
+import { useCallback, useState } from "react"
+import { GoPin } from "react-icons/go"
+import { RxExit } from "react-icons/rx"
+import { useNavigate } from "react-router"
+import { Logout } from "../logout/logout"
 
 interface Subcategory {
   title: string
@@ -18,16 +18,19 @@ interface MenuItem {
 }
 
 function normalizeString(str: string) {
-  return str
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, '-')
-    .toLowerCase()
+  return (
+    str
+      .normalize("NFD")
+      // biome-ignore lint/suspicious/noMisleadingCharacterClass: <explanation>
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "-")
+      .toLowerCase()
+  )
 }
 
 export default function Sidebar() {
   const [openSubmenus, setOpenSubmenus] = useState<{ [key: string]: boolean }>(
-    {},
+    {}
   )
   const [isSidebarCompressed, setIsSidebarCompressed] = useState<boolean>(true)
   const [isSidebarPinned, setIsSidebarPinned] = useState<boolean>(false)
@@ -40,7 +43,7 @@ export default function Sidebar() {
 
   const handleConfirmLogout = () => {
     setShowLogoutCard(false)
-    navigate('/')
+    navigate("/")
     window.location.reload()
   }
 
@@ -57,7 +60,7 @@ export default function Sidebar() {
 
   const handleMenuClick = useCallback(() => {
     setIsSidebarCompressed(prev => !prev)
-    navigate('/dashboard')
+    navigate("/dashboard")
   }, [navigate])
 
   const handleMouseEnter = useCallback(() => {
@@ -79,8 +82,11 @@ export default function Sidebar() {
 
   const renderSubcategories = useCallback(
     (subcategories: Subcategory[], depth = 0) => {
-      return subcategories.map((subcategory, idx) => (
-        <div key={idx} className={`ml-${4 * (depth + 1)} mt-2 w-full gap-2`}>
+      return subcategories.map(subcategory => (
+        <div
+          key={subcategory.title}
+          className={`ml-${4 * (depth + 1)} mt-2 w-full gap-2`}
+        >
           <div className="text-lg text-zinc-400 py-4 px-8 uppercase font-bold">
             {isSidebarCompressed ? (
               <Separator
@@ -91,20 +97,21 @@ export default function Sidebar() {
               <p>{subcategory.title}</p>
             )}
           </div>
-          {subcategory.items.map((item: MenuItem, itemIdx: number) => (
+          {subcategory.items.map((item: MenuItem) => (
             <div
-              key={itemIdx}
+              key={item.label}
               className={`flex text-xs ${
                 isSidebarCompressed
-                  ? 'items-center justify-center'
-                  : 'items-start justify-start'
+                  ? "items-center justify-center"
+                  : "items-start justify-start"
               } px-2 py-1.5 gap-4`}
             >
-              <div
+              <button
+                type="button"
                 className={`flex items-center px-4 py-2 cursor-pointer ${
                   window.location.pathname.includes(normalizeString(item.label))
-                    ? 'text-sky-500 bg-zinc-600 w-full'
-                    : 'hover:bg-zinc-700 w-full'
+                    ? "text-sky-500 bg-zinc-600 w-full"
+                    : "hover:bg-zinc-700 w-full"
                 }`}
                 onClick={() => {
                   if (item.subcategories) {
@@ -121,7 +128,7 @@ export default function Sidebar() {
                 {!isSidebarCompressed && (
                   <span className="text-sm">{item.label}</span>
                 )}
-              </div>
+              </button>
               {openSubmenus[item.label] &&
                 item.subcategories &&
                 renderSubcategories(item.subcategories, depth + 1)}
@@ -130,7 +137,7 @@ export default function Sidebar() {
         </div>
       ))
     },
-    [isSidebarCompressed, openSubmenus, navigate, handleToggleSubmenu],
+    [isSidebarCompressed, openSubmenus, navigate, handleToggleSubmenu]
   )
 
   return (
@@ -138,17 +145,18 @@ export default function Sidebar() {
       <div
         id="sidebar-menu"
         className={`${
-          isSidebarCompressed ? 'w-28' : 'w-64'
+          isSidebarCompressed ? "w-28" : "w-64"
         } flex flex-col h-screen bg-foreground/90 transition-all overflow-x-hidden text-white duration-300  ease-out relative`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         <div
           className={`flex ${
-            isSidebarCompressed ? 'justify-center' : 'justify-between'
+            isSidebarCompressed ? "justify-center" : "justify-between"
           } items-center p-4`}
         >
-          <div
+          <button
+            type="button"
             className="cursor-pointer flex items-center gap-2"
             onClick={handleMenuClick}
           >
@@ -160,19 +168,20 @@ export default function Sidebar() {
             {!isSidebarCompressed && (
               <span className="text-lg font-bold">Menu</span>
             )}
-          </div>
+          </button>
           <div className="flex items-center h-5 space-x-2 justify-center ">
             {!isSidebarCompressed && (
               <>
                 <button
+                  type="button"
                   onClick={handlePinSidebar}
                   className={`p-1 rounded-full  ${
                     isSidebarPinned
-                      ? 'bg-sky-500'
-                      : 'bg-zinc-700 hover:bg-zinc-600 animate-bounce'
+                      ? "bg-sky-500"
+                      : "bg-zinc-700 hover:bg-zinc-600 animate-bounce"
                   }`}
                   title={
-                    isSidebarPinned ? 'Desafixar sidebar' : 'Fixar sidebar'
+                    isSidebarPinned ? "Desafixar sidebar" : "Fixar sidebar"
                   }
                 >
                   <GoPin className="w-4 h-4" />
@@ -197,7 +206,8 @@ export default function Sidebar() {
 
         {menuNavigation.map(menu => (
           <div key={menu.id} className="mb-2">
-            <div
+            <button
+              type="button"
               onClick={() => handleToggleSubmenu(menu.id)}
               className="cursor-pointer flex items-center px-8 py-4 gap-2 text-lg rounded hover:bg-zinc-700"
               title={menu.label}
@@ -205,7 +215,7 @@ export default function Sidebar() {
               <div className="w-10 items-center justify-center flex">
                 <p
                   className={`font-bold ${
-                    isSidebarCompressed ? 'text-4xl' : 'text-2xl'
+                    isSidebarCompressed ? "text-4xl" : "text-2xl"
                   }`}
                 >
                   {menu.icon}
@@ -214,7 +224,7 @@ export default function Sidebar() {
               {!isSidebarCompressed && (
                 <span className="text-xl">{menu.label}</span>
               )}
-            </div>
+            </button>
             {openSubmenus[menu.id] &&
               menu.subcategories &&
               renderSubcategories(menu.subcategories)}

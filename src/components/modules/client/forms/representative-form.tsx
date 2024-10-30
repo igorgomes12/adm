@@ -1,20 +1,20 @@
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button"
 import {
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from "@/components/ui/form"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import type { FC } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import type { TClient } from '../zod-form/zod_client.schema'
+} from "@/components/ui/select"
+import type { FC } from "react"
+import { FormProvider, useForm } from "react-hook-form"
+import type { TClient } from "../zod-form/zod_client.schema"
 
 type FormValues = {
   representative: string
@@ -28,20 +28,20 @@ export const RepresentativeForm: FC<{ onNext: (data: TClient) => void }> = ({
 }) => {
   const form = useForm<FormValues>({
     defaultValues: {
-      representative: '',
-      channel_entry: '',
-      region: '',
-      accontings: '',
+      representative: "",
+      channel_entry: "",
+      region: "",
+      accontings: "",
     },
   })
 
-  const submitForm = async (data: any) => {
-    console.log('Dados do formulário:', data)
+  const submitForm = async (data: FormValues) => {
+    console.log("Dados do formulário:", data)
     try {
       onNext(data as unknown as TClient)
-      console.log('Form enviado com sucesso:', data)
+      console.log("Form enviado com sucesso:", data)
     } catch (error) {
-      console.error('Erro ao enviar o formulário:', error)
+      console.error("Erro ao enviar o formulário:", error)
     }
   }
 

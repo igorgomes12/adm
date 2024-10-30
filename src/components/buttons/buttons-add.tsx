@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from 'react'
+import type { FC, ReactNode } from "react"
 
 type TButtonAdd = {
   onOpen?: () => void
@@ -6,11 +6,12 @@ type TButtonAdd = {
 }
 export const ButtonAdd: FC<TButtonAdd> = ({ onOpen, icon }) => {
   return (
-    <div
+    <button
+      type="button"
       onClick={onOpen}
       className="border rounded-full bg-foreground/50 font-bold cursor-pointer hover:bg-foreground/70 text-white"
     >
       {icon}
-    </div>
+    </button>
   )
 }

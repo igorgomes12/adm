@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
-import BlurIn from '../magicui/blur-in'
-import FlickeringGrid from '../magicui/flickering-grid'
-import { SignInForm } from './form-sign-in'
+import { useEffect, useState } from "react"
+import BlurIn from "../magicui/blur-in"
+import FlickeringGrid from "../magicui/flickering-grid"
+import { SignInForm } from "./form-sign-in"
 
 export const SignIn = () => {
   const [windowSize, setWindowSize] = useState({
@@ -17,10 +17,10 @@ export const SignIn = () => {
       })
     }
 
-    window.addEventListener('resize', handleResize)
+    window.addEventListener("resize", handleResize)
 
     return () => {
-      window.removeEventListener('resize', handleResize)
+      window.removeEventListener("resize", handleResize)
     }
   }, [])
 
@@ -43,10 +43,10 @@ export const SignIn = () => {
             alt="logo"
             className="absolute transform -translate-x-1/2 -translate-y-1/2"
             style={{
-              top: '50%',
-              left: '50%',
-              maxWidth: '60%',
-              height: 'auto',
+              top: "50%",
+              left: "50%",
+              maxWidth: "60%",
+              height: "auto",
             }}
           />
         </div>
@@ -59,7 +59,7 @@ export const SignIn = () => {
             />
           </div>
           <div className="text-center text-md flex flex-col gap-2">
-            <BlurIn word="Seja bem-vindo!" className="text-md"></BlurIn>
+            <BlurIn word="Seja bem-vindo!" className="text-md" />
 
             <p className="text-sm">
               Insira suas credenciais para acessar o sistema

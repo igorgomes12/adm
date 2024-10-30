@@ -1,23 +1,26 @@
-import { HeaderForms } from '@/components/header-forms/header-forms'
+import { HeaderForms } from "@/components/header-forms/header-forms"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { AddressData, fetchViaCep } from '@/infra/http/api-via-cep/fecth-viacep'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
-import { FC, useEffect } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import { useFormStore } from '../../representative-component/zustand/gerenciador-zustand'
-import { addressSchema, addressSchemaType } from '../zod-form/zod-address'
-import { TClient } from '../zod-form/zod_client.schema'
-import { useNavigate } from 'react-router-dom'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import {
+  type AddressData,
+  fetchViaCep,
+} from "@/infra/http/api-via-cep/fecth-viacep"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useQuery } from "@tanstack/react-query"
+import { type FC, useEffect } from "react"
+import { FormProvider, useForm } from "react-hook-form"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import { useFormStore } from "../../representative-component/zustand/gerenciador-zustand"
+import { addressSchema, type addressSchemaType } from "../zod-form/zod-address"
+import type { TClient } from "../zod-form/zod_client.schema"
+import { useNavigate } from "react-router-dom"
 
 export const AddressForm: FC<{
   onNext?: (data: TClient) => void
@@ -28,15 +31,15 @@ export const AddressForm: FC<{
 
   const form = useForm<addressSchemaType>({
     defaultValues: {
-      cep: initialValues?.cep || formData.address?.postal_code || '',
-      street: initialValues?.street || formData.address?.street || '',
-      bairro: initialValues?.bairro || formData.address?.neighborhood || '',
+      cep: initialValues?.cep || formData.address?.postal_code || "",
+      street: initialValues?.street || formData.address?.street || "",
+      bairro: initialValues?.bairro || formData.address?.neighborhood || "",
       municipio:
-        initialValues?.municipio || formData.address?.municipality_name || '',
-      UF: initialValues?.UF || formData.address?.state || '',
-      number: initialValues?.number || formData.address?.number || '',
+        initialValues?.municipio || formData.address?.municipality_name || "",
+      UF: initialValues?.UF || formData.address?.state || "",
+      number: initialValues?.number || formData.address?.number || "",
       complement:
-        initialValues?.complement || formData.address?.complement || '',
+        initialValues?.complement || formData.address?.complement || "",
     },
     resolver: zodResolver(addressSchema),
   })
@@ -51,10 +54,10 @@ export const AddressForm: FC<{
     formState: { errors },
   } = form
 
-  const cep = watch('cep')
+  const cep = watch("cep")
 
   const { data: viaCepData, isError } = useQuery<AddressData>({
-    queryKey: ['viaCep', cep],
+    queryKey: ["viaCep", cep],
     queryFn: () => fetchViaCep(cep),
     enabled: Boolean(cep) && cep.length === 8,
   })
@@ -62,20 +65,20 @@ export const AddressForm: FC<{
   useEffect(() => {
     if (!cep) {
       reset({
-        street: '',
-        bairro: '',
-        municipio: '',
-        UF: '',
+        street: "",
+        bairro: "",
+        municipio: "",
+        UF: "",
       })
       return
     }
 
     if (viaCepData) {
-      setValue('street', viaCepData.logradouro || '')
-      setValue('bairro', viaCepData.bairro || '')
-      setValue('municipio', viaCepData.localidade || '')
-      setValue('UF', viaCepData.uf || '')
-      clearErrors(['street', 'bairro', 'municipio', 'UF'])
+      setValue("street", viaCepData.logradouro || "")
+      setValue("bairro", viaCepData.bairro || "")
+      setValue("municipio", viaCepData.localidade || "")
+      setValue("UF", viaCepData.uf || "")
+      clearErrors(["street", "bairro", "municipio", "UF"])
     }
   }, [cep, viaCepData, reset, setValue, clearErrors])
 
@@ -91,15 +94,15 @@ export const AddressForm: FC<{
   const submitForm = async (data: addressSchemaType) => {
     try {
       updateFormData({ address: data })
-      onNext && onNext(data as unknown as TClient)
+      onNext?.(data as unknown as TClient)
       setMutationSuccess(true)
-      toast.success('Formulário enviado com sucesso!', {
-        onClose: () => navigate('/canais'), // Navega para a tela de canais após o toast
-        autoClose: 2000, // Fecha o toast após 2 segundos
+      toast.success("Formulário enviado com sucesso!", {
+        onClose: () => navigate("/canais"),
+        autoClose: 2000,
       })
     } catch (error) {
-      console.error('Erro ao enviar o formulário:', error)
-      toast.error('Erro ao enviar o formulário. Tente novamente.')
+      console.error("Erro ao enviar o formulário:", error)
+      toast.error("Erro ao enviar o formulário. Tente novamente.")
     }
   }
 
@@ -120,7 +123,7 @@ export const AddressForm: FC<{
                 <FormItem className="w-full">
                   <FormLabel>CEP</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register('cep')} />
+                    <Input {...field} {...register("cep")} />
                   </FormControl>
                   <FormMessage>{errors.cep?.message}</FormMessage>
                 </FormItem>
@@ -131,7 +134,7 @@ export const AddressForm: FC<{
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Endereço</FormLabel>
-                  <Input {...field} {...register('street')} />
+                  <Input {...field} {...register("street")} />
                   <FormMessage>{errors.street?.message}</FormMessage>
                 </FormItem>
               )}
@@ -144,7 +147,7 @@ export const AddressForm: FC<{
                 <FormItem className="w-full">
                   <FormLabel>Bairro</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register('bairro')} />
+                    <Input {...field} {...register("bairro")} />
                   </FormControl>
                   <FormMessage>{errors.bairro?.message}</FormMessage>
                 </FormItem>
@@ -155,7 +158,7 @@ export const AddressForm: FC<{
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Municipio</FormLabel>
-                  <Input {...field} {...register('municipio')} />
+                  <Input {...field} {...register("municipio")} />
                   <FormMessage>{errors.municipio?.message}</FormMessage>
                 </FormItem>
               )}
@@ -168,7 +171,7 @@ export const AddressForm: FC<{
                 <FormItem className="w-full">
                   <FormLabel>UF</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register('UF')} />
+                    <Input {...field} {...register("UF")} />
                   </FormControl>
                   <FormMessage>{errors.UF?.message}</FormMessage>
                 </FormItem>
@@ -180,7 +183,7 @@ export const AddressForm: FC<{
                 <FormItem className="w-full">
                   <FormLabel>Numero</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register('number')} />
+                    <Input {...field} {...register("number")} />
                   </FormControl>
                   <FormMessage>{errors.number?.message}</FormMessage>
                 </FormItem>
@@ -191,7 +194,7 @@ export const AddressForm: FC<{
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Complemento</FormLabel>
-                  <Input {...field} {...register('complement')} />
+                  <Input {...field} {...register("complement")} />
                   <FormMessage>{errors.complement?.message}</FormMessage>
                 </FormItem>
               )}

@@ -1,13 +1,13 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { FC } from 'react'
-import { FaRocket } from 'react-icons/fa'
-import { Flip, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import api from '../../infra/auth/database/acess-api/interceptors-axios'
-import type { CreateRepresentativeSchemaDto } from '../modules/representative-component/zod/create-representative.dto'
-import { useFormStore } from '../modules/representative-component/zustand/gerenciador-zustand'
-import { Button } from '../ui/button'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import type { FC } from "react"
+import { FaRocket } from "react-icons/fa"
+import { Flip, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import api from "../../infra/auth/database/acess-api/interceptors-axios"
+import type { CreateRepresentativeSchemaDto } from "../modules/representative-component/zod/create-representative.dto"
+import { useFormStore } from "../modules/representative-component/zustand/gerenciador-zustand"
+import { Button } from "../ui/button"
+import { useNavigate, useParams } from "react-router-dom"
 
 interface IHeaderFormsProps {
   title: string
@@ -24,36 +24,35 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
   const { id } = useParams<{ id: string }>()
 
   const createMutation = useMutation({
-    mutationKey: ['post-representative'],
+    mutationKey: ["post-representative"],
     mutationFn: async (data: CreateRepresentativeSchemaDto) => {
       const res = await api.post<CreateRepresentativeSchemaDto>(
-        '/representative',
+        "/representative",
         {
           ...data,
-          status: 'ativo',
-        },
+          status: "ativo",
+        }
       )
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['get-representative'] })
-      toast.success('Estabelecimento adicionado com sucesso!', {
-        theme: 'dark',
+      queryClient.invalidateQueries({ queryKey: ["get-representative"] })
+      toast.success("Estabelecimento adicionado com sucesso!", {
+        theme: "dark",
         icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
+        progressStyle: { background: "#1f62cf" },
         transition: Flip,
         autoClose: 1000,
-        onClose: () => navigate('/canais'),
+        onClose: () => navigate("/canais"),
       })
       resetFormData()
-      setActiveComponent && setActiveComponent('Canais')
+      setActiveComponent?.("Canais")
       setMutationSuccess(true)
     },
     onError: (error: Error) => {
-      console.error('Erro ao adicionar estabelecimento:', error)
+      console.error("Erro ao adicionar estabelecimento:", error)
       toast.error(
-        'Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente.' +
-          (error.message || ''),
+        `Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente. ${error.message || ""}`
       )
       setMutationSuccess(false)
     },
@@ -61,30 +60,29 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
 
   const updateMutation = useMutation({
     mutationFn: async (data: CreateRepresentativeSchemaDto) => {
-      const res = await api.patch(`/representative`, data, {
+      const res = await api.patch("/representative", data, {
         params: { id },
       })
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['get-representative'] })
-      toast.success('Representante atualizado com sucesso!', {
-        theme: 'dark',
+      queryClient.invalidateQueries({ queryKey: ["get-representative"] })
+      toast.success("Representante atualizado com sucesso!", {
+        theme: "dark",
         icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
+        progressStyle: { background: "#1f62cf" },
         transition: Flip,
         autoClose: 1000,
-        onClose: () => navigate('/canais'),
+        onClose: () => navigate("/canais"),
       })
       resetFormData()
-      setActiveComponent && setActiveComponent('Canais')
+      setActiveComponent?.("Canais")
       setMutationSuccess(true)
     },
     onError: (error: Error) => {
-      console.error('Erro ao atualizar representante:', error)
+      console.error("Erro ao atualizar representante:", error)
       toast.error(
-        'Ocorreu um erro ao atualizar o representante. Por favor, tente novamente.' +
-          (error.message || ''),
+        `Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente. ${error.message || ""}`
       )
       setMutationSuccess(false)
     },
@@ -94,28 +92,28 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
     setMutationSuccess(false)
 
     const completeData: CreateRepresentativeSchemaDto = {
-      type: formData.type || 'REPRESENTATIVE',
-      region: formData.region || 'centro',
-      supervisor: formData.supervisor || '',
-      status: formData.status || 'ativo',
-      name: formData?.name?.toUpperCase() || '',
+      type: formData.type || "REPRESENTATIVE",
+      region: formData.region || "centro",
+      supervisor: formData.supervisor || "",
+      status: formData.status || "ativo",
+      name: formData?.name?.toUpperCase() || "",
       commission: {
         implantation: formData.commission?.implantation,
         mensality: formData.commission?.mensality,
       },
       contact: {
-        email: formData.contact?.email || 'joao.silva@example.com',
-        cellphone: formData.contact?.cellphone || '',
-        phone: formData.contact?.phone || '(11) 3333-3333',
+        email: formData.contact?.email || "joao.silva@example.com",
+        cellphone: formData.contact?.cellphone || "",
+        phone: formData.contact?.phone || "(11) 3333-3333",
       },
       address: {
-        postal_code: formData.address?.postal_code || '29210250',
-        street: formData.address?.street || 'Rua nova',
-        number: formData.address?.number || '12',
-        neighborhood: formData.address?.neighborhood || 'Itapebussu',
-        municipality_name: formData.address?.municipality_name || 'Guarapari',
-        state: formData.address?.state || 'ES',
-        complement: formData.address?.complement || 'casa',
+        postal_code: formData.address?.postal_code || "29210250",
+        street: formData.address?.street || "Rua nova",
+        number: formData.address?.number || "12",
+        neighborhood: formData.address?.neighborhood || "Itapebussu",
+        municipality_name: formData.address?.municipality_name || "Guarapari",
+        state: formData.address?.state || "ES",
+        complement: formData.address?.complement || "casa",
       },
     }
 
@@ -128,21 +126,21 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
 
   const resetFormData = () => {
     updateFormData({
-      name: '',
-      type: 'REPRESENTATIVE',
-      region: '',
-      supervisor: '',
-      status: 'ativo',
+      name: "",
+      type: "REPRESENTATIVE",
+      region: "",
+      supervisor: "",
+      status: "ativo",
       commission: { implantation: 0, mensality: 1 },
-      contact: { cellphone: '', phone: '', email: '' },
+      contact: { cellphone: "", phone: "", email: "" },
       address: {
-        postal_code: '',
-        street: '',
-        number: '',
-        neighborhood: '',
-        municipality_name: '',
-        state: '',
-        complement: '',
+        postal_code: "",
+        street: "",
+        number: "",
+        neighborhood: "",
+        municipality_name: "",
+        state: "",
+        complement: "",
       },
     })
   }
@@ -153,7 +151,7 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
         <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
           {title}
         </h1>
-        <Button onClick={handleSave} variant={'blue'}>
+        <Button onClick={handleSave} variant={"blue"}>
           Salvar
         </Button>
       </div>

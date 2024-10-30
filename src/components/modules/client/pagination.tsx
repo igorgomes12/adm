@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from "react"
 import {
   Pagination,
   PaginationContent,
@@ -6,23 +6,28 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
+} from "@/components/ui/pagination"
 
 type PaginationsProps = {
-  totalItems: number;
-  itemsPerPage: number;
-  currentPage: number;
-  onPageChange: (page: number) => void;
-};
+  totalItems: number
+  itemsPerPage: number
+  currentPage: number
+  onPageChange: (page: number) => void
+}
 
-const Paginations: React.FC<PaginationsProps> = ({ totalItems, itemsPerPage, currentPage, onPageChange }) => {
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+const Paginations: React.FC<PaginationsProps> = ({
+  totalItems,
+  itemsPerPage,
+  currentPage,
+  onPageChange,
+}) => {
+  const totalPages = Math.ceil(totalItems / itemsPerPage)
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
-      onPageChange(page);
+      onPageChange(page)
     }
-  };
+  }
 
   return (
     <Pagination>
@@ -30,15 +35,14 @@ const Paginations: React.FC<PaginationsProps> = ({ totalItems, itemsPerPage, cur
         <PaginationItem>
           <PaginationPrevious
             onClick={() => handlePageChange(currentPage - 1)}
-            className={currentPage === 1 ? 'disabled' : ''}
-          >
-          </PaginationPrevious>
+            className={currentPage === 1 ? "disabled" : ""}
+          />
         </PaginationItem>
         {[...Array(totalPages)].map((_, index) => (
-          <PaginationItem key={index}>
+          <PaginationItem key={`page-${index + 1}`}>
             <PaginationLink
               onClick={() => handlePageChange(index + 1)}
-              className={currentPage === index + 1 ? 'active' : ''}
+              className={currentPage === index + 1 ? "active" : ""}
             >
               {index + 1}
             </PaginationLink>
@@ -47,13 +51,12 @@ const Paginations: React.FC<PaginationsProps> = ({ totalItems, itemsPerPage, cur
         <PaginationItem>
           <PaginationNext
             onClick={() => handlePageChange(currentPage + 1)}
-            className={currentPage === totalPages ? 'disabled' : ''}
-          >
-          </PaginationNext>
+            className={currentPage === totalPages ? "disabled" : ""}
+          />
         </PaginationItem>
       </PaginationContent>
     </Pagination>
-  );
-};
+  )
+}
 
-export default Paginations;
+export default Paginations

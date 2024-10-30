@@ -1,11 +1,12 @@
-import { Button } from '@/components/ui/button'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { FaRocket } from 'react-icons/fa'
-import { IoWarningOutline } from 'react-icons/io5'
-import { Flip, toast } from 'react-toastify'
-import { useEstablishmentDeleteZustand } from '../zustand-establishment/delete-establisment'
+import { Button } from "@/components/ui/button"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
+import { FaRocket } from "react-icons/fa"
+import { Flip, toast } from "react-toastify"
+import { useEstablishmentDeleteZustand } from "../zustand-establishment/delete-establisment"
+import { showMessageError } from "@/common/messages/Err/toast-err"
+import axios from "axios"
 
 export const ModalEstablishmentDelete = () => {
   const { id, isOpen, onClose } = useEstablishmentDeleteZustand()
@@ -13,34 +14,35 @@ export const ModalEstablishmentDelete = () => {
   const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
-    mutationKey: ['delete-establishement'],
+    mutationKey: ["delete-establishement"],
     mutationFn: async () => {
-      const res = await api.delete(`/establishment`, {
+      const res = await api.delete("/establishment", {
         params: { id },
       })
       return res.data
     },
     onSuccess: () => {
-      toast.success('Sistema excluído com sucesso!', {
-        theme: 'dark',
+      toast.success("Sistema excluído com sucesso!", {
+        theme: "dark",
         icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
+        progressStyle: { background: "#1f62cf" },
         transition: Flip,
       })
-      queryClient.invalidateQueries({ queryKey: ['get-establishment'] })
+      queryClient.invalidateQueries({ queryKey: ["get-establishment"] })
       onClose()
     },
-    onError: error => {
-      toast.error(
-        'Erro ao excluir o sistema. Por favor, tente novamente. ' +
-          error.message,
-        {
-          theme: 'colored',
-          icon: <IoWarningOutline />,
-          transition: Flip,
-        },
-      )
+
+    onError: (error: unknown) => {
+      let errorMessage = "Verifique suas credenciais."
+
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || errorMessage
+      }
+
+      showMessageError(errorMessage)
+      console.error("Erro de login:", error)
     },
+
     onSettled: () => {
       setIsDeleting(false)
     },
@@ -78,7 +80,7 @@ export const ModalEstablishmentDelete = () => {
             onClick={handleDelete}
             disabled={isDeleting}
           >
-            {isDeleting ? 'Excluindo...' : 'Excluir'}
+            {isDeleting ? "Excluindo..." : "Excluir"}
           </Button>
         </div>
       </div>

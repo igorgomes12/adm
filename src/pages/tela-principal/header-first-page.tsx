@@ -1,7 +1,7 @@
-import { Logout } from '@/components/logout/logout'
-import { useState } from 'react'
-import { FaPowerOff } from 'react-icons/fa'
-import { useNavigate } from 'react-router'
+import { Logout } from "@/components/logout/logout"
+import { useState } from "react"
+import { FaPowerOff } from "react-icons/fa"
+import { useNavigate } from "react-router"
 
 export const HeaderFirstPage = () => {
   const [showLogoutCard, setShowLogoutCard] = useState(false)
@@ -13,7 +13,7 @@ export const HeaderFirstPage = () => {
 
   const handleConfirmLogout = () => {
     setShowLogoutCard(false)
-    navigate('/')
+    navigate("/")
     window.location.reload()
   }
 
@@ -31,7 +31,7 @@ export const HeaderFirstPage = () => {
         />
       </a>
       <div>
-        <button onClick={handlePowerOffClick}>
+        <button type="button" onClick={handlePowerOffClick}>
           <FaPowerOff className="text-white text-2xl" />
         </button>
       </div>

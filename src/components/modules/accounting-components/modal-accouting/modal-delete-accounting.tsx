@@ -1,41 +1,41 @@
-import { Button } from '@/components/ui/button'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { FaRocket } from 'react-icons/fa'
-import { IoWarningOutline } from 'react-icons/io5'
-import { Flip, toast } from 'react-toastify'
-import { useAccoutingDeleteZustand } from '../zustand-accounting/delete-zustand'
+import { Button } from "@/components/ui/button"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
+import { FaRocket } from "react-icons/fa"
+import { IoWarningOutline } from "react-icons/io5"
+import { Flip, toast } from "react-toastify"
+import { useAccoutingDeleteZustand } from "../zustand-accounting/delete-zustand"
 
 export const ModalAccountingDelete = () => {
   const { id, isOpen, onClose } = useAccoutingDeleteZustand()
   const [isDeleting, setIsDeleting] = useState(false)
   const queryClient = useQueryClient()
 
-  console.log('Modal Delete - isOpen:', isOpen, 'id:', id)
+  console.log("Modal Delete - isOpen:", isOpen, "id:", id)
 
   const { mutate } = useMutation({
-    mutationKey: ['delete-system'],
+    mutationKey: ["delete-system"],
     mutationFn: async () => {
-      const res = await api.delete(`/accouting`, {
+      const res = await api.delete("/accouting", {
         params: { id },
       })
       return res.data
     },
     onSuccess: () => {
-      toast.success('Sistema excluído com sucesso!', {
-        theme: 'dark',
+      toast.success("Sistema excluído com sucesso!", {
+        theme: "dark",
         icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
+        progressStyle: { background: "#1f62cf" },
         transition: Flip,
       })
-      queryClient.invalidateQueries({ queryKey: ['get-accounting'] })
+      queryClient.invalidateQueries({ queryKey: ["get-accounting"] })
       onClose()
     },
     onError: error => {
-      console.error('Erro ao excluir o sistema:', error)
-      toast.error('Erro ao excluir o sistema. Por favor, tente novamente.', {
-        theme: 'colored',
+      console.error("Erro ao excluir o sistema:", error)
+      toast.error("Erro ao excluir o sistema. Por favor, tente novamente.", {
+        theme: "colored",
         icon: <IoWarningOutline />,
         transition: Flip,
       })
@@ -77,7 +77,7 @@ export const ModalAccountingDelete = () => {
             onClick={handleDelete}
             disabled={isDeleting}
           >
-            {isDeleting ? 'Excluindo...' : 'Excluir'}
+            {isDeleting ? "Excluindo..." : "Excluir"}
           </Button>
         </div>
       </div>

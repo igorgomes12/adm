@@ -1,17 +1,17 @@
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import type { FC } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import type { TClient } from '../zod-form/zod_client.schema'
-import { OwnerSchema, type TOwner } from '../zod-form/zod_owner.schema'
-import { zodResolver } from '@hookform/resolvers/zod'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import type { FC } from "react"
+import { FormProvider, useForm } from "react-hook-form"
+import type { TClient } from "../zod-form/zod_client.schema"
+import { OwnerSchema, type TOwner } from "../zod-form/zod_owner.schema"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 export const AccoutingForm: FC<{ onNext: (data: TClient) => void }> = ({
   onNext,
@@ -22,13 +22,13 @@ export const AccoutingForm: FC<{ onNext: (data: TClient) => void }> = ({
 
   const { handleSubmit, register } = form
 
-  const submitForm = async (data: any) => {
-    console.log('Dados do formulário:', data)
+  const submitForm = async (data: TOwner) => {
+    console.log("Dados do formulário:", data)
     try {
       onNext(data as unknown as TClient)
-      console.log('Form enviado com sucesso:', data)
+      console.log("Form enviado com sucesso:", data)
     } catch (error) {
-      console.error('Erro ao enviar o formulário:', error)
+      console.error("Erro ao enviar o formulário:", error)
     }
   }
 
@@ -51,7 +51,7 @@ export const AccoutingForm: FC<{ onNext: (data: TClient) => void }> = ({
                 <FormItem className="w-full">
                   <FormLabel>Proprietário</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register('name')} />
+                    <Input {...field} {...register("name")} />
                   </FormControl>
                 </FormItem>
               )}
@@ -61,7 +61,7 @@ export const AccoutingForm: FC<{ onNext: (data: TClient) => void }> = ({
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>CPF</FormLabel>
-                  <Input {...field} {...register('cpf_cnpj')} />
+                  <Input {...field} {...register("cpf_cnpj")} />
                 </FormItem>
               )}
             />
@@ -71,7 +71,7 @@ export const AccoutingForm: FC<{ onNext: (data: TClient) => void }> = ({
                 <FormItem className="w-full">
                   <FormLabel>Data de Nascimento</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} {...register('birth_date')} />
+                    <Input type="date" {...field} {...register("birth_date")} />
                   </FormControl>
                 </FormItem>
               )}

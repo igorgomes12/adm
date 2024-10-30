@@ -1,30 +1,30 @@
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { FormProvider, useForm } from 'react-hook-form'
-import { FaRocket } from 'react-icons/fa'
-import { Flip, toast } from 'react-toastify'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { FormProvider, useForm } from "react-hook-form"
+import { FaRocket } from "react-icons/fa"
+import { Flip, toast } from "react-toastify"
 import {
   schemaEstablished,
   type TSchemaEstablished,
-} from '../zod-types-establishment/zod-establihment'
-import { useEstablishmentZustand } from '../zustand-establishment/create-establishment'
+} from "../zod-types-establishment/zod-establihment"
+import { useEstablishmentZustand } from "../zustand-establishment/create-establishment"
 
 type TAddEstablishment = {
   message: string
 }
 
 // Modificamos o tipo para remover o campo status
-type TEstablishmentInput = Omit<TSchemaEstablished, 'status'>
+type TEstablishmentInput = Omit<TSchemaEstablished, "status">
 
 export const AddEstablishmentModal = () => {
   const { onClose } = useEstablishmentZustand()
@@ -32,36 +32,35 @@ export const AddEstablishmentModal = () => {
   const queryClient = useQueryClient()
 
   const { mutate: mutation, isSuccess } = useMutation({
-    mutationKey: ['post-establishment'],
+    mutationKey: ["post-establishment"],
     mutationFn: async (data: TEstablishmentInput) => {
-      const res = await api.post<TAddEstablishment>('/establishment', {
+      const res = await api.post<TAddEstablishment>("/establishment", {
         ...data,
         status: true,
       })
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['get-establishment'] })
-      toast.success('Estabelecimento adicionado com sucesso!', {
-        theme: 'dark',
+      queryClient.invalidateQueries({ queryKey: ["get-establishment"] })
+      toast.success("Estabelecimento adicionado com sucesso!", {
+        theme: "dark",
         icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
+        progressStyle: { background: "#1f62cf" },
         transition: Flip,
       })
       onClose()
     },
     onError: error => {
-      console.error('Erro ao adicionar estabelecimento:', error)
+      console.error("Erro ao adicionar estabelecimento:", error)
       toast.error(
-        'Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente.' +
-          (error.message || ''),
+        `Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente, ${error.message}`
       )
     },
   })
 
   const form = useForm<TEstablishmentInput>({
     defaultValues: {
-      name: '',
+      name: "",
     },
     resolver: zodResolver(schemaEstablished.omit({ status: true })),
   })
@@ -69,12 +68,12 @@ export const AddEstablishmentModal = () => {
   const { register } = form
 
   const onSubmit = async (data: TEstablishmentInput) => {
-    console.log('Dados enviados:', data)
+    console.log("Dados enviados:", data)
     try {
       await mutation(data)
-      console.log('Requisição enviada com sucesso')
+      console.log("Requisição enviada com sucesso")
     } catch (error) {
-      console.error('Erro ao enviar a requisição:', error)
+      console.error("Erro ao enviar a requisição:", error)
     }
   }
 
@@ -97,7 +96,7 @@ export const AddEstablishmentModal = () => {
                   <FormLabel>Nome do Estabelecimento</FormLabel>
                   <FormControl>
                     <Input
-                      {...register('name')}
+                      {...register("name")}
                       placeholder="Nome do estabelecimento"
                       {...field}
                     />
@@ -122,7 +121,7 @@ export const AddEstablishmentModal = () => {
                 variant="success"
                 disabled={isSuccess}
               >
-                {isSuccess ? 'Salvando...' : 'Salvar'}
+                {isSuccess ? "Salvando..." : "Salvar"}
               </Button>
             </div>
           </form>

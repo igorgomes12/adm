@@ -3,10 +3,10 @@ import type { FC } from "react"
 import { FaRocket } from "react-icons/fa"
 import { Flip, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import api from "../../infra/auth/database/acess-api/interceptors-axios"
-import type { CreateRepresentativeSchemaDto } from "../modules/representative-component/zod/create-representative.dto"
-import { useFormStore } from "../modules/representative-component/zustand/gerenciador-zustand"
-import { Button } from "../ui/button"
+import api from "../../../../infra/auth/database/acess-api/interceptors-axios"
+import type { CreateRepresentativeSchemaDto } from "../zod/create-representative.dto"
+import { useFormStore } from "../zustand/gerenciador-zustand"
+import { Button } from "../../../ui/button"
 import { useNavigate, useParams } from "react-router-dom"
 
 interface IHeaderFormsProps {
@@ -93,27 +93,27 @@ export const HeaderForms: FC<IHeaderFormsProps> = ({
 
     const completeData: CreateRepresentativeSchemaDto = {
       type: formData.type || "REPRESENTATIVE",
-      region: formData.region || "centro",
+      region: formData.region || "",
       supervisor: formData.supervisor || "",
-      status: formData.status || "ativo",
+      status: formData.status || "",
       name: formData?.name?.toUpperCase() || "",
       commission: {
         implantation: formData.commission?.implantation,
         mensality: formData.commission?.mensality,
       },
       contact: {
-        email: formData.contact?.email || "joao.silva@example.com",
+        email: formData.contact?.email || "",
         cellphone: formData.contact?.cellphone || "",
-        phone: formData.contact?.phone || "(11) 3333-3333",
+        phone: formData.contact?.phone || "",
       },
       address: {
-        postal_code: formData.address?.postal_code || "29210250",
-        street: formData.address?.street || "Rua nova",
-        number: formData.address?.number || "12",
-        neighborhood: formData.address?.neighborhood || "Itapebussu",
-        municipality_name: formData.address?.municipality_name || "Guarapari",
-        state: formData.address?.state || "ES",
-        complement: formData.address?.complement || "casa",
+        postal_code: formData.address?.postal_code || "",
+        street: formData.address?.street || "",
+        number: formData.address?.number || "",
+        neighborhood: formData.address?.neighborhood || "",
+        municipality_name: formData.address?.municipality_name || "",
+        state: formData.address?.state || "",
+        complement: formData.address?.complement || "",
       },
     }
 

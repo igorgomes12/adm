@@ -1,4 +1,3 @@
-import { HeaderForms } from "@/components/header-forms/header-forms"
 import { Button } from "@/components/ui/button"
 import {
   FormControl,
@@ -17,7 +16,7 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, type FC } from "react"
+import { type FC, useEffect } from "react"
 import {
   Controller,
   FormProvider,
@@ -25,8 +24,12 @@ import {
   useForm,
 } from "react-hook-form"
 import { FaPlus, FaRegStar, FaStar, FaTrash } from "react-icons/fa"
-import { useFormStore } from "../../representative-component/zustand/gerenciador-zustand"
-import { ContactSchema, type TContact } from "../zod-form/zod_contact.schema"
+import {
+  ContactSchema,
+  type TContact,
+} from "../../client/zod-form/zod_contact.schema"
+import { HeaderClientForms } from "../header-client"
+import { useClientFormStore } from "../zustand/client-form.zustand"
 
 const applyMask = (value: string, mask: string): string => {
   let formattedValue = ""
@@ -43,14 +46,14 @@ const applyMask = (value: string, mask: string): string => {
   return formattedValue
 }
 
-export const ContactForm: FC<{
+export const ContactCLientForm: FC<{
   onNext?: (data: TContact) => void
   initialValues?: TContact
 }> = ({ onNext, initialValues }) => {
-  const { updateFormData } = useFormStore()
+  const { updateFormData } = useClientFormStore()
   const form = useForm<TContact>({
     resolver: zodResolver(ContactSchema),
-    defaultValues: initialValues, // Use os initialValues diretamente
+    defaultValues: initialValues,
   })
 
   const {
@@ -60,7 +63,6 @@ export const ContactForm: FC<{
     reset,
   } = form
 
-  // Atualiza os valores do formulário quando initialValues mudam
   useEffect(() => {
     reset(initialValues)
   }, [initialValues, reset])
@@ -109,7 +111,7 @@ export const ContactForm: FC<{
   return (
     <div className="flex flex-col p-4 w-full h-screen">
       <div className="flex w-full items-start justify-start">
-        <HeaderForms title="Formulários de Contatos" />
+        <HeaderClientForms title="Formulários de Contatos" />
       </div>
       <FormProvider {...form}>
         <form
@@ -192,7 +194,7 @@ export const ContactForm: FC<{
                       <div className="relative flex items-center">
                         <Input
                           {...field}
-                          value={field.value || ""} // Garante que o valor inicial não seja undefined
+                          value={field.value || ""}
                           onChange={e => {
                             const mask = getMask(
                               form.getValues(`telefones.${index}.type`)

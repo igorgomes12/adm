@@ -1,14 +1,14 @@
-import { HeaderForms } from '@/components/header-forms/header-forms'
-import { Button } from '@/components/ui/button'
+import { HeaderForms } from "@/components/modules/representative-component/header-forms/header-forms"
+import { Button } from "@/components/ui/button"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Select,
   SelectContent,
@@ -16,22 +16,22 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
-import { FC, useEffect } from 'react'
-import { FormProvider, useForm, useWatch } from 'react-hook-form'
-import { ToastContainer } from 'react-toastify'
-import { translateType } from '../table-representative'
-import { schemaDadosGerais, type TSchemaDadosGerais } from '../zod/dados.zod'
-import { useFormStore } from '../zustand/gerenciador-zustand'
-import type { representative } from '../zod/types-representative'
+} from "@/components/ui/select"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useQuery } from "@tanstack/react-query"
+import { type FC, useEffect } from "react"
+import { FormProvider, useForm, useWatch } from "react-hook-form"
+import { ToastContainer } from "react-toastify"
+import { translateType } from "../table-representative"
+import { schemaDadosGerais, type TSchemaDadosGerais } from "../zod/dados.zod"
+import { useFormStore } from "../zustand/gerenciador-zustand"
+import type { representative } from "../zod/types-representative"
 
-const options: Array<'REPRESENTATIVE' | 'CONSULTANT' | 'PARTHER'> = [
-  'REPRESENTATIVE',
-  'CONSULTANT',
-  'PARTHER',
+const options: Array<"REPRESENTATIVE" | "CONSULTANT" | "PARTHER"> = [
+  "REPRESENTATIVE",
+  "CONSULTANT",
+  "PARTHER",
 ]
 
 export const DadosGerais: FC<{
@@ -44,18 +44,18 @@ export const DadosGerais: FC<{
     resolver: zodResolver(schemaDadosGerais),
     defaultValues: initialValues.id
       ? {
-          name: initialValues.name || formData.name || '',
-          type: initialValues.type || formData.type || 'REPRESENTATIVE',
-          region: initialValues.region || formData.region || '',
-          supervisor: initialValues.supervisor || formData.supervisor || '',
-          status: initialValues.status || formData.status || '',
+          name: initialValues.name || formData.name || "",
+          type: initialValues.type || formData.type || "REPRESENTATIVE",
+          region: initialValues.region || formData.region || "",
+          supervisor: initialValues.supervisor || formData.supervisor || "",
+          status: initialValues.status || formData.status || "",
         }
       : {
-          name: '',
-          type: 'REPRESENTATIVE',
-          region: '',
-          supervisor: '',
-          status: '',
+          name: "",
+          type: "REPRESENTATIVE",
+          region: "",
+          supervisor: "",
+          status: "",
         },
   })
 
@@ -71,11 +71,11 @@ export const DadosGerais: FC<{
       reset(initialValues)
     } else {
       reset({
-        name: '',
-        type: 'REPRESENTATIVE',
-        region: '',
-        supervisor: '',
-        status: '',
+        name: "",
+        type: "REPRESENTATIVE",
+        region: "",
+        supervisor: "",
+        status: "",
       })
     }
   }, [initialValues, reset])
@@ -97,15 +97,15 @@ export const DadosGerais: FC<{
   }
 
   const { data: supervisors } = useQuery<representative[], Error>({
-    queryKey: ['get-representative'],
+    queryKey: ["get-representative"],
     queryFn: async () => {
-      const response = await api.get('/representative')
+      const response = await api.get("/representative")
       return response.data
     },
   })
 
   const filteredSupervisors = supervisors?.filter(
-    supervisor => supervisor.id !== initialValues.id,
+    supervisor => supervisor.id !== initialValues.id
   )
 
   return (
@@ -191,7 +191,7 @@ export const DadosGerais: FC<{
                   <FormLabel htmlFor="supervisor">Supervisor</FormLabel>
                   <FormControl>
                     <Select
-                      value={field.value || ''}
+                      value={field.value || ""}
                       onValueChange={field.onChange}
                       disabled={!filteredSupervisors}
                     >
@@ -200,8 +200,11 @@ export const DadosGerais: FC<{
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {filteredSupervisors?.map((item, i: number) => (
-                            <SelectItem key={i} value={item.id.toString()}>
+                          {filteredSupervisors?.map(item => (
+                            <SelectItem
+                              key={item.id}
+                              value={item.id.toString()}
+                            >
                               {item.name}
                             </SelectItem>
                           ))}

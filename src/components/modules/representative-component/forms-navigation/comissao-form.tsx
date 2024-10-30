@@ -1,22 +1,22 @@
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { FC, useEffect } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { HeaderForms } from '@/components/header-forms/header-forms'
-import { ToastContainer } from 'react-toastify'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { type FC, useEffect } from "react"
+import { FormProvider, useForm } from "react-hook-form"
+import { HeaderForms } from "@/components/modules/representative-component/header-forms/header-forms"
+import { ToastContainer } from "react-toastify"
 import {
   commissionRepresentativeSchemaDto,
   type CommissionRepresentativeDto,
-} from '../zod/commission-representative.dto'
-import { useFormStore } from '../zustand/gerenciador-zustand'
+} from "../zod/commission-representative.dto"
+import { useFormStore } from "../zustand/gerenciador-zustand"
 
 export const ComissaoForm: FC<{
   onNext: (data: CommissionRepresentativeDto) => void
@@ -67,7 +67,7 @@ export const ComissaoForm: FC<{
                       min={0}
                       value={field.value}
                       onChange={e =>
-                        field.onChange(parseFloat(e.target.value) || 0)
+                        field.onChange(Number.parseFloat(e.target.value) || 0)
                       }
                     />
                   </FormControl>
@@ -88,7 +88,7 @@ export const ComissaoForm: FC<{
                       min={0}
                       value={field.value}
                       onChange={e =>
-                        field.onChange(parseFloat(e.target.value) || 0)
+                        field.onChange(Number.parseFloat(e.target.value) || 0)
                       }
                     />
                   </FormControl>

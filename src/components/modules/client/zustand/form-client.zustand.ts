@@ -1,68 +1,73 @@
 import { create } from 'zustand'
 
-interface FormDataClientStore {
-  id?: number
-  inDebt?: boolean
-  identifier?: string
-  createdAt?: string
-  updatedAt?: string
-  deletedAt?: string | null
-  corporate_name?: string
-  fantasy_name?: string
-  contacts?: Array<{
-    name: string
-    contact: string
-    telefones: Array<{
-      number: string
-      type: 'TELEFONE' | 'WHATSAPP' | 'CELULAR'
-      favorite: boolean
-    }>
-    description?: string
-  }>
-  cpf_cnpj?: string
-  state_registration?: string
-  municipal_registration?: string | null
-  rural_registration?: string | null
-  address?: Array<{
-    postal_code: string
-    street: string
-    number: string
-    neighborhood: string
-    municipality_id: number
-    municipality_name: string
-    state_id: number
-    state: string
-    country_id: number
-    region_id: number
-    description?: string
-    main: boolean
-  }>
-  name_account?: string
-  id_account?: number
-  establishment_typeId?: number
-  systemsId?: number
-  owner?: Array<{
-    name: string
-    cpf_cnpj: string
-    birth_date: string
-  }>
+interface Contact {
+  description: string
+  contact: string
+  type: 'EMAIL'
+  favorite: boolean
 }
 
-interface FormClientStore {
-  formData: FormDataClientStore
-  updateFormData: (data: Partial<FormDataClientStore>) => void
-  isMutationSuccess: boolean
-  setMutationSuccess: (success: boolean) => void
+interface Address {
+  street: string
+  complement: string
+  postal_code: string
+  number: string
+  neighborhood: string
+  municipality_id: number
+  municipality_name: string
+  state_id: number
+  state: string
+  country_id: number
+  region_id: number
+  description: string
+  favorite: boolean
 }
 
-export const useFormClientStore = create<FormClientStore>(set => ({
+interface Owner {
+  name: string
+  cpf_cnpj: string
+  birth_date: string
+}
+
+interface FormDataStore {
+  corporate_name: string
+  fantasy_name: string
+  cpf_cnpj: string
+  state_registration: string
+  municipal_registration: string
+  rural_registration: string
+  establishment_typeId: number
+  systemsId: number
+  contacts: Contact[]
+  address: Address[]
+  id_account: number
+  name_account: string
+  owner: Owner[]
+}
+
+interface FormStore {
+  formData: FormDataStore
+  updateFormData: (data: Partial<FormDataStore>) => void
+}
+
+export const useFormStore = create<FormStore>(set => ({
   formData: {
+    corporate_name: '',
+    fantasy_name: '',
+    cpf_cnpj: '',
+    state_registration: '',
+    municipal_registration: '',
+    rural_registration: '',
+    establishment_typeId: 1,
+    systemsId: 1,
+    contacts: [],
     address: [],
+    id_account: 1,
+    name_account: '',
+    owner: [],
   },
   updateFormData: data =>
     set(state => ({
       formData: { ...state.formData, ...data },
     })),
-  isMutationSuccess: false,
-  setMutationSuccess: success => set({ isMutationSuccess: success }),
 }))

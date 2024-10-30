@@ -1,5 +1,4 @@
-import { AddressForm } from "@/components/modules/client/forms/address-form"
-import { ContactForm } from "@/components/modules/client/forms/contact-form"
+import { ContactForm } from "@/components/modules/representative-component/forms-navigation/contact-form"
 import { ComissaoForm } from "@/components/modules/representative-component/forms-navigation/comissao-form"
 import { DadosGerais } from "@/components/modules/representative-component/forms-navigation/dados-gerais"
 import { RepresentativeNavComponent } from "@/components/modules/representative-component/nav/navitgation-form"
@@ -8,6 +7,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { type FC, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { toast } from "react-toastify"
+import { AddressForm } from "@/components/modules/representative-component/forms-navigation/address-form"
 
 export const FormRepresentative: FC = () => {
   const { id } = useParams<{ id: string }>()

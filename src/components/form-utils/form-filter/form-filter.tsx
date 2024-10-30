@@ -1,6 +1,6 @@
-import { ButtonAdd } from '@/components/buttons/buttons-add'
-import type { FC } from 'react'
-import { BsFillPrinterFill, BsPlus } from 'react-icons/bs'
+import { ButtonAdd } from "@/components/buttons/buttons-add"
+import type { FC } from "react"
+import { BsFillPrinterFill, BsPlus } from "react-icons/bs"
 
 interface FormFilterProps {
   searchTerm: string
@@ -34,7 +34,7 @@ export const FormFilter: FC<FormFilterProps> = ({
           icon={
             <BsFillPrinterFill
               width="bold"
-              className="p-2 bg-sky-500 hover:bg-sky-600 rounded-full"
+              className="p-2 bg-lime-500 hover:bg-lime-600 rounded-full"
               size={40}
             />
           }

@@ -6,7 +6,7 @@ export const showMessageSuccess: FC<{ message: string }> = ({ message }) => {
   return toast.success(message, {
     theme: 'dark',
     icon: FaRocket,
-    progressStyle: { background: '#1f62cf' },
+    progressStyle: { background: 'rgb(34 197 94)' },
     transition: Flip,
   })
 }

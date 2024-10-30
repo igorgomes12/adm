@@ -1,22 +1,36 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useParams } from "react-router"
+import { useClientFormStore } from "@/components/modules/client/zustand/client-form.zustand"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { ContactCLientForm } from "@/components/modules/client/forms/contact-client-form"
+import { RepresentativeForm } from "@/components/modules/client/forms/representative-form"
+import { OwnerForm } from "@/components/modules/client/forms/accounting-form"
 import {
   ClientNavigationComponent,
   navClients,
 } from "@/components/client-forms/client-navigation-component"
-import { AccoutingForm } from "@/components/modules/client/forms/accounting-form"
-import { AddressForm } from "@/components/modules/client/forms/address-form"
-import { ContactForm } from "@/components/modules/client/forms/contact-form"
-import { RepresentativeForm } from "@/components/modules/client/forms/representative-form"
-import { EnterpriseForm } from "../../../components/modules/client/forms/enterprise-form"
-import { useClientFormStore } from "@/components/modules/client/zustand/client-form.zustand"
-import api from "@/infra/auth/database/acess-api/interceptors-axios"
-import { useParams } from "react-router"
+import { toast } from "react-toastify"
+import { EnterpriseForm } from "@/components/modules/client/forms/enterprise-form"
 
 export const FormClientComponent = () => {
   const { id } = useParams<{ id: string }>()
   const [selectedForm, setSelectedForm] = useState<string>("Empresa")
   const [enabledForms, setEnabledForms] = useState<string[]>(["Empresa"])
   const { formData, updateFormData } = useClientFormStore()
+
+  useEffect(() => {
+    if (id) {
+      const fetchData = async () => {
+        try {
+          const response = await api.get(`/client/${id}`)
+          updateFormData(response.data)
+        } catch (error) {
+          console.error("Erro ao buscar dados do cliente:", error)
+        }
+      }
+      fetchData()
+    }
+  }, [id, updateFormData])
 
   const handleNext = (currentForm: string, data: unknown) => {
     updateFormData({ [currentForm.toLowerCase()]: data })
@@ -25,7 +39,9 @@ export const FormClientComponent = () => {
       navClients.findIndex(client => client.title === currentForm) + 1
     if (nextFormIndex < navClients.length) {
       const nextFormTitle = navClients[nextFormIndex].title
-      setEnabledForms([...enabledForms, nextFormTitle])
+      if (!enabledForms.includes(nextFormTitle)) {
+        setEnabledForms(prev => [...prev, nextFormTitle])
+      }
       setSelectedForm(nextFormTitle)
     } else {
       submitAllData()
@@ -35,27 +51,41 @@ export const FormClientComponent = () => {
   const submitAllData = async () => {
     try {
       const combinedData = {
-        ...formData.enterprise,
-        ...formData.contact,
-        ...formData.address,
-        ...formData.representative,
+        ...formData.empresa,
+        contacts: formData.contact,
+        address: formData.address,
+        owner: formData.representative,
         ...formData.accounting,
       }
-      await api.post("/client", combinedData)
-      console.log("Todos os dados foram enviados com sucesso:", combinedData)
+      console.log("?????", combinedData)
+
+      if (id) {
+        await api.patch(`/client/${id}`, combinedData)
+        toast.success("Cliente atualizado com sucesso!")
+      } else {
+        await api.post("/client", combinedData)
+        toast.success("Cliente cadastrado com sucesso!")
+      }
     } catch (error) {
       console.error("Erro ao enviar os dados:", error)
+      toast.error("Erro ao enviar os dados do cliente.")
     }
   }
 
   const renderForm = () => {
     switch (selectedForm) {
       case "Empresa":
-        return <EnterpriseForm onNext={data => handleNext("Empresa", data)} />
+        return (
+          <EnterpriseForm
+            initialValues={formData.empresa}
+            onNext={data => handleNext("Empresa", data)}
+          />
+        )
       case "Contatos":
-        return <ContactForm onNext={data => handleNext("Contatos", data)} />
-      case "Endereços":
-        return <AddressForm onNext={data => handleNext("Endereços", data)} />
+        return (
+          <ContactCLientForm onNext={data => handleNext("Contatos", data)} />
+        )
+      //
       case "Representante":
         return (
           <RepresentativeForm
@@ -63,9 +93,7 @@ export const FormClientComponent = () => {
           />
         )
       case "Proprietário":
-        return (
-          <AccoutingForm onNext={data => handleNext("Proprietário", data)} />
-        )
+        return <OwnerForm onNext={data => handleNext("Proprietário", data)} />
       default:
         return <div>Selecione uma opção para ver o formulário.</div>
     }
@@ -75,7 +103,7 @@ export const FormClientComponent = () => {
     <div className="flex px-2">
       <aside className="w-96 bg-gray-100 items-center flex overscroll-none flex-col space-y-6">
         <h2 className="text-2xl font-semibold p-2">
-          {id ? "Editar cliente" : " Cadastro cliente"}
+          {id ? "Editar cliente" : "Cadastro cliente"}
         </h2>
         <ClientNavigationComponent
           selected={selectedForm}

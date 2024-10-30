@@ -1,17 +1,17 @@
-import { SignIn } from '@/components/sing-in/sing-in'
-import { AccountingComponent } from '@/pages/channel/accounting/accounting'
-import { ClientComponent } from '@/pages/channel/client/client'
-import { FormClientComponent } from '@/pages/channel/client/form-client'
-import { EstablishmentComponent } from '@/pages/channel/establishment/establishment'
-import { PaymentComponent } from '@/pages/channel/forms-payment/payment'
-import { FormRepresentative } from '@/pages/channel/representative/form-representative'
-import { RepresentativeComponent } from '@/pages/channel/representative/representative'
-import { SystemComponent } from '@/pages/channel/system/system'
-import { UsersComponent } from '@/pages/channel/user/users'
-import { MainDashboard } from '@/pages/dashboard/main-dashboard'
-import { Layout } from '@/pages/layout'
-import { TelaPrincipal } from '@/pages/tela-principal/tela-principal'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { SignIn } from "@/components/sing-in/sing-in"
+import { AccountingComponent } from "@/pages/channel/accounting/accounting"
+import { ClientComponent } from "@/pages/channel/client/client"
+import { FormClientComponent } from "@/pages/channel/client/form-client"
+import { EstablishmentComponent } from "@/pages/channel/establishment/establishment"
+import { PaymentComponent } from "@/pages/channel/forms-payment/payment"
+import { FormRepresentative } from "@/pages/channel/representative/form-representative"
+import { RepresentativeComponent } from "@/pages/channel/representative/representative"
+import { SystemComponent } from "@/pages/channel/system/system"
+import { UsersComponent } from "@/pages/channel/user/users"
+import { MainDashboard } from "@/pages/dashboard/main-dashboard"
+import { Layout } from "@/pages/layout"
+import { TelaPrincipal } from "@/pages/tela-principal/tela-principal"
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 
 export const AppRoutes = () => {
   return (

@@ -1,4 +1,4 @@
-import { HeaderForms } from "@/components/header-forms/header-forms"
+import { HeaderForms } from "@/components/modules/representative-component/header-forms/header-forms"
 import {
   FormControl,
   FormField,
@@ -18,9 +18,13 @@ import { FormProvider, useForm } from "react-hook-form"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { useFormStore } from "../../representative-component/zustand/gerenciador-zustand"
-import { addressSchema, type addressSchemaType } from "../zod-form/zod-address"
-import type { TClient } from "../zod-form/zod_client.schema"
+
 import { useNavigate } from "react-router-dom"
+import {
+  type addressSchemaType,
+  addressSchema,
+} from "../../client/zod-form/zod-address"
+import type { TClient } from "../../client/zod-form/zod_client.schema"
 
 export const AddressForm: FC<{
   onNext?: (data: TClient) => void

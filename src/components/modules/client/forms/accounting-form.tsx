@@ -12,8 +12,9 @@ import { FormProvider, useForm } from "react-hook-form"
 import type { TClient } from "../zod-form/zod_client.schema"
 import { OwnerSchema, type TOwner } from "../zod-form/zod_owner.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { HeaderClientForms } from "../header-client"
 
-export const AccoutingForm: FC<{ onNext: (data: TClient) => void }> = ({
+export const OwnerForm: FC<{ onNext: (data: TClient) => void }> = ({
   onNext,
 }) => {
   const form = useForm<TOwner>({
@@ -35,9 +36,7 @@ export const AccoutingForm: FC<{ onNext: (data: TClient) => void }> = ({
   return (
     <div className="flex flex-col p-4 w-full h-screen">
       <div className="flex w-full items-start justify-start">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
-          Formulário de Endereço
-        </h1>
+        <HeaderClientForms title="Formulário de Proprietário" />
       </div>
       <FormProvider {...form}>
         <form

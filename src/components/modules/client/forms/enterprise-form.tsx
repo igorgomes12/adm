@@ -1,113 +1,88 @@
-import { Button } from "@/components/ui/button"
+import { useForm, FormProvider } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { type FC, useEffect } from "react"
+import { Input } from "@/components/ui/input"
+import { HeaderClientForms } from "../header-client"
 import {
-  FormControl,
+  type EnterpriseDto,
+  schemaEnterpriseDto,
+} from "../zod-form/zod-enterprise.dto"
+import {
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import api from "@/infra/auth/database/acess-api/interceptors-axios"
-import { useQuery } from "@tanstack/react-query"
-import { AxiosError } from "axios"
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import { useFormStore } from "../zustand/form-client.zustand"
+import { Button } from "@/components/ui/button"
 
-import { useEffect, type FC } from "react"
-import { FormProvider, useForm } from "react-hook-form"
-import type { TSchemaEstablished } from "../../establishment-components/zod-types-establishment/zod-establihment"
-import { HeaderClientForms } from "../header-client"
-import type { TClient } from "../zod-form/zod_client.schema"
+export const EnterpriseForm: FC<{
+  onNext: (data: EnterpriseDto) => void
+  initialValues: EnterpriseDto & { id?: number }
+}> = ({ onNext, initialValues }) => {
+  const { updateFormData } = useFormStore()
 
-interface IEnterpriseFormProps {
-  onNext: (data: TClient) => void
-}
-
-export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
-  const form = useForm()
-
-  const { data, error } = useQuery<TSchemaEstablished[], AxiosError<Error>>({
-    queryKey: ["get-establishment"],
-    queryFn: async () => {
-      const response = await api.get("/establishment")
-      return response.data
+  const form = useForm<EnterpriseDto>({
+    resolver: zodResolver(schemaEnterpriseDto),
+    defaultValues: {
+      corporate_name: initialValues?.corporate_name || "",
+      fantasy_name: initialValues?.fantasy_name || "",
+      cpf_cnpj: initialValues?.cpf_cnpj || "",
+      state_registration: initialValues?.state_registration || "",
+      municipal_registration: initialValues?.municipal_registration || "",
+      rural_registration: initialValues?.rural_registration || "",
     },
   })
 
-  if (error) {
-    return (
-      <div>
-        <p>{`Nenhum estabelecimento encontrado. Por favor, tente novamente. ${error.message}`}</p>
-      </div>
-    )
-  }
-
-  const { setValue, register, handleSubmit } = form
+  const {
+    handleSubmit,
+    register,
+    reset,
+    watch,
+    formState: { errors },
+  } = form
 
   useEffect(() => {
-    const today = new Date().toISOString().split("T")[0]
-    setValue("createdAt", today)
-  }, [setValue])
-
-  const submitForm = async () => {
-    try {
-      onNext(data as unknown as TClient)
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error.response?.status === 400)
-          throw new Error("Formulário inválido")
-        if (error.response?.status === 401)
-          throw new Error("Usuário não autorizado")
-        if (error.response?.status === 404)
-          throw new Error("Usuário não encontrado")
-      }
+    if (initialValues) {
+      reset(initialValues)
     }
+  }, [initialValues, reset])
+
+  // Update global form data on input change
+  useEffect(() => {
+    const subscription = watch(value => {
+      updateFormData(value)
+    })
+    return () => subscription.unsubscribe()
+  }, [watch, updateFormData])
+
+  const onSubmit = (data: EnterpriseDto) => {
+    console.log("=> ", data)
+    updateFormData(data)
+    onNext(data)
   }
+
   return (
-    <div className="flex flex-col p-4 w-full h-screen">
-      <div className="flex w-full items-start justify-start">
-        <HeaderClientForms title="Formulários da Empresa" />
-      </div>
+    <section className="w-full items-start justify-center p-4 flex flex-col">
+      <HeaderClientForms title="Dados Gerais" />
       <FormProvider {...form}>
         <form
-          onSubmit={handleSubmit(submitForm)}
-          className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full"
-          action=""
+          onSubmit={handleSubmit(onSubmit)}
+          className="gap-4 p-4 w-full border-2 shadow-lg rounded-md flex flex-col"
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
-            <FormField
-              name="createdAt"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Data Cadastro</FormLabel>
-                  <Input
-                    {...register("createdAt")}
-                    className="text-md font-normal"
-                    type="date"
-                    disabled
-                    {...field}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               name="corporate_name"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Nome Corporativo</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      {...register("corporate_name", { required: true })}
-                    />
-                  </FormControl>
-                  <FormMessage />
+                  <Input
+                    {...field}
+                    {...register("corporate_name", { required: true })}
+                  />
+                  <FormMessage>{errors.corporate_name?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -117,7 +92,7 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
                 <FormItem className="w-full">
                   <FormLabel>Nome Fantasia</FormLabel>
                   <Input {...register("fantasy_name")} {...field} />
-                  <FormMessage />
+                  <FormMessage>{errors.fantasy_name?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -128,10 +103,8 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>CNPJ</FormLabel>
-                  <FormControl>
-                    <Input {...field} {...register("cpf_cnpj")} />
-                  </FormControl>
-                  <FormMessage />
+                  <Input {...field} {...register("cpf_cnpj")} />
+                  <FormMessage>{errors.cpf_cnpj?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -142,10 +115,10 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Incrição Estadual</FormLabel>
-                  <FormControl>
-                    <Input {...field} {...register("state_registration")} />
-                  </FormControl>
-                  <FormMessage />
+                  <Input {...field} {...register("state_registration")} />
+                  <FormMessage>
+                    {errors.state_registration?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -155,7 +128,9 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
                 <FormItem className="w-full">
                   <FormLabel>Incrição Municipal</FormLabel>
                   <Input {...field} {...register("municipal_registration")} />
-                  <FormMessage />
+                  <FormMessage>
+                    {errors.municipal_registration?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -165,38 +140,9 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
                 <FormItem className="w-full">
                   <FormLabel>Incrição Rural</FormLabel>
                   <Input {...field} {...register("rural_registration")} />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="flex lg:flex-row flex-col w-full gap-2 items-center justify-between">
-            <FormField
-              name={"establishment_typeId"}
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Tipo Estabelecimento</FormLabel>
-                  <FormControl>
-                    <Select
-                      onValueChange={value => field.onChange(Number(value))}
-                      defaultValue={field.value?.toString()}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione um tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {data?.map((item: TSchemaEstablished) => (
-                          <SelectItem
-                            key={item.id}
-                            value={item?.id?.toString() || "0"}
-                          >
-                            {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
+                  <FormMessage>
+                    {errors.rural_registration?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -208,6 +154,7 @@ export const EnterpriseForm: FC<IEnterpriseFormProps> = ({ onNext }) => {
           </div>
         </form>
       </FormProvider>
-    </div>
+      <ToastContainer />
+    </section>
   )
 }

@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { api } from "@/infra/auth/database/acess-api/api"
 import type { TClient } from "./zod-form/zod_client.schema"
 import { Button } from "@/components/ui/button"
-import { useFormClientStore } from "./zustand/form-client.zustand"
+import { useFormStore } from "./zustand/form-client.zustand"
 
 interface IHeaderClientFormsProps {
   title: string
@@ -18,14 +18,16 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
   title,
   setActiveComponent,
 }) => {
-  const { formData, updateFormData, setMutationSuccess } = useFormClientStore()
+  const { formData } = useFormStore()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
+  const { updateFormData } = useFormStore()
 
   const createMutation = useMutation({
     mutationKey: ["post-client"],
-    mutationFn: async (data: TClient) => {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    mutationFn: async (data: any) => {
       const res = await api.post<TClient>("/client", {
         ...data,
         status: "ativo",
@@ -44,7 +46,6 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
       })
       resetFormData()
       setActiveComponent?.("Clientes de venda")
-      setMutationSuccess(true)
     },
     onError: (error: Error) => {
       console.error("Erro ao adicionar estabelecimento:", error)
@@ -52,12 +53,12 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
         `Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente.
           ${error.message || ""}`
       )
-      setMutationSuccess(false)
     },
   })
 
   const updateMutation = useMutation({
-    mutationFn: async (data: TClient) => {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    mutationFn: async (data: any) => {
       const res = await api.patch("/client", data, {
         params: { id },
       })
@@ -75,7 +76,6 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
       })
       resetFormData()
       setActiveComponent?.("Clientes de venda")
-      setMutationSuccess(true)
     },
     onError: (error: Error) => {
       console.error("Erro ao atualizar representante:", error)
@@ -83,31 +83,31 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
         `Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente.
           ${error.message || ""}`
       )
-      setMutationSuccess(false)
     },
   })
 
   const handleSave = () => {
-    setMutationSuccess(false)
-
-    const completeData: TClient = {
-      corporate_name: formData.corporate_name || "Nome Empresarial",
-      fantasy_name: formData.fantasy_name || "Nome Fantasia",
-      contacts: formData.contacts || [],
-      cpf_cnpj: formData.cpf_cnpj || "00000000000",
-      state_registration: formData.state_registration || "Registro Estadual",
+    const completeData = {
+      corporate_name: formData.corporate_name || "",
+      fantasy_name: formData.fantasy_name || "",
+      contacts: formData.contacts.length > 0 ? formData.contacts : [],
+      cpf_cnpj: formData.cpf_cnpj || "",
+      state_registration: formData.state_registration || "",
       municipal_registration: formData.municipal_registration || null,
       rural_registration: formData.rural_registration || null,
-      address: formData.address || [],
-      name_account: formData.name_account || "Nome da Conta",
+      address: formData.address.length > 0 ? formData.address : [],
+      name_account: formData.name_account || "",
       id_account: formData.id_account || 1,
       establishment_typeId: formData.establishment_typeId || 1,
       systemsId: formData.systemsId || 1,
-      owner: formData.owner || [],
+      owner: formData.owner.length > 0 ? formData.owner : [],
     }
 
     if (id) {
-      updateMutation.mutate(completeData)
+      updateMutation.mutate({
+        ...completeData,
+        id: Number(id),
+      })
     } else {
       createMutation.mutate(completeData)
     }
@@ -115,21 +115,18 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
 
   const resetFormData = () => {
     updateFormData({
-      address: [
-        {
-          postal_code: "",
-          street: "",
-          number: "",
-          neighborhood: "",
-          municipality_name: "",
-          state: "",
-          municipality_id: 0,
-          state_id: 0,
-          country_id: 0,
-          region_id: 0,
-          main: false,
-        },
-      ],
+      corporate_name: "",
+      fantasy_name: "",
+      cpf_cnpj: "",
+      state_registration: "",
+      municipal_registration: "",
+      rural_registration: "",
+      contacts: [],
+      address: [],
+      name_account: "",
+      establishment_typeId: 1,
+      systemsId: 1,
+      owner: [],
     })
   }
 

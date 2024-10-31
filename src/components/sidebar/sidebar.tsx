@@ -110,7 +110,7 @@ export default function Sidebar() {
                 type="button"
                 className={`flex items-center px-4 py-2 cursor-pointer ${
                   window.location.pathname.includes(normalizeString(item.label))
-                    ? "text-lime-500 bg-zinc-600 w-full"
+                    ? "text-lime-600 bg-zinc-600 w-full"
                     : "hover:bg-zinc-700 w-full"
                 }`}
                 onClick={() => {
@@ -177,7 +177,7 @@ export default function Sidebar() {
                   onClick={handlePinSidebar}
                   className={`p-1 rounded-full  ${
                     isSidebarPinned
-                      ? "bg-lime-500"
+                      ? "bg-lime-600"
                       : "bg-zinc-700 hover:bg-zinc-600 animate-bounce"
                   }`}
                   title={

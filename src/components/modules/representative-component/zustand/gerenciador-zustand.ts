@@ -44,6 +44,15 @@ export const useFormStore = create<FormStore>(set => ({
       phone: '',
       email: '',
     },
+    address: {
+      postal_code: '',
+      street: '',
+      number: '',
+      neighborhood: '',
+      municipality_name: '',
+      state: '',
+      complement: '',
+    },
   },
   updateFormData: data =>
     set(state => ({

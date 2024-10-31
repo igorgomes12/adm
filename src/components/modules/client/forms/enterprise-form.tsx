@@ -50,7 +50,6 @@ export const EnterpriseForm: FC<{
     }
   }, [initialValues, reset])
 
-  // Update global form data on input change
   useEffect(() => {
     const subscription = watch(value => {
       updateFormData(value)
@@ -59,7 +58,6 @@ export const EnterpriseForm: FC<{
   }, [watch, updateFormData])
 
   const onSubmit = (data: EnterpriseDto) => {
-    console.log("=> ", data)
     updateFormData(data)
     onNext(data)
   }

@@ -34,7 +34,7 @@ export const FormFilter: FC<FormFilterProps> = ({
           icon={
             <BsFillPrinterFill
               width="bold"
-              className="p-2 bg-lime-500 hover:bg-lime-600 rounded-full"
+              className="p-2 bg-lime-600 hover:bg-lime-600 rounded-full"
               size={40}
             />
           }

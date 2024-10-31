@@ -3,7 +3,7 @@ import { create } from 'zustand'
 interface Contact {
   description: string
   contact: string
-  type: 'EMAIL'
+  type: 'TELEFONE' | 'WHATSAPP' | 'CELULAR'
   favorite: boolean
 }
 
@@ -23,13 +23,20 @@ interface Address {
   favorite: boolean
 }
 
-interface Owner {
+export interface Owner {
   name: string
   cpf_cnpj: string
   birth_date: string
+  observation: string
+}
+export interface Representative {
+  representative: string
+  channel_entry: string
+  region: string
 }
 
 interface FormDataStore {
+  representative: Representative
   corporate_name: string
   fantasy_name: string
   cpf_cnpj: string
@@ -42,7 +49,7 @@ interface FormDataStore {
   address: Address[]
   id_account: number
   name_account: string
-  owner: Owner[]
+  owner: Owner
 }
 
 interface FormStore {
@@ -52,6 +59,11 @@ interface FormStore {
 
 export const useFormStore = create<FormStore>(set => ({
   formData: {
+    representative: {
+      representative: '',
+      channel_entry: '',
+      region: '',
+    },
     corporate_name: '',
     fantasy_name: '',
     cpf_cnpj: '',
@@ -60,11 +72,40 @@ export const useFormStore = create<FormStore>(set => ({
     rural_registration: '',
     establishment_typeId: 1,
     systemsId: 1,
-    contacts: [],
-    address: [],
+    contacts: [
+      {
+        description: '',
+        contact: '',
+        type: 'TELEFONE',
+        favorite: false,
+      },
+    ],
+    address: [
+      {
+        street: '',
+        complement: '',
+        postal_code: '',
+        number: '',
+        neighborhood: '',
+        municipality_id: 0,
+        municipality_name: '',
+        state_id: 0,
+        state: '',
+        country_id: 0,
+        region_id: 0,
+        description: '',
+        favorite: false,
+      },
+    ],
     id_account: 1,
     name_account: '',
-    owner: [],
+    owner: {
+      id: 0,
+      name: '',
+      cpf_cnpj: '',
+      birth_date: '',
+      observation: '',
+    },
   },
   updateFormData: data =>
     set(state => ({

@@ -1,3 +1,10 @@
+import { useEffect, type FC } from "react"
+import { useForm, FormProvider } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useQuery } from "@tanstack/react-query"
+import { ToastContainer, toast } from "react-toastify"
+import { useNavigate } from "react-router-dom"
+import { Button } from "@/components/ui/button"
 import {
   FormControl,
   FormField,
@@ -6,47 +13,38 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { fetchViaCep } from "@/infra/http/api-via-cep/fecth-viacep"
 import {
-  type AddressData,
-  fetchViaCep,
-} from "@/infra/http/api-via-cep/fecth-viacep"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useQuery } from "@tanstack/react-query"
-import { type FC, useEffect } from "react"
-import { FormProvider, useForm } from "react-hook-form"
-import { ToastContainer, toast } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
-import { useFormStore } from "../../representative-component/zustand/gerenciador-zustand"
-
-import { useNavigate } from "react-router-dom"
-import {
-  type addressSchemaType,
   addressSchema,
+  type addressSchemaType,
 } from "../../client/zod-form/zod-address"
-import type { TClient } from "../../client/zod-form/zod_client.schema"
 import { HeaderClientForms } from "../header-client"
-import { Button } from "@/components/ui/button"
+import "react-toastify/dist/ReactToastify.css"
+import { useFormStore } from "../zustand/form-client.zustand"
 
-export const AddressCLientForm: FC<{
-  onNext?: (data: TClient) => void
+interface IAddressClientFormProps {
+  onNext: (data: addressSchemaType) => void
   initialValues?: addressSchemaType
-}> = ({ onNext, initialValues }) => {
-  const { formData, updateFormData, setMutationSuccess } = useFormStore()
+}
+
+export const AddressClientForm: FC<IAddressClientFormProps> = ({
+  onNext,
+  initialValues,
+}) => {
+  const { updateFormData } = useFormStore()
   const navigate = useNavigate()
 
   const form = useForm<addressSchemaType>({
-    defaultValues: {
-      cep: initialValues?.cep || formData.address?.postal_code || "",
-      street: initialValues?.street || formData.address?.street || "",
-      bairro: initialValues?.bairro || formData.address?.neighborhood || "",
-      municipio:
-        initialValues?.municipio || formData.address?.municipality_name || "",
-      UF: initialValues?.UF || formData.address?.state || "",
-      number: initialValues?.number || formData.address?.number || "",
-      complement:
-        initialValues?.complement || formData.address?.complement || "",
-    },
     resolver: zodResolver(addressSchema),
+    defaultValues: {
+      postal_code: initialValues?.postal_code || "",
+      street: initialValues?.street || "",
+      neighborhood: initialValues?.neighborhood || "",
+      municipality_name: initialValues?.municipality_name || "",
+      state: initialValues?.state || "",
+      number: initialValues?.number || "",
+      complement: initialValues?.complement || "",
+    },
   })
 
   const {
@@ -59,33 +57,33 @@ export const AddressCLientForm: FC<{
     formState: { errors },
   } = form
 
-  const cep = watch("cep")
+  const postal_code = watch("postal_code")
 
-  const { data: viaCepData, isError } = useQuery<AddressData>({
-    queryKey: ["viaCep", cep],
-    queryFn: () => fetchViaCep(cep),
-    enabled: Boolean(cep) && cep.length === 8,
+  const { data: viaCepData, isError } = useQuery({
+    queryKey: ["viaCep", postal_code],
+    queryFn: () => fetchViaCep(postal_code),
+    enabled: Boolean(postal_code) && postal_code.length === 8,
   })
 
   useEffect(() => {
-    if (!cep) {
+    if (!postal_code) {
       reset({
         street: "",
-        bairro: "",
-        municipio: "",
-        UF: "",
+        neighborhood: "",
+        municipality_name: "",
+        state: "",
       })
       return
     }
 
     if (viaCepData) {
       setValue("street", viaCepData.logradouro || "")
-      setValue("bairro", viaCepData.bairro || "")
-      setValue("municipio", viaCepData.localidade || "")
-      setValue("UF", viaCepData.uf || "")
-      clearErrors(["street", "bairro", "municipio", "UF"])
+      setValue("neighborhood", viaCepData.bairro || "")
+      setValue("municipality_name", viaCepData.localidade || "")
+      setValue("state", viaCepData.uf || "")
+      clearErrors(["street", "neighborhood", "municipality_name", "state"])
     }
-  }, [cep, viaCepData, reset, setValue, clearErrors])
+  }, [postal_code, viaCepData, reset, setValue, clearErrors])
 
   if (isError) {
     return (
@@ -98,9 +96,26 @@ export const AddressCLientForm: FC<{
 
   const submitForm = async (data: addressSchemaType) => {
     try {
-      updateFormData({ address: data })
-      onNext?.(data as unknown as TClient)
-      setMutationSuccess(true)
+      console.log("Dados do formulário:", data)
+
+      const completeAddress = {
+        municipality_id: 0,
+        state_id: 0,
+        country_id: 0,
+        region_id: 0,
+        description: "",
+        favorite: false,
+        neighborhood: data.neighborhood,
+        postal_code: data.postal_code,
+        street: data.street,
+        municipality_name: data.municipality_name,
+        state: data.state,
+        number: data.number || "",
+        complement: data.complement || "",
+      }
+
+      updateFormData({ address: [completeAddress] })
+      onNext(data)
       toast.success("Formulário enviado com sucesso!", {
         onClose: () => navigate("/canais"),
         autoClose: 2000,
@@ -123,14 +138,14 @@ export const AddressCLientForm: FC<{
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
-              name="cep"
+              name="postal_code"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>CEP</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register("cep")} />
+                    <Input {...field} {...register("postal_code")} />
                   </FormControl>
-                  <FormMessage>{errors.cep?.message}</FormMessage>
+                  <FormMessage>{errors.postal_code?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -147,38 +162,38 @@ export const AddressCLientForm: FC<{
           </div>
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
-              name="bairro"
+              name="neighborhood"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Bairro</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register("bairro")} />
+                    <Input {...field} {...register("neighborhood")} />
                   </FormControl>
-                  <FormMessage>{errors.bairro?.message}</FormMessage>
+                  <FormMessage>{errors.neighborhood?.message}</FormMessage>
                 </FormItem>
               )}
             />
             <FormField
-              name="municipio"
+              name="municipality_name"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Municipio</FormLabel>
-                  <Input {...field} {...register("municipio")} />
-                  <FormMessage>{errors.municipio?.message}</FormMessage>
+                  <Input {...field} {...register("municipality_name")} />
+                  <FormMessage>{errors.municipality_name?.message}</FormMessage>
                 </FormItem>
               )}
             />
           </div>
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
-              name="UF"
+              name="state"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>UF</FormLabel>
+                  <FormLabel>Estado</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register("UF")} />
+                    <Input {...field} {...register("state")} />
                   </FormControl>
-                  <FormMessage>{errors.UF?.message}</FormMessage>
+                  <FormMessage>{errors.state?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -186,7 +201,7 @@ export const AddressCLientForm: FC<{
               name="number"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Numero</FormLabel>
+                  <FormLabel>Número</FormLabel>
                   <FormControl>
                     <Input {...field} {...register("number")} />
                   </FormControl>

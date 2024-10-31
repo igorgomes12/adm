@@ -57,20 +57,24 @@ export const ClientNavigationComponent: FC<{
               >
                 <IconComponent
                   className={`text-2xl ${
-                    selected === item.title ? "text-sky-500" : "text-gray-600"
+                    selected === item.title ? "text-lime-600" : "text-gray-600"
                   }`}
                 />
                 <div className="items-start flex flex-col w-full gap-2">
                   <h3
                     className={`text-md font-semibold ${
-                      selected === item.title ? "text-sky-500" : "text-gray-600"
+                      selected === item.title
+                        ? "text-lime-600"
+                        : "text-gray-600"
                     }`}
                   >
                     {item.title}
                   </h3>
                   <p
                     className={`text-xs font-extralight ${
-                      selected === item.title ? "text-sky-500" : "text-gray-600"
+                      selected === item.title
+                        ? "text-lime-600"
+                        : "text-gray-600"
                     }`}
                   >
                     {item.description}

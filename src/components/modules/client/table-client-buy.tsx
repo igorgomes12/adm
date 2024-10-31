@@ -16,7 +16,6 @@ import type { TAddress } from "./zod-form/zod_address.schema"
 import type { TClient } from "./zod-form/zod_client.schema"
 import type { TContact } from "./zod-form/zod_contact.schema"
 
-// Interface de propriedades para o componente
 interface ITableClientBuyProps {
   searchTerm: string
   onOpenFormClient: (id: number) => void
@@ -26,7 +25,7 @@ const headers = [
   "Cód.",
   "Nome",
   "CNPJ",
-  "Telefone",
+  "Contato",
   "Representante",
   "Sistema Em Uso",
   "Sistema",
@@ -41,74 +40,35 @@ export const TableClientBuy: FC<ITableClientBuyProps> = ({
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 4
 
-  // const queryClient = useQueryClient()
-
-  // Busca de dados usando react-query
   const { data, isLoading, error } = useQuery<TClient[]>({
     queryKey: ["clients"],
     queryFn: async () => {
       const response = await api.get("/client")
+      console.log("Raw API Response:", response.data) // Verifique o formato aqui
       return response.data
     },
   })
 
-  // Função de mutação para atualização de status (exemplo, se necessário no futuro)
-  // const updateStatusMutation = useMutation({
-  //   mutationFn: async ({
-  //     id,
-  //     newStatus,
-  //   }: {
-  //     id: number
-  //     newStatus: boolean
-  //   }) => {
-  //     const response = await api.patch(
-  //       `/client`,
-  //       { status: newStatus ? 'ativo' : 'inativo' },
-  //       { params: { id } },
-  //     )
-  //     return response.data
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ['clients'] })
-  //     showMessageSuccess({
-  //       message: 'Status atualizado com sucesso!',
-  //     })
-  //   },
-  //   onError: (error: unknown) => {
-  //     let errorMessage = 'Verifique suas credenciais.'
-  //     if (axios.isAxiosError(error)) {
-  //       errorMessage = error.response?.data?.message || errorMessage
-  //     }
-  //     showMessageError(errorMessage)
-  //     console.error('Erro ao atualizar status:', error)
-  //   },
-  // })
-
-  // const handleStatusChange = (id: number, newStatus: boolean) => {
-  //   updateStatusMutation.mutate({ id, newStatus })
-  // }
-
-  // Filtragem dos dados com base no termo de busca
   const filteredData = useMemo(() => {
     if (!data) return []
     const lowerCaseSearchTerm = searchTerm.toLowerCase()
-    return data.filter((item: TClient) =>
+    const result = data.filter((item: TClient) =>
       Object.values(item).some(
         value =>
           typeof value === "string" &&
           value.toLowerCase().includes(lowerCaseSearchTerm)
       )
     )
+    console.log("Filtered Data:", result) // Verifique o formato aqui
+    return result
   }, [data, searchTerm])
-
-  // Paginação dos dados
 
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage
-    return filteredData.slice(startIndex, startIndex + itemsPerPage)
+    const result = filteredData.slice(startIndex, startIndex + itemsPerPage)
+    console.log("Paginated Data:", result) // Verifique o formato aqui
+    return result
   }, [filteredData, currentPage])
-
-  // Conteúdo da tabela
 
   const tableContent = useMemo(() => {
     if (isLoading || !filteredData || filteredData.length === 0) {
@@ -143,28 +103,24 @@ export const TableClientBuy: FC<ITableClientBuyProps> = ({
       >
         <TableCell className="text-sm items-center">{item.id}</TableCell>
         <TableCell className="text-sm items-center">
-          <p className="font-bold">{item.fantasy_name}</p> -{" "}
-          {item.corporate_name}
+          <p className="font-bold">{item.fantasyName}</p> -{item.corporateName}
         </TableCell>
-        <TableCell className="text-sm items-center">{item.cpf_cnpj}</TableCell>
+        <TableCell className="text-sm items-center">{item.cpfCnpj}</TableCell>
         <TableCell className="text-sm items-center">
           {(item.contacts || [])
-            .flatMap((contact: TContact) => contact.contact)
+            .map((contact: TContact) => contact.contact)
             .join(", ")}
         </TableCell>
         <TableCell className="text-sm items-center">
-          {item.fantasy_name}
+          {item.ruralRegistration}
         </TableCell>
         <TableCell className="text-sm items-center">{item.systemsId}</TableCell>
         <TableCell className="text-sm items-center">
-          {item.state_registration}
+          {item.stateRegistration}
         </TableCell>
         <TableCell className="text-sm items-center">
-          {(item.address || []).flatMap((address: TAddress) => address.street)}{" "}
-          -{" "}
-          {(item.address || []).flatMap(
-            (address: TAddress) => address.municipality_id
-          )}
+          {(item.address || []).map((address: TAddress) => address.street)} -{" "}
+          {(item.address || []).map((address: TAddress) => address.postal_code)}
         </TableCell>
         <TableCell className="flex items-center justify-center w-full h-full space-x-2">
           <button

@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "react-router"
-import { useClientFormStore } from "@/components/modules/client/zustand/client-form.zustand"
 import api from "@/infra/auth/database/acess-api/interceptors-axios"
-import { ContactCLientForm } from "@/components/modules/client/forms/contact-client-form"
 import { RepresentativeForm } from "@/components/modules/client/forms/representative-form"
 import { OwnerForm } from "@/components/modules/client/forms/accounting-form"
 import {
@@ -11,26 +9,37 @@ import {
 } from "@/components/client-forms/client-navigation-component"
 import { toast } from "react-toastify"
 import { EnterpriseForm } from "@/components/modules/client/forms/enterprise-form"
+import { ContactClientForm } from "@/components/modules/client/forms/contact-client-form"
+import { AddressClientForm } from "@/components/modules/client/forms/address-client-form"
+import { useFormStore } from "@/components/modules/client/zustand/form-client.zustand"
+import { useQuery } from "@tanstack/react-query"
 
 export const FormClientComponent = () => {
   const { id } = useParams<{ id: string }>()
   const [selectedForm, setSelectedForm] = useState<string>("Empresa")
   const [enabledForms, setEnabledForms] = useState<string[]>(["Empresa"])
-  const { formData, updateFormData } = useClientFormStore()
+  const { formData, updateFormData } = useFormStore()
+
+  const {
+    data: clientData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["client", id],
+    queryFn: async () => {
+      const response = await api.get(`/client/${id}`)
+      return response.data
+    },
+    enabled: !!id,
+  })
 
   useEffect(() => {
-    if (id) {
-      const fetchData = async () => {
-        try {
-          const response = await api.get(`/client/${id}`)
-          updateFormData(response.data)
-        } catch (error) {
-          console.error("Erro ao buscar dados do cliente:", error)
-        }
-      }
-      fetchData()
+    if (clientData) {
+      updateFormData(clientData)
     }
-  }, [id, updateFormData])
+  }, [clientData, updateFormData])
+
+  console.log("Dados do cliente:", clientData)
 
   const handleNext = (currentForm: string, data: unknown) => {
     updateFormData({ [currentForm.toLowerCase()]: data })
@@ -51,13 +60,8 @@ export const FormClientComponent = () => {
   const submitAllData = async () => {
     try {
       const combinedData = {
-        ...formData.empresa,
-        contacts: formData.contact,
-        address: formData.address,
-        owner: formData.representative,
-        ...formData.accounting,
+        ...formData,
       }
-      console.log("?????", combinedData)
 
       if (id) {
         await api.patch(`/client/${id}`, combinedData)
@@ -77,23 +81,38 @@ export const FormClientComponent = () => {
       case "Empresa":
         return (
           <EnterpriseForm
-            initialValues={formData.empresa}
+            initialValues={formData}
             onNext={data => handleNext("Empresa", data)}
           />
         )
       case "Contatos":
         return (
-          <ContactCLientForm onNext={data => handleNext("Contatos", data)} />
+          <ContactClientForm
+            initialValues={formData.contacts[0]}
+            onNext={data => handleNext("Contatos", [data])}
+          />
         )
-      //
+      case "Endereços":
+        return (
+          <AddressClientForm
+            initialValues={formData.address[0]}
+            onNext={data => handleNext("Endereços", [data])}
+          />
+        )
       case "Representante":
         return (
           <RepresentativeForm
+            initialValues={formData.representative}
             onNext={data => handleNext("Representante", data)}
           />
         )
       case "Proprietário":
-        return <OwnerForm onNext={data => handleNext("Proprietário", data)} />
+        return (
+          <OwnerForm
+            initialValues={formData.owner}
+            onNext={data => handleNext("Proprietário", data)}
+          />
+        )
       default:
         return <div>Selecione uma opção para ver o formulário.</div>
     }
@@ -112,7 +131,15 @@ export const FormClientComponent = () => {
           }
         />
       </aside>
-      <main className="flex-1 bg-white">{renderForm()}</main>
+      <main className="flex-1 bg-white">
+        {isLoading ? (
+          <p>Carregando dados do cliente...</p>
+        ) : error ? (
+          <p>Erro ao carregar os dados: {error.message}</p>
+        ) : (
+          renderForm()
+        )}
+      </main>
     </div>
   )
 }

@@ -1,26 +1,26 @@
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { TrashIcon } from '@radix-ui/react-icons'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useCallback, useEffect } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { FormProvider, useForm } from 'react-hook-form'
-import { FaRocket } from 'react-icons/fa'
-import { Flip, toast } from 'react-toastify'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { TrashIcon } from "@radix-ui/react-icons"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useCallback, useEffect } from "react"
+import { useDropzone } from "react-dropzone"
+import { FormProvider, useForm } from "react-hook-form"
+import { FaRocket } from "react-icons/fa"
+import { Flip, toast } from "react-toastify"
 import {
   SystemSchemaDto,
   type TSystemSchemaDto,
-} from './zod-types/types-system'
-import { useSystemEditZustand } from './zustand-state/system-edit-zustand'
+} from "./zod-types/types-system"
+import { useSystemEditZustand } from "./zustand-state/system-edit-zustand"
 
 export const ModalSystemEdit = () => {
   const { id, isOpen, onClose } = useSystemEditZustand()
@@ -29,19 +29,19 @@ export const ModalSystemEdit = () => {
   const form = useForm<TSystemSchemaDto>({
     defaultValues: {
       id: 0,
-      name: '',
-      image_url: '',
-      description: '',
-      stable_version: '',
+      name: "",
+      image_url: "",
+      description: "",
+      stable_version: "",
     },
     resolver: zodResolver(SystemSchemaDto),
   })
 
   const { data: systemData, isLoading: isLoadingSystem } = useQuery({
-    queryKey: ['get-system', id],
+    queryKey: ["get-system", id],
     queryFn: async () => {
       if (id) {
-        const response = await api.get(`/systems`, { params: { id } })
+        const response = await api.get("/systems", { params: { id } })
         return (
           response.data.find((system: TSystemSchemaDto) => system.id === id) ||
           null
@@ -59,31 +59,31 @@ export const ModalSystemEdit = () => {
         name: systemData.name,
         image_url: systemData.image_url,
         description: systemData.description,
-        stable_version: systemData.stable_version || '',
+        stable_version: systemData.stable_version || "",
       })
     }
   }, [systemData, form])
 
   const { mutate, isSuccess: isUpdating } = useMutation({
-    mutationKey: ['patch-system'],
+    mutationKey: ["patch-system"],
     mutationFn: async (data: TSystemSchemaDto) => {
-      const res = await api.patch(`/systems`, data, { params: { id: data.id } })
+      const res = await api.patch("/systems", data, { params: { id: data.id } })
       return res.data
     },
     onSuccess: () => {
-      toast.success('Sistema atualizado com sucesso!', {
-        theme: 'dark',
+      toast.success("Sistema atualizado com sucesso!", {
+        theme: "dark",
         icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
+        progressStyle: { background: "#1f62cf" },
         transition: Flip,
       })
-      queryClient.invalidateQueries({ queryKey: ['get-systems'] })
-      queryClient.invalidateQueries({ queryKey: ['get-system', id] })
+      queryClient.invalidateQueries({ queryKey: ["get-systems"] })
+      queryClient.invalidateQueries({ queryKey: ["get-system", id] })
       onClose()
     },
     onError: error => {
-      console.error('Mutation error:', error)
-      toast.error('Erro ao atualizar o sistema. Por favor, tente novamente.')
+      console.error("Mutation error:", error)
+      toast.error("Erro ao atualizar o sistema. Por favor, tente novamente.")
     },
   })
 
@@ -93,7 +93,7 @@ export const ModalSystemEdit = () => {
 
   const handleFileSelect = (
     file: File | null,
-    onChange: (...event: any[]) => void,
+    onChange: (...event: unknown[]) => void
   ) => {
     if (file) {
       onChange(file)
@@ -199,7 +199,7 @@ export const ModalSystemEdit = () => {
                   variant="success"
                   disabled={isUpdating}
                 >
-                  {isUpdating ? 'Salvando...' : 'Salvar'}
+                  {isUpdating ? "Salvando..." : "Salvar"}
                 </Button>
               </div>
             </form>
@@ -225,13 +225,13 @@ const ImageDropzone: React.FC<ImageDropzoneProps> = ({
         onFileSelect(acceptedFiles[0])
       }
     },
-    [onFileSelect],
+    [onFileSelect]
   )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.gif'],
+      "image/*": [".jpeg", ".jpg", ".png", ".gif"],
     },
     maxFiles: 1,
   })
@@ -259,8 +259,8 @@ const ImageDropzone: React.FC<ImageDropzoneProps> = ({
         ) : (
           <p className="text-gray-500 text-sm">
             {isDragActive
-              ? 'Solte a imagem aqui'
-              : 'Arraste e solte para adicionar imagem ou clique para selecionar'}
+              ? "Solte a imagem aqui"
+              : "Arraste e solte para adicionar imagem ou clique para selecionar"}
           </p>
         )}
       </div>

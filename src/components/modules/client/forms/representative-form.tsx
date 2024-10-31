@@ -1,10 +1,5 @@
 import { Button } from "@/components/ui/button"
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
+import { FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import {
   Select,
   SelectContent,
@@ -13,33 +8,52 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import type { FC } from "react"
-import { FormProvider, useForm } from "react-hook-form"
-import type { TClient } from "../zod-form/zod_client.schema"
+import { FormProvider, useForm, Controller } from "react-hook-form"
+import { useQuery } from "@tanstack/react-query"
 import { HeaderClientForms } from "../header-client"
+import type { representative } from "../../representative-component/zod/types-representative"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import type { Representative } from "../zustand/form-client.zustand"
 
 type FormValues = {
   representative: string
   channel_entry: string
   region: string
-  accontings: string
 }
 
-export const RepresentativeForm: FC<{ onNext: (data: TClient) => void }> = ({
+interface IRepresentativeFormProps {
+  onNext: (data: Representative) => void
+  initialValues: Representative
+}
+
+export const RepresentativeForm: FC<IRepresentativeFormProps> = ({
   onNext,
+  initialValues,
 }) => {
   const form = useForm<FormValues>({
     defaultValues: {
-      representative: "",
-      channel_entry: "",
-      region: "",
-      accontings: "",
+      representative: initialValues.representative || "",
+      channel_entry: initialValues.channel_entry || "",
+      region: initialValues.region || "",
+    },
+  })
+
+  const {
+    data: representatives,
+    isLoading,
+    isError,
+  } = useQuery<representative[], Error>({
+    queryKey: ["get-representative"],
+    queryFn: async () => {
+      const response = await api.get("/representative")
+      return response.data
     },
   })
 
   const submitForm = async (data: FormValues) => {
     console.log("Dados do formulário:", data)
     try {
-      onNext(data as unknown as TClient)
+      onNext(data as unknown as Representative)
       console.log("Form enviado com sucesso:", data)
     } catch (error) {
       console.error("Erro ao enviar o formulário:", error)
@@ -57,19 +71,24 @@ export const RepresentativeForm: FC<{ onNext: (data: TClient) => void }> = ({
           className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full"
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
-            <FormField
+            <Controller
               name="representative"
+              control={form.control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Representante</FormLabel>
-                  <Select {...field}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecione um representante" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">João Silva</SelectItem>
-                      <SelectItem value="2">Lucas Silva</SelectItem>
-                      <SelectItem value="3">Maria Silva</SelectItem>
+                      {isLoading && <div>Carregando...</div>}
+                      {isError && <div>Erro ao carregar representantes.</div>}
+                      {representatives?.map(rep => (
+                        <SelectItem key={rep.id} value={rep.name}>
+                          {rep.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage>
@@ -78,21 +97,25 @@ export const RepresentativeForm: FC<{ onNext: (data: TClient) => void }> = ({
                 </FormItem>
               )}
             />
-            <FormField
+
+            <Controller
               name="channel_entry"
+              control={form.control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Canal divulgação de entrada</FormLabel>
-                  <Select {...field}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecione um canal" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Instagram">Instagram</SelectItem>
-                      <SelectItem value="Facebook">Facebook</SelectItem>
-                      <SelectItem value="Twitter">Twitter</SelectItem>
-                      <SelectItem value="Linkedin">Linkedin</SelectItem>
-                      <SelectItem value="Outros">Outros</SelectItem>
+                      <>
+                        <SelectItem value="Instagram">Instagram</SelectItem>
+                        <SelectItem value="Facebook">Facebook</SelectItem>
+                        <SelectItem value="Twitter">Twitter</SelectItem>
+                        <SelectItem value="Linkedin">Linkedin</SelectItem>
+                        <SelectItem value="Outros">Outros</SelectItem>
+                      </>
                     </SelectContent>
                   </Select>
                   <FormMessage>
@@ -103,42 +126,26 @@ export const RepresentativeForm: FC<{ onNext: (data: TClient) => void }> = ({
             />
           </div>
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
-            <FormField
+            <Controller
               name="region"
+              control={form.control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Região</FormLabel>
-                  <Select {...field}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecione uma região" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">Guarapari</SelectItem>
-                      <SelectItem value="2">Cajamar</SelectItem>
-                      <SelectItem value="3">Vitória</SelectItem>
+                      <>
+                        <SelectItem value="1">Guarapari</SelectItem>
+                        <SelectItem value="2">Cajamar</SelectItem>
+                        <SelectItem value="3">Vitória</SelectItem>
+                      </>
                     </SelectContent>
                   </Select>
                   <FormMessage>
                     {form.formState.errors.region?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="accontings"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Contabilidade</FormLabel>
-                  <Select {...field}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Selecione uma contabilidade" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Outros">Outros</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage>
-                    {form.formState.errors.accontings?.message}
                   </FormMessage>
                 </FormItem>
               )}

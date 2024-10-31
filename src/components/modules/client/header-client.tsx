@@ -18,16 +18,14 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
   title,
   setActiveComponent,
 }) => {
-  const { formData } = useFormStore()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
-  const { updateFormData } = useFormStore()
+  const { formData, updateFormData } = useFormStore()
 
   const createMutation = useMutation({
     mutationKey: ["post-client"],
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: TClient) => {
       const res = await api.post<TClient>("/client", {
         ...data,
         status: "ativo",
@@ -50,18 +48,14 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
     onError: (error: Error) => {
       console.error("Erro ao adicionar estabelecimento:", error)
       toast.error(
-        `Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente.
-          ${error.message || ""}`
+        `Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente. ${error.message || ""}`
       )
     },
   })
 
   const updateMutation = useMutation({
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    mutationFn: async (data: any) => {
-      const res = await api.patch("/client", data, {
-        params: { id },
-      })
+    mutationFn: async (data: TClient) => {
+      const res = await api.patch(`/client/${id}`, data)
       return res.data
     },
     onSuccess: () => {
@@ -80,34 +74,31 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
     onError: (error: Error) => {
       console.error("Erro ao atualizar representante:", error)
       toast.error(
-        `Ocorreu um erro ao adicionar o estabelecimento. Por favor, tente novamente.
-          ${error.message || ""}`
+        `Ocorreu um erro ao atualizar o representante. Por favor, tente novamente. ${error.message || ""}`
       )
     },
   })
 
   const handleSave = () => {
-    const completeData = {
-      corporate_name: formData.corporate_name || "",
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const completeData: any = {
+      corporate_name: formData.corporate_name,
       fantasy_name: formData.fantasy_name || "",
-      contacts: formData.contacts.length > 0 ? formData.contacts : [],
-      cpf_cnpj: formData.cpf_cnpj || "",
-      state_registration: formData.state_registration || "",
+      contacts: formData.contacts || [], // Certifique-se de que contacts está no formato esperado
+      cpf_cnpj: formData.cpf_cnpj,
+      state_registration: formData.state_registration,
       municipal_registration: formData.municipal_registration || null,
       rural_registration: formData.rural_registration || null,
-      address: formData.address.length > 0 ? formData.address : [],
+      address: formData.address,
       name_account: formData.name_account || "",
       id_account: formData.id_account || 1,
       establishment_typeId: formData.establishment_typeId || 1,
       systemsId: formData.systemsId || 1,
-      owner: formData.owner.length > 0 ? formData.owner : [],
+      owner: formData.owner,
     }
 
     if (id) {
-      updateMutation.mutate({
-        ...completeData,
-        id: Number(id),
-      })
+      updateMutation.mutate(completeData)
     } else {
       createMutation.mutate(completeData)
     }
@@ -122,24 +113,43 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
       municipal_registration: "",
       rural_registration: "",
       contacts: [],
-      address: [],
+      address: [
+        {
+          description: "",
+          postal_code: "",
+          street: "",
+          number: "",
+          neighborhood: "",
+          municipality_name: "",
+          state: "",
+          complement: "",
+          favorite: false,
+          country_id: 0,
+          region_id: 0,
+          municipality_id: 0,
+          state_id: 0,
+        },
+      ],
       name_account: "",
       establishment_typeId: 1,
       systemsId: 1,
-      owner: [],
+      owner: {
+        name: "",
+        cpf_cnpj: "",
+        birth_date: "",
+        observation: "",
+      },
     })
   }
 
   return (
-    <>
-      <div className="flex items-start justify-between w-full">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
-          {title}
-        </h1>
-        <Button onClick={handleSave} variant={"blue"}>
-          Salvar
-        </Button>
-      </div>
-    </>
+    <div className="flex items-start justify-between w-full">
+      <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
+        {title}
+      </h1>
+      <Button onClick={handleSave} variant="blue">
+        Salvar
+      </Button>
+    </div>
   )
 }

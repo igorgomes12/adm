@@ -1,10 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { FC, useMemo } from 'react'
-import { FaEdit, FaTrash } from 'react-icons/fa'
-import { toast } from 'react-toastify'
-import api from '../../../infra/auth/database/acess-api/interceptors-axios'
-import { SkeletonCard } from '../../skeleton-component/skeleton'
-import { Switch } from '../../ui/switch'
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { type FC, useMemo } from "react"
+import { FaEdit, FaTrash } from "react-icons/fa"
+import { toast } from "react-toastify"
+import api from "../../../infra/auth/database/acess-api/interceptors-axios"
+import { SkeletonCard } from "../../skeleton-component/skeleton"
+import { Switch } from "../../ui/switch"
 import {
   Table,
   TableBody,
@@ -12,13 +12,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../ui/table'
-import { ModalEstablishmentDelete } from './modal-establishment/delete-modal-establishment'
-import { EditEstablishmentModal } from './modal-establishment/edit-modal-establishment'
-import { useEstablishmentDeleteZustand } from './zustand-establishment/delete-establisment'
-import { useEstablishmentEditZustand } from './zustand-establishment/edit-establishment'
+} from "../../ui/table"
+import { ModalEstablishmentDelete } from "./modal-establishment/delete-modal-establishment"
+import { EditEstablishmentModal } from "./modal-establishment/edit-modal-establishment"
+import { useEstablishmentDeleteZustand } from "./zustand-establishment/delete-establisment"
+import { useEstablishmentEditZustand } from "./zustand-establishment/edit-establishment"
 
-const headers = ['Cód.', 'Nome Estabelecimento', 'Status', '']
+const headers = ["Cód.", "Nome Estabelecimento", "Status", ""]
 
 export type TEstablishment = {
   id: number
@@ -43,12 +43,14 @@ const EstablishmentRow: FC<{
     </TableCell>
     <TableCell className="flex items-center justify-center w-full h-full space-x-2">
       <button
+        type="button"
         onClick={() => onOpenEdit(establishment.id)}
         className="text-blue-200 hover:text-blue-500"
       >
         <FaEdit size={24} />
       </button>
       <button
+        type="button"
         onClick={() => onOpenDelete(establishment.id)}
         className="text-red-200 hover:text-red-500"
       >
@@ -75,9 +77,9 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
   const queryClient = useQueryClient()
 
   const { data, isLoading, error } = useQuery<TEstablishment[], Error>({
-    queryKey: ['get-establishment'],
+    queryKey: ["get-establishment"],
     queryFn: async () => {
-      const response = await api.get('/establishment')
+      const response = await api.get("/establishment")
       return response.data
     },
   })
@@ -91,18 +93,18 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
       newStatus: boolean
     }) => {
       const response = await api.patch(
-        `/establishment`,
+        "/establishment",
         { status: newStatus },
-        { params: { id } },
+        { params: { id } }
       )
       return response.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['get-establishment'] })
-      toast.success('Status atualizado com sucesso!')
+      queryClient.invalidateQueries({ queryKey: ["get-establishment"] })
+      toast.success("Status atualizado com sucesso!")
     },
     onError: () => {
-      toast.error('Erro ao atualizar o status. Por favor, tente novamente.')
+      toast.error("Erro ao atualizar o status. Por favor, tente novamente.")
     },
   })
 
@@ -123,7 +125,7 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
     return data.filter(establishment => {
       if (establishment.id.toString() === searchTermLower) return true
       if (matchAllTerms(establishment.name)) return true
-      if (matchAllTerms(establishment.status ? 'Ativo' : 'Inativo')) return true
+      if (matchAllTerms(establishment.status ? "Ativo" : "Inativo")) return true
       return false
     })
   }, [data, searchTerm])
@@ -153,6 +155,7 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
         onStatusChange={handleStatusChange}
       />
     ))
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   }, [isLoading, error, filteredData, handleStatusChange, onOpenEdit, onOpen])
 
   return (
@@ -160,8 +163,8 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
       <Table className="min-w-full py-2 text-lg">
         <TableHeader>
           <TableRow className="bg-gray-300 w-auto">
-            {headers.map((header, index) => (
-              <TableHead key={index} className="text-black w-auto">
+            {headers.map(header => (
+              <TableHead key={header} className="text-black w-auto">
                 {header}
               </TableHead>
             ))}

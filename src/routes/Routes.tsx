@@ -6,6 +6,7 @@ import { EstablishmentComponent } from "@/pages/channel/establishment/establishm
 import { PaymentComponent } from "@/pages/channel/forms-payment/payment"
 import { FormRepresentative } from "@/pages/channel/representative/form-representative"
 import { RepresentativeComponent } from "@/pages/channel/representative/representative"
+import { CalledComponent } from "@/pages/channel/support/called/called"
 import { SystemComponent } from "@/pages/channel/system/system"
 import { UsersComponent } from "@/pages/channel/user/users"
 import { MainDashboard } from "@/pages/dashboard/main-dashboard"
@@ -39,6 +40,8 @@ export const AppRoutes = () => {
             element={<EstablishmentComponent />}
           />
           <Route path="/usuarios" element={<UsersComponent />} />
+          <Route path="/chamados" element={<CalledComponent />} />
+
           <Route path="*" element={<Navigate to="/tela-principal" />} />
         </Route>
       </Routes>

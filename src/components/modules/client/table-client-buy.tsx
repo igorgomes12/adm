@@ -103,20 +103,21 @@ export const TableClientBuy: FC<ITableClientBuyProps> = ({
       >
         <TableCell className="text-sm items-center">{item.id}</TableCell>
         <TableCell className="text-sm items-center">
-          <p className="font-bold">{item.fantasyName}</p> -{item.corporateName}
+          <p className="font-bold">{item.fantasy_name}</p> -
+          {item.corporate_name}
         </TableCell>
-        <TableCell className="text-sm items-center">{item.cpfCnpj}</TableCell>
+        <TableCell className="text-sm items-center">{item.cpf_cnpj}</TableCell>
         <TableCell className="text-sm items-center">
           {(item.contacts || [])
             .map((contact: TContact) => contact.contact)
             .join(", ")}
         </TableCell>
         <TableCell className="text-sm items-center">
-          {item.ruralRegistration}
+          {item.rural_registration}
         </TableCell>
         <TableCell className="text-sm items-center">{item.systemsId}</TableCell>
         <TableCell className="text-sm items-center">
-          {item.stateRegistration}
+          {item.state_registration}
         </TableCell>
         <TableCell className="text-sm items-center">
           {(item.address || []).map((address: TAddress) => address.street)} -{" "}

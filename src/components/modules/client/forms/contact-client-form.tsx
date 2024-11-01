@@ -94,7 +94,7 @@ export const ContactClientForm: FC<{
                 <FormItem className="w-full">
                   <FormLabel>Descrição</FormLabel>
                   <FormControl>
-                    <Textarea {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage>{errors.description?.message}</FormMessage>
                 </FormItem>
@@ -125,7 +125,6 @@ export const ContactClientForm: FC<{
                         <SelectValue placeholder="Selecione um tipo" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="EMAIL">Email</SelectItem>
                         <SelectItem value="TELEFONE">Telefone fixo</SelectItem>
                         <SelectItem value="WHATSAPP">WhatsApp</SelectItem>
                         <SelectItem value="CELULAR">Celular</SelectItem>
@@ -133,6 +132,18 @@ export const ContactClientForm: FC<{
                     </Select>
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name=""
+              render={({ field, fieldState }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Contato</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message}</FormMessage>
                 </FormItem>
               )}
             />

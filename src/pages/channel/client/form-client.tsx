@@ -120,7 +120,7 @@ export const FormClientComponent = () => {
 
   return (
     <div className="flex px-2">
-      <aside className="w-96 bg-gray-100 items-center flex overscroll-none flex-col space-y-6">
+      <aside className="w-96 bg-gray-100 h-screen items-center flex overscroll-none flex-col space-y-6">
         <h2 className="text-2xl font-semibold p-2">
           {id ? "Editar cliente" : "Cadastro cliente"}
         </h2>

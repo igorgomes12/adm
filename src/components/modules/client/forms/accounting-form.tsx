@@ -1,28 +1,27 @@
 import { Button } from "@/components/ui/button"
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form"
+import { FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { type FC, useEffect } from "react"
+import { FormProvider, useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { FC } from "react"
-import { FormProvider, useForm } from "react-hook-form"
 import { HeaderClientForms } from "../header-client"
 import { OwnerSchema, type TOwner } from "../zod-form/zod_owner.schema"
 import { type Owner, useFormStore } from "../zustand/form-client.zustand"
 
-interface IAccountingFormProps {
+interface IOwnerFormProps {
   onNext: (data: Owner) => void
-  initialValues: Owner
+  initialValues: {
+    owners: Array<{
+      birthDate: string
+      cpfCnpj: string
+      name: string
+      observation?: string
+    }>
+  }
 }
 
-export const OwnerForm: FC<IAccountingFormProps> = ({
-  onNext,
-  initialValues,
-}) => {
+export const OwnerForm: FC<IOwnerFormProps> = ({ onNext, initialValues }) => {
   const defaultInitialValues: Owner = {
     name: "",
     cpf_cnpj: "",
@@ -33,20 +32,20 @@ export const OwnerForm: FC<IAccountingFormProps> = ({
 
   const form = useForm<TOwner>({
     resolver: zodResolver(OwnerSchema),
-    defaultValues: {
-      name: initialValues?.name || defaultInitialValues.name,
-      cpf_cnpj: initialValues?.cpf_cnpj || defaultInitialValues.cpf_cnpj,
-      birth_date: initialValues?.birth_date || defaultInitialValues.birth_date,
-      observation:
-        initialValues?.observation || defaultInitialValues.observation,
-    },
+    defaultValues: defaultInitialValues,
   })
 
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = form
+  const { control, setValue } = form
+
+  useEffect(() => {
+    if (initialValues.owners && initialValues.owners.length > 0) {
+      const owner = initialValues.owners[0]
+      setValue("name", owner.name || "")
+      setValue("cpf_cnpj", owner.cpfCnpj || "")
+      setValue("birth_date", owner.birthDate || "")
+      setValue("observation", owner.observation || "")
+    }
+  }, [initialValues, setValue])
 
   const submitForm = async (data: TOwner) => {
     try {
@@ -62,6 +61,7 @@ export const OwnerForm: FC<IAccountingFormProps> = ({
       console.error("Erro ao enviar o formulário:", error)
     }
   }
+
   return (
     <div className="flex flex-col p-4 w-full h-screen">
       <div className="flex w-full items-start justify-start">
@@ -69,57 +69,63 @@ export const OwnerForm: FC<IAccountingFormProps> = ({
       </div>
       <FormProvider {...form}>
         <form
-          onSubmit={handleSubmit(submitForm)}
+          onSubmit={form.handleSubmit(submitForm)}
           className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full"
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
-            <FormField
+            <Controller
               name="name"
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Proprietário</FormLabel>
-                  <FormControl>
-                    <Input {...field} {...register("name")} />
-                    {errors.name && <p>{errors.name.message}</p>}
-                  </FormControl>
+                  <Input {...field} />
+                  <FormMessage>
+                    {form.formState.errors.name?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
-            <FormField
+
+            <Controller
               name="cpf_cnpj"
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>CPF/CNPJ</FormLabel>
-                  <FormControl>
-                    <Input {...field} {...register("cpf_cnpj")} />
-                    {errors.cpf_cnpj && <p>{errors.cpf_cnpj.message}</p>}
-                  </FormControl>
+                  <Input {...field} />
+                  <FormMessage>
+                    {form.formState.errors.cpf_cnpj?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
-            <FormField
+
+            <Controller
               name="birth_date"
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Data de Nascimento</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} {...register("birth_date")} />
-                    {errors.birth_date && <p>{errors.birth_date.message}</p>}
-                  </FormControl>
+                  <Input type="date" {...field} />
+                  <FormMessage>
+                    {form.formState.errors.birth_date?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
           </div>
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
-            <FormField
+            <Controller
               name="observation"
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Observação</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} {...register("observation")} />
-                    {errors.observation && <p>{errors.observation.message}</p>}
-                  </FormControl>
+                  <Textarea {...field} />
+                  <FormMessage>
+                    {form.formState.errors.observation?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -127,7 +133,7 @@ export const OwnerForm: FC<IAccountingFormProps> = ({
 
           <div className="flex w-full items-center justify-center">
             <Button className="w-full" type="submit" variant="success">
-              Enviar
+              Próximo
             </Button>
           </div>
         </form>

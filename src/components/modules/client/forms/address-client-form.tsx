@@ -22,9 +22,25 @@ import { HeaderClientForms } from "../header-client"
 import "react-toastify/dist/ReactToastify.css"
 import { useFormStore } from "../zustand/form-client.zustand"
 
+type Address = {
+  postal_code: string
+  street: string
+  neighborhood: string
+  municipality_name: string
+  state: string
+  number: string
+  complement: string
+  municipality_id: number
+  state_id: number
+  country_id: number
+  region_id: number
+  description: string
+  favorite: boolean
+}
+
 interface IAddressClientFormProps {
-  onNext: (data: addressSchemaType) => void
-  initialValues?: addressSchemaType
+  onNext: (data: Address) => void
+  initialValues: Partial<Address>
 }
 
 export const AddressClientForm: FC<IAddressClientFormProps> = ({
@@ -36,15 +52,7 @@ export const AddressClientForm: FC<IAddressClientFormProps> = ({
 
   const form = useForm<addressSchemaType>({
     resolver: zodResolver(addressSchema),
-    defaultValues: {
-      postal_code: initialValues?.postal_code || "",
-      street: initialValues?.street || "",
-      neighborhood: initialValues?.neighborhood || "",
-      municipality_name: initialValues?.municipality_name || "",
-      state: initialValues?.state || "",
-      number: initialValues?.number || "",
-      complement: initialValues?.complement || "",
-    },
+    defaultValues: initialValues as addressSchemaType,
   })
 
   const {
@@ -66,13 +74,22 @@ export const AddressClientForm: FC<IAddressClientFormProps> = ({
   })
 
   useEffect(() => {
+    if (initialValues) {
+      reset(initialValues as addressSchemaType)
+    }
+  }, [initialValues, reset])
+
+  useEffect(() => {
     if (!postal_code) {
-      reset({
-        street: "",
-        neighborhood: "",
-        municipality_name: "",
-        state: "",
-      })
+      reset(
+        {
+          street: "",
+          neighborhood: "",
+          municipality_name: "",
+          state: "",
+        },
+        { keepDefaultValues: true }
+      )
       return
     }
 
@@ -98,24 +115,20 @@ export const AddressClientForm: FC<IAddressClientFormProps> = ({
     try {
       console.log("Dados do formulário:", data)
 
-      const completeAddress = {
-        municipality_id: 0,
-        state_id: 0,
-        country_id: 0,
-        region_id: 0,
-        description: "",
-        favorite: false,
-        neighborhood: data.neighborhood,
-        postal_code: data.postal_code,
-        street: data.street,
-        municipality_name: data.municipality_name,
-        state: data.state,
-        number: data.number || "",
-        complement: data.complement || "",
+      const completeAddress: Address = {
+        ...data,
+        municipality_id: initialValues.municipality_id ?? 0,
+        state_id: initialValues.state_id ?? 0,
+        country_id: initialValues.country_id ?? 0,
+        region_id: initialValues.region_id ?? 0,
+        description: initialValues.description ?? "",
+        favorite: initialValues.favorite ?? false,
+        complement: data.complement ?? "",
+        number: data.number ?? "",
       }
 
       updateFormData({ address: [completeAddress] })
-      onNext(data)
+      onNext(completeAddress)
       toast.success("Formulário enviado com sucesso!", {
         onClose: () => navigate("/canais"),
         autoClose: 2000,
@@ -125,7 +138,6 @@ export const AddressClientForm: FC<IAddressClientFormProps> = ({
       toast.error("Erro ao enviar o formulário. Tente novamente.")
     }
   }
-
   return (
     <div className="flex flex-col p-4 w-full h-screen">
       <div className="flex w-full items-start justify-start">

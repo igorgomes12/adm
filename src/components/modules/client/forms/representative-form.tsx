@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { FC } from "react"
+import { type FC, useEffect } from "react"
 import { FormProvider, useForm, Controller } from "react-hook-form"
 import { useQuery } from "@tanstack/react-query"
 import { HeaderClientForms } from "../header-client"
@@ -38,6 +38,16 @@ export const RepresentativeForm: FC<IRepresentativeFormProps> = ({
     },
   })
 
+  const { control, setValue } = form
+
+  useEffect(() => {
+    if (initialValues) {
+      setValue("representative", initialValues.representative || "")
+      setValue("channel_entry", initialValues.channel_entry || "")
+      setValue("region", initialValues.region || "")
+    }
+  }, [initialValues, setValue])
+
   const {
     data: representatives,
     isLoading,
@@ -53,7 +63,7 @@ export const RepresentativeForm: FC<IRepresentativeFormProps> = ({
   const submitForm = async (data: FormValues) => {
     console.log("Dados do formulário:", data)
     try {
-      onNext(data as unknown as Representative)
+      onNext(data)
       console.log("Form enviado com sucesso:", data)
     } catch (error) {
       console.error("Erro ao enviar o formulário:", error)
@@ -73,7 +83,7 @@ export const RepresentativeForm: FC<IRepresentativeFormProps> = ({
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <Controller
               name="representative"
-              control={form.control}
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Representante</FormLabel>
@@ -100,7 +110,7 @@ export const RepresentativeForm: FC<IRepresentativeFormProps> = ({
 
             <Controller
               name="channel_entry"
-              control={form.control}
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Canal divulgação de entrada</FormLabel>
@@ -128,7 +138,7 @@ export const RepresentativeForm: FC<IRepresentativeFormProps> = ({
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <Controller
               name="region"
-              control={form.control}
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Região</FormLabel>

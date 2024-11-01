@@ -100,7 +100,6 @@ export const useFormStore = create<FormStore>(set => ({
     id_account: 1,
     name_account: '',
     owner: {
-      id: 0,
       name: '',
       cpf_cnpj: '',
       birth_date: '',

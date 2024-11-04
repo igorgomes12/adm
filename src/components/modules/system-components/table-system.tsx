@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from "react"
-import { FaEdit, FaSortAmountUp, FaTrash } from "react-icons/fa"
+import { FaEdit, FaTrash } from "react-icons/fa"
 
 import { SkeletonCard } from "@/components/skeleton-component/skeleton"
 import {
@@ -36,13 +36,13 @@ const SystemRow: React.FC<SystemRowProps> = React.memo(
         {system.description}
       </TableCell>
       <TableCell className="flex items-center justify-center w-full h-full space-x-2">
-        <button
+        {/* <button
           type="button"
           onClick={() => onEdit(system.id || 0)}
           className="text-amber-200 hover:text-amber-500"
         >
           <FaSortAmountUp size={24} />
-        </button>
+        </button> */}
         <button
           type="button"
           onClick={() => onEdit(system.id || 0)}

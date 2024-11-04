@@ -39,11 +39,11 @@ export const FormRepresentative: FC = () => {
       ],
     },
     enderecos: {
-      cep: "",
+      postal_code: "",
       street: "",
-      bairro: "",
-      municipio: "",
-      UF: "",
+      neighborhood: "",
+      municipality_name: "",
+      state: "",
       number: "",
       complement: "",
     },
@@ -92,11 +92,12 @@ export const FormRepresentative: FC = () => {
           ],
         },
         enderecos: {
-          cep: representativeData.address?.postal_code || "",
+          postal_code: representativeData.address?.postal_code || "",
           street: representativeData.address?.street || "",
-          bairro: representativeData.address?.neighborhood || "",
-          municipio: representativeData.address?.municipality_name || "",
-          UF: representativeData.address?.state || "",
+          neighborhood: representativeData.address?.neighborhood || "",
+          municipality_name:
+            representativeData.address?.municipality_name || "",
+          state: representativeData.address?.state || "",
           number: representativeData.address?.number || "",
           complement: representativeData.address?.complement || "",
         },
@@ -128,7 +129,8 @@ export const FormRepresentative: FC = () => {
     },
   })
 
-  const handleNext = (currentForm: string, data: unknown) => {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const handleNext = (currentForm: string, data: any) => {
     setFormData(prevData => ({
       ...prevData,
       [currentForm.toLowerCase()]: data,
@@ -136,6 +138,7 @@ export const FormRepresentative: FC = () => {
 
     const forms = ["Dados Gerais", "Comissão", "Contatos", "Endereços"]
     const nextFormIndex = forms.indexOf(currentForm) + 1
+
     if (nextFormIndex < forms.length) {
       const nextFormTitle = forms[nextFormIndex]
       if (!enabledForms.includes(nextFormTitle)) {
@@ -143,6 +146,7 @@ export const FormRepresentative: FC = () => {
       }
       setSelectedForm(nextFormTitle)
     } else {
+      console.log("Dados a serem enviados:", formData) // Log para verificar
       if (id) {
         updateRepresentativeMutation.mutate(formData)
       } else {

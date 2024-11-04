@@ -26,7 +26,7 @@ module.exports = {
         colorProject: {
           'blue-dark': '#072D44',
           'blue-medium': '#064469',
-          'blue-light': '#86f228',
+          'blue-light': '#248c40',
           'blue-light-es': '#9CCDDB',
           'blue-light-up': '#D0D7E1',
           white: '#FFFFFF',

@@ -53,7 +53,7 @@ export const ContactForm: FC<{
   const { updateFormData } = useFormStore()
   const form = useForm<TContact>({
     resolver: zodResolver(ContactSchema),
-    defaultValues: initialValues, // Use os initialValues diretamente
+    defaultValues: initialValues,
   })
 
   const {
@@ -63,7 +63,6 @@ export const ContactForm: FC<{
     reset,
   } = form
 
-  // Atualiza os valores do formulário quando initialValues mudam
   useEffect(() => {
     reset(initialValues)
   }, [initialValues, reset])
@@ -104,6 +103,7 @@ export const ContactForm: FC<{
         },
       })
       onNext?.(data)
+      console.log("contact", data)
     } catch (error) {
       console.error("Erro ao enviar o formulário:", error)
     }

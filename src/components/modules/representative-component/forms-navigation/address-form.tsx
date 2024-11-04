@@ -1,4 +1,7 @@
-import { HeaderForms } from "@/components/modules/representative-component/header-forms/header-forms"
+import type React from "react"
+import { useEffect } from "react"
+import { FormProvider, useForm, useWatch } from "react-hook-form"
+import { useFormStore } from "../../representative-component/zustand/gerenciador-zustand"
 import {
   FormControl,
   FormField,
@@ -6,28 +9,24 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { zodResolver } from "@hookform/resolvers/zod"
+import {
+  addressSchema,
+  type addressSchemaType,
+} from "../../client/zod-form/zod-address"
+import { ToastContainer, toast } from "react-toastify"
+import { HeaderForms } from "@/components/modules/representative-component/header-forms/header-forms"
+import { useNavigate } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
 import {
   type AddressData,
   fetchViaCep,
 } from "@/infra/http/api-via-cep/fecth-viacep"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useQuery } from "@tanstack/react-query"
-import { type FC, useEffect } from "react"
-import { FormProvider, useForm } from "react-hook-form"
-import { ToastContainer, toast } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
-import { useFormStore } from "../../representative-component/zustand/gerenciador-zustand"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
-import { useNavigate } from "react-router-dom"
-import {
-  type addressSchemaType,
-  addressSchema,
-} from "../../client/zod-form/zod-address"
-import type { TClient } from "../../client/zod-form/zod_client.schema"
-
-export const AddressForm: FC<{
-  onNext?: (data: TClient) => void
+export const AddressForm: React.FC<{
+  onNext?: (data: addressSchemaType) => void
   initialValues?: addressSchemaType
 }> = ({ onNext, initialValues }) => {
   const { formData, updateFormData, setMutationSuccess } = useFormStore()
@@ -35,12 +34,16 @@ export const AddressForm: FC<{
 
   const form = useForm<addressSchemaType>({
     defaultValues: {
-      cep: initialValues?.cep || formData.address?.postal_code || "",
+      postal_code:
+        initialValues?.postal_code || formData.address?.postal_code || "",
       street: initialValues?.street || formData.address?.street || "",
-      bairro: initialValues?.bairro || formData.address?.neighborhood || "",
-      municipio:
-        initialValues?.municipio || formData.address?.municipality_name || "",
-      UF: initialValues?.UF || formData.address?.state || "",
+      neighborhood:
+        initialValues?.neighborhood || formData.address?.neighborhood || "",
+      municipality_name:
+        initialValues?.municipality_name ||
+        formData.address?.municipality_name ||
+        "",
+      state: initialValues?.state || formData.address?.state || "",
       number: initialValues?.number || formData.address?.number || "",
       complement:
         initialValues?.complement || formData.address?.complement || "",
@@ -50,55 +53,40 @@ export const AddressForm: FC<{
 
   const {
     handleSubmit,
-    register,
-    watch,
-    reset,
+    control,
     setValue,
     clearErrors,
     formState: { errors },
   } = form
+  const cep = useWatch({ control, name: "postal_code" })
 
-  const cep = watch("cep")
-
-  const { data: viaCepData, isError } = useQuery<AddressData>({
+  const { data: viaCepData } = useQuery<AddressData>({
     queryKey: ["viaCep", cep],
     queryFn: () => fetchViaCep(cep),
     enabled: Boolean(cep) && cep.length === 8,
   })
 
   useEffect(() => {
-    if (!cep) {
-      reset({
-        street: "",
-        bairro: "",
-        municipio: "",
-        UF: "",
-      })
-      return
-    }
-
     if (viaCepData) {
       setValue("street", viaCepData.logradouro || "")
-      setValue("bairro", viaCepData.bairro || "")
-      setValue("municipio", viaCepData.localidade || "")
-      setValue("UF", viaCepData.uf || "")
-      clearErrors(["street", "bairro", "municipio", "UF"])
+      setValue("neighborhood", viaCepData.bairro || "")
+      setValue("municipality_name", viaCepData.localidade || "")
+      setValue("state", viaCepData.uf || "")
+      clearErrors(["street", "neighborhood", "municipality_name", "state"])
     }
-  }, [cep, viaCepData, reset, setValue, clearErrors])
+  }, [viaCepData, setValue, clearErrors])
 
-  if (isError) {
-    return (
-      <div className="text-red-500">
-        Não foi possível localizar o CEP. Por favor, verifique o número e tente
-        novamente.
-      </div>
-    )
-  }
+  // Effect to update the global state whenever the form inputs change
+  const watchedFields = useWatch({ control })
+
+  useEffect(() => {
+    updateFormData({ address: watchedFields })
+  }, [watchedFields, updateFormData])
 
   const submitForm = async (data: addressSchemaType) => {
     try {
       updateFormData({ address: data })
-      onNext?.(data as unknown as TClient)
+      if (onNext) onNext(data)
       setMutationSuccess(true)
       toast.success("Formulário enviado com sucesso!", {
         onClose: () => navigate("/canais"),
@@ -112,9 +100,7 @@ export const AddressForm: FC<{
 
   return (
     <div className="flex flex-col p-4 w-full h-screen">
-      <div className="flex w-full items-start justify-start">
-        <HeaderForms title="Formulários de Endereço" />
-      </div>
+      <HeaderForms title="Formulários de Endereço" />
       <FormProvider {...form}>
         <form
           onSubmit={handleSubmit(submitForm)}
@@ -122,23 +108,25 @@ export const AddressForm: FC<{
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
-              name="cep"
+              name="postal_code"
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>CEP</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register("cep")} />
+                    <Input {...field} />
                   </FormControl>
-                  <FormMessage>{errors.cep?.message}</FormMessage>
+                  <FormMessage>{errors.postal_code?.message}</FormMessage>
                 </FormItem>
               )}
             />
             <FormField
               name="street"
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Endereço</FormLabel>
-                  <Input {...field} {...register("street")} />
+                  <Input {...field} />
                   <FormMessage>{errors.street?.message}</FormMessage>
                 </FormItem>
               )}
@@ -146,48 +134,52 @@ export const AddressForm: FC<{
           </div>
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
-              name="bairro"
+              name="neighborhood"
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Bairro</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register("bairro")} />
+                    <Input {...field} />
                   </FormControl>
-                  <FormMessage>{errors.bairro?.message}</FormMessage>
+                  <FormMessage>{errors.neighborhood?.message}</FormMessage>
                 </FormItem>
               )}
             />
             <FormField
-              name="municipio"
+              name="municipality_name"
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Municipio</FormLabel>
-                  <Input {...field} {...register("municipio")} />
-                  <FormMessage>{errors.municipio?.message}</FormMessage>
+                  <FormLabel>Município</FormLabel>
+                  <Input {...field} />
+                  <FormMessage>{errors.municipality_name?.message}</FormMessage>
                 </FormItem>
               )}
             />
           </div>
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
             <FormField
-              name="UF"
+              name="state"
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>UF</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register("UF")} />
+                    <Input {...field} />
                   </FormControl>
-                  <FormMessage>{errors.UF?.message}</FormMessage>
+                  <FormMessage>{errors.state?.message}</FormMessage>
                 </FormItem>
               )}
             />
             <FormField
               name="number"
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Numero</FormLabel>
+                  <FormLabel>Número</FormLabel>
                   <FormControl>
-                    <Input {...field} {...register("number")} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage>{errors.number?.message}</FormMessage>
                 </FormItem>
@@ -195,15 +187,19 @@ export const AddressForm: FC<{
             />
             <FormField
               name="complement"
+              control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Complemento</FormLabel>
-                  <Input {...field} {...register("complement")} />
+                  <Input {...field} />
                   <FormMessage>{errors.complement?.message}</FormMessage>
                 </FormItem>
               )}
             />
           </div>
+          <Button type="submit" variant="success">
+            Próximo
+          </Button>
         </form>
       </FormProvider>
       <ToastContainer />

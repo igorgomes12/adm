@@ -1,5 +1,5 @@
 import { BiBuildingHouse } from "react-icons/bi"
-import { BsFillPersonPlusFill, BsJournalPlus } from "react-icons/bs"
+import { BsFillPersonPlusFill } from "react-icons/bs"
 import { GiTakeMyMoney } from "react-icons/gi"
 
 import {
@@ -10,14 +10,9 @@ import {
   FaDollarSign,
   FaHeadset,
   FaUser,
-  FaUsers,
 } from "react-icons/fa"
-import {
-  HiMiniMegaphone,
-  HiOutlineChatBubbleLeftEllipsis,
-} from "react-icons/hi2"
+import { HiOutlineChatBubbleLeftEllipsis } from "react-icons/hi2"
 import { ImUsers } from "react-icons/im"
-import { IoCalendarOutline } from "react-icons/io5"
 
 export const menuNavigation = [
   {
@@ -34,13 +29,13 @@ export const menuNavigation = [
           { label: "Tipo Estabelecimento", icon: <BiBuildingHouse /> },
         ],
       },
-      {
-        title: "Lançamentos",
-        items: [{ label: "Planilha de Venda", icon: <BsJournalPlus /> }],
-      },
+      // {
+      //   title: "Lançamentos",
+      //   items: [{ label: "Planilha de Venda", icon: <BsJournalPlus /> }],
+      // },
     ],
   },
-  { id: "relatorios", label: "Relatórios", link: "#", icon: <FaChartBar /> },
+  // { id: "relatorios", label: "Relatórios", link: "#", icon: <FaChartBar /> },
   {
     id: "administracao",
     label: "Administração",
@@ -52,65 +47,65 @@ export const menuNavigation = [
           { label: "Usuários", icon: <ImUsers /> },
           { label: "Canais", icon: <FaDollarSign /> },
 
-          {
-            label: "Ações",
-            icon: <FaChartBar />,
-            subcategories: [
-              {
-                title: "Versões",
-                items: [
-                  {
-                    label: "Sistema",
-                    icon: <BsFillPersonPlusFill />,
-                  },
-                ],
-              },
-            ],
-          },
+          // {
+          //   label: "Ações",
+          //   icon: <FaChartBar />,
+          //   subcategories: [
+          //     {
+          //       title: "Versões",
+          //       items: [
+          //         {
+          //           label: "Sistema",
+          //           icon: <BsFillPersonPlusFill />,
+          //         },
+          //       ],
+          //     },
+          //   ],
+          // },
           { label: "Formas de Pagamento", icon: <GiTakeMyMoney /> },
-          { label: "Descrição de Chamados", icon: <FaChartBar /> },
-          { label: "Agendar Telemarketing", icon: <FaChartBar /> },
+          // { label: "Descrição de Chamados", icon: <FaChartBar /> },
+          // { label: "Agendar Telemarketing", icon: <FaChartBar /> },
         ],
       },
-      {
-        title: "Utilitários",
-        items: [
-          { label: "Exportar E-mail", icon: <FaChartBar /> },
-          { label: "Comissão", icon: <FaChartBar /> },
-          { label: "Pagamento comissão", icon: <FaChartBar /> },
-          { label: "Faturamento", icon: <FaChartBar /> },
-          { label: "Scheduler", icon: <FaChartBar /> },
-          { label: "Acordo", icon: <FaChartBar /> },
-          { label: "Máquina", icon: <FaChartBar /> },
-          { label: "Config. Empresa", icon: <FaChartBar /> },
-        ],
-      },
+      // {
+      //   title: "Utilitários",
+      //   items: [
+      //     { label: "Exportar E-mail", icon: <FaChartBar /> },
+      //     { label: "Comissão", icon: <FaChartBar /> },
+      //     { label: "Pagamento comissão", icon: <FaChartBar /> },
+      //     { label: "Faturamento", icon: <FaChartBar /> },
+      //     { label: "Scheduler", icon: <FaChartBar /> },
+      //     { label: "Acordo", icon: <FaChartBar /> },
+      //     { label: "Máquina", icon: <FaChartBar /> },
+      //     { label: "Config. Empresa", icon: <FaChartBar /> },
+      //   ],
+      // },
     ],
   },
-  { id: "financeiro", label: "Financeiro", link: "#", icon: <FaDollarSign /> },
-  { id: "programacao", label: "Programação", link: "#", icon: <FaDesktop /> },
-  { id: "monitoramento", label: "Monitoramento", link: "#", icon: <FaBell /> },
-  {
-    id: "suporte",
-    label: "Suporte",
-    icon: <FaUser />,
-    subcategories: [
-      {
-        items: [
-          { label: "Clientes", icon: <FaUsers /> },
-          { label: "Implantação", icon: <FaDollarSign /> },
-          { label: "Requisições", icon: <FaDesktop /> },
-          { id: "chamados", label: "Chamados", icon: <HiMiniMegaphone /> },
-          { label: "Agendas", icon: <IoCalendarOutline /> },
-        ],
-      },
-      {
-        title: "Lançamentos",
-        items: [{ label: "Planilha de Venda", icon: <BsJournalPlus /> }],
-      },
-    ],
-  },
-  { id: "utilitarios", label: "Utilitários", link: "#", icon: <ImUsers /> },
+  // { id: "financeiro", label: "Financeiro", link: "#", icon: <FaDollarSign /> },
+  // { id: "programacao", label: "Programação", link: "#", icon: <FaDesktop /> },
+  // { id: "monitoramento", label: "Monitoramento", link: "#", icon: <FaBell /> },
+  // {
+  //   id: "suporte",
+  //   label: "Suporte",
+  //   icon: <FaUser />,
+  //   subcategories: [
+  //     {
+  //       items: [
+  //         { label: "Clientes", icon: <FaUsers /> },
+  //         { label: "Implantação", icon: <FaDollarSign /> },
+  //         { label: "Requisições", icon: <FaDesktop /> },
+  //         { id: "chamados", label: "Chamados", icon: <HiMiniMegaphone /> },
+  //         { label: "Agendas", icon: <IoCalendarOutline /> },
+  //       ],
+  //     },
+  //     {
+  //       title: "Lançamentos",
+  //       items: [{ label: "Planilha de Venda", icon: <BsJournalPlus /> }],
+  //     },
+  //   ],
+  // },
+  // { id: "utilitarios", label: "Utilitários", link: "#", icon: <ImUsers /> },
 ]
 
 export const canaisItems = [

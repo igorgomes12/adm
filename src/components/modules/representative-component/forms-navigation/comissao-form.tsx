@@ -43,6 +43,7 @@ export const ComissaoForm: FC<{
   const onSubmit = (data: CommissionRepresentativeDto) => {
     updateFormData({ commission: data })
     onNext(data)
+    console.log("comissao", data)
   }
 
   return (

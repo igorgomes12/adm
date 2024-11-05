@@ -18,6 +18,8 @@ import {
 import { ModalRepresentativeDelete } from "./mod/modal-representative-delete"
 import type { representative } from "./zod/types-representative"
 import { useRepresentativeDeleteZustand } from "./zustand/delete-representative"
+import usePaginationStore from "@/components/pagination/hook/use-pagination"
+import Paginations from "../client/pagination"
 
 const headers = [
   "Cód.",
@@ -98,6 +100,8 @@ export const TableRepresentative: FC<{
   onOpenFormClient: (id: number) => void
 }> = ({ searchTerm, onOpenFormClient }) => {
   const { isOpen, onOpen } = useRepresentativeDeleteZustand()
+  const { currentPage, changePage } = usePaginationStore()
+  const itemsPerPage = 8
 
   const queryClient = useQueryClient()
 
@@ -213,6 +217,14 @@ export const TableRepresentative: FC<{
         </TableHeader>
         <TableBody>{tableContent}</TableBody>
       </Table>
+      <div className="flex justify-end mt-2">
+        <Paginations
+          totalItems={filteredData.length}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          onPageChange={changePage}
+        />
+      </div>
       {isOpen && <ModalRepresentativeDelete />}
     </div>
   )

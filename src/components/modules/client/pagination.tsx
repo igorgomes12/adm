@@ -29,30 +29,57 @@ const Paginations: React.FC<PaginationsProps> = ({
     }
   }
 
+  const renderPaginationItems = () => {
+    const items = []
+    for (let i = 1; i <= totalPages; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            href="#"
+            onClick={e => {
+              e.preventDefault()
+              handlePageChange(i)
+            }}
+            isActive={i === currentPage}
+            className={`px-3 py-1 rounded ${
+              i === currentPage ? "bg-gray-800 text-white" : "bg-white"
+            } hover:bg-gray-300 transition-colors duration-200`}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      )
+    }
+    return items
+  }
+
   return (
-    <Pagination>
-      <PaginationContent>
+    <Pagination className="flex justify-center items-center space-x-2">
+      <PaginationContent className="flex items-center space-x-1">
         <PaginationItem>
           <PaginationPrevious
-            onClick={() => handlePageChange(currentPage - 1)}
-            className={currentPage === 1 ? "disabled" : ""}
-          />
+            href="#"
+            onClick={e => {
+              e.preventDefault()
+              handlePageChange(currentPage - 1)
+            }}
+            className={`${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+          >
+            &lt;
+          </PaginationPrevious>
         </PaginationItem>
-        {[...Array(totalPages)].map((_, index) => (
-          <PaginationItem key={`page-${index + 1}`}>
-            <PaginationLink
-              onClick={() => handlePageChange(index + 1)}
-              className={currentPage === index + 1 ? "active" : ""}
-            >
-              {index + 1}
-            </PaginationLink>
-          </PaginationItem>
-        ))}
+        {renderPaginationItems()}
         <PaginationItem>
           <PaginationNext
-            onClick={() => handlePageChange(currentPage + 1)}
-            className={currentPage === totalPages ? "disabled" : ""}
-          />
+            href="#"
+            onClick={e => {
+              e.preventDefault()
+              handlePageChange(currentPage + 1)
+            }}
+            className={`${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
+          >
+            &gt;
+          </PaginationNext>
         </PaginationItem>
       </PaginationContent>
     </Pagination>

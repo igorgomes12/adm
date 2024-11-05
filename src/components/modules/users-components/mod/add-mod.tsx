@@ -1,42 +1,42 @@
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { FaEye, FaEyeSlash, FaRocket } from 'react-icons/fa'
-import { Flip, toast } from 'react-toastify'
-import { UserSchemaDto, type TUserSchemaDto } from '../zod-types-user/zod-users'
-import { useAddUserZustand } from '../zustand/add-zustand'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
+import { FormProvider, useForm } from "react-hook-form"
+import { FaEye, FaEyeSlash, FaRocket } from "react-icons/fa"
+import { Flip, toast } from "react-toastify"
+import { UserSchemaDto, type TUserSchemaDto } from "../zod-types-user/zod-users"
+import { useAddUserZustand } from "../zustand/add-zustand"
 
 type ProfileType =
-  | 'ADMIN'
-  | 'FINANCE'
-  | 'REPRESENTATIVE'
-  | 'REPRESENTATIVE_SUPERVISOR'
-  | 'PROGRAMMING'
-  | 'PROGRAMMING_SUPERVISOR'
-  | 'SUPPORT'
-  | 'SUPPORT_SUPERVISOR'
+  | "ADMIN"
+  | "FINANCE"
+  | "REPRESENTATIVE"
+  | "REPRESENTATIVE_SUPERVISOR"
+  | "PROGRAMMING"
+  | "PROGRAMMING_SUPERVISOR"
+  | "SUPPORT"
+  | "SUPPORT_SUPERVISOR"
 
 const profileMap: Record<number, ProfileType> = {
-  1: 'ADMIN',
-  2: 'FINANCE',
-  3: 'REPRESENTATIVE',
-  4: 'REPRESENTATIVE_SUPERVISOR',
-  5: 'PROGRAMMING',
-  6: 'PROGRAMMING_SUPERVISOR',
-  7: 'SUPPORT',
-  8: 'SUPPORT_SUPERVISOR',
+  1: "ADMIN",
+  2: "FINANCE",
+  3: "REPRESENTATIVE",
+  4: "REPRESENTATIVE_SUPERVISOR",
+  5: "PROGRAMMING",
+  6: "PROGRAMMING_SUPERVISOR",
+  7: "SUPPORT",
+  8: "SUPPORT_SUPERVISOR",
 }
 
 export const ModalUserAdd = () => {
@@ -45,34 +45,34 @@ export const ModalUserAdd = () => {
   const [showPassword, setShowPassword] = useState(false)
 
   const { mutate, isSuccess } = useMutation({
-    mutationKey: ['post-user'],
+    mutationKey: ["post-user"],
     mutationFn: async (data: TUserSchemaDto) => {
-      const res = await api.post('/user', data)
+      const res = await api.post("/user", data)
       return res.data
     },
     onSuccess: () => {
-      toast.success('Usuário adicionado com sucesso!', {
-        theme: 'dark',
+      toast.success("Usuário adicionado com sucesso!", {
+        theme: "dark",
         icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
+        progressStyle: { background: "#1f62cf" },
         transition: Flip,
       })
-      queryClient.invalidateQueries({ queryKey: ['get-users'] })
+      queryClient.invalidateQueries({ queryKey: ["get-users"] })
       onClose()
     },
     onError: error => {
-      console.error('Mutation error:', error)
-      toast.error('Erro ao salvar o usuário. Por favor, tente novamente.')
+      console.error("Mutation error:", error)
+      toast.error("Erro ao salvar o usuário. Por favor, tente novamente.")
     },
   })
 
   const form = useForm<TUserSchemaDto>({
     resolver: zodResolver(UserSchemaDto),
     defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      status: 'ativo',
+      name: "",
+      email: "",
+      password: "",
+      status: "ativo",
       profile: [],
     },
   })
@@ -128,7 +128,7 @@ export const ModalUserAdd = () => {
                     <FormControl>
                       <Input
                         placeholder="Senha"
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         {...field}
                       />
                     </FormControl>
@@ -186,7 +186,7 @@ export const ModalUserAdd = () => {
                 variant="success"
                 disabled={isSuccess}
               >
-                {isSuccess ? 'Salvando...' : 'Salvar'}
+                {isSuccess ? "Salvando..." : "Salvar"}
               </Button>
             </div>
           </form>

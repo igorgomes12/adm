@@ -4,8 +4,8 @@ import { type FC, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { HeaderClientForms } from "../header-client"
 import {
-  type EnterpriseDto,
   schemaEnterpriseDto,
+  type EnterpriseDto,
 } from "../zod-form/zod-enterprise.dto"
 import {
   FormField,
@@ -13,10 +13,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { ToastContainer } from "react-toastify"
+import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { useFormStore } from "../zustand/form-client.zustand"
 import { Button } from "@/components/ui/button"
+import { formatCNPJ } from "@/common/regex/cnpj"
 
 export const EnterpriseForm: FC<{
   onNext: (data: EnterpriseDto) => void
@@ -38,16 +39,15 @@ export const EnterpriseForm: FC<{
 
   const {
     handleSubmit,
-    register,
+
     reset,
     watch,
+    setValue,
     formState: { errors },
   } = form
 
   useEffect(() => {
-    if (initialValues) {
-      reset(initialValues)
-    }
+    reset(initialValues)
   }, [initialValues, reset])
 
   useEffect(() => {
@@ -58,8 +58,13 @@ export const EnterpriseForm: FC<{
   }, [watch, updateFormData])
 
   const onSubmit = (data: EnterpriseDto) => {
-    updateFormData(data)
-    onNext(data)
+    if (Object.keys(errors).length > 0) {
+      toast.error("Por favor, preencha todos os campos obrigatórios.")
+      console.log(errors)
+    } else {
+      updateFormData(data)
+      onNext(data)
+    }
   }
 
   return (
@@ -76,10 +81,7 @@ export const EnterpriseForm: FC<{
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Nome Corporativo</FormLabel>
-                  <Input
-                    {...field}
-                    {...register("corporate_name", { required: true })}
-                  />
+                  <Input {...field} />
                   <FormMessage>{errors.corporate_name?.message}</FormMessage>
                 </FormItem>
               )}
@@ -89,7 +91,7 @@ export const EnterpriseForm: FC<{
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Nome Fantasia</FormLabel>
-                  <Input {...register("fantasy_name")} {...field} />
+                  <Input {...field} />
                   <FormMessage>{errors.fantasy_name?.message}</FormMessage>
                 </FormItem>
               )}
@@ -101,7 +103,12 @@ export const EnterpriseForm: FC<{
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>CNPJ</FormLabel>
-                  <Input {...field} {...register("cpf_cnpj")} />
+                  <Input
+                    {...field}
+                    onChange={e =>
+                      setValue("cpf_cnpj", formatCNPJ(e.target.value))
+                    }
+                  />
                   <FormMessage>{errors.cpf_cnpj?.message}</FormMessage>
                 </FormItem>
               )}
@@ -112,8 +119,8 @@ export const EnterpriseForm: FC<{
               name="state_registration"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Incrição Estadual</FormLabel>
-                  <Input {...field} {...register("state_registration")} />
+                  <FormLabel>Inscrição Estadual</FormLabel>
+                  <Input {...field} />
                   <FormMessage>
                     {errors.state_registration?.message}
                   </FormMessage>
@@ -124,8 +131,8 @@ export const EnterpriseForm: FC<{
               name="municipal_registration"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Incrição Municipal</FormLabel>
-                  <Input {...field} {...register("municipal_registration")} />
+                  <FormLabel>Inscrição Municipal</FormLabel>
+                  <Input {...field} />
                   <FormMessage>
                     {errors.municipal_registration?.message}
                   </FormMessage>
@@ -136,8 +143,8 @@ export const EnterpriseForm: FC<{
               name="rural_registration"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Incrição Rural</FormLabel>
-                  <Input {...field} {...register("rural_registration")} />
+                  <FormLabel>Inscrição Rural</FormLabel>
+                  <Input {...field} />
                   <FormMessage>
                     {errors.rural_registration?.message}
                   </FormMessage>

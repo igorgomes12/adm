@@ -1,10 +1,10 @@
-import { Button } from '@/components/ui/button'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { IoWarningOutline } from 'react-icons/io5'
-import { Flip, toast } from 'react-toastify'
-import { useSystemDeleteZustand } from './zustand-state/system-del-zustand'
+import { Button } from "@/components/ui/button"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
+import { IoWarningOutline } from "react-icons/io5"
+import { Flip, toast } from "react-toastify"
+import { useSystemDeleteZustand } from "./zustand-state/system-del-zustand"
 
 export const ModalSystemDelete = () => {
   const { id, isOpen, onClose } = useSystemDeleteZustand()
@@ -12,23 +12,23 @@ export const ModalSystemDelete = () => {
   const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
-    mutationKey: ['delete-system'],
+    mutationKey: ["delete-system"],
     mutationFn: async () => {
-      const res = await api.delete(`/systems`, { params: { id } })
+      const res = await api.delete("/systems", { params: { id } })
       return res.data
     },
     onSuccess: () => {
-      toast.success('Sistema excluído com sucesso!', {
-        theme: 'colored',
+      toast.success("Sistema excluído com sucesso!", {
+        theme: "colored",
         icon: <IoWarningOutline />,
         transition: Flip,
       })
-      queryClient.invalidateQueries({ queryKey: ['get-systems'] })
+      queryClient.invalidateQueries({ queryKey: ["get-systems"] })
       onClose()
     },
     onError: (error: Error) => {
       toast.error(`Error ao excluir o sistema ${error.message}`, {
-        theme: 'colored',
+        theme: "colored",
         icon: <IoWarningOutline />,
         transition: Flip,
       })
@@ -58,7 +58,7 @@ export const ModalSystemDelete = () => {
         <div className="flex w-full flex-col sm:flex-row justify-center gap-2">
           <Button
             className="w-full"
-            variant="outline"
+            variant="destructive"
             onClick={onClose}
             disabled={isDeleting}
           >
@@ -66,11 +66,11 @@ export const ModalSystemDelete = () => {
           </Button>
           <Button
             className="w-full"
-            variant="destructive"
+            variant="success"
             onClick={handleDelete}
             disabled={isDeleting}
           >
-            {isDeleting ? 'Excluindo...' : 'Excluir'}
+            {isDeleting ? "Excluindo..." : "Excluir"}
           </Button>
         </div>
       </div>

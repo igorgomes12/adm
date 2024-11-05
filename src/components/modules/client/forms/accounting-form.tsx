@@ -1,13 +1,17 @@
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { FormProvider, useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { HeaderClientForms } from "../header-client"
 import { OwnerSchema, type TOwner } from "../zod-form/zod_owner.schema"
 import { type Owner, useFormStore } from "../zustand/form-client.zustand"
+import { toast, ToastContainer } from "react-toastify"
+import { useNavigate } from "react-router-dom"
 import type { FC } from "react"
+import { formatCpfCnpj } from "@/common/regex/cpf-cnpj"
+import { HeaderClientForms } from "../header-client"
 
 interface IOwnerFormProps {
   onNext: (data: Owner) => void
@@ -16,15 +20,27 @@ interface IOwnerFormProps {
 
 export const OwnerForm: FC<IOwnerFormProps> = ({ onNext, initialValues }) => {
   const { updateFormData } = useFormStore()
+  const navigate = useNavigate()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<TOwner>({
     resolver: zodResolver(OwnerSchema),
-    defaultValues: initialValues,
+    defaultValues: {
+      name: initialValues.name || "",
+      cpf_cnpj: initialValues.cpf_cnpj || "",
+      birth_date: initialValues.birth_date || "",
+      observation: initialValues.observation || "",
+    },
   })
 
-  const { control, handleSubmit, formState } = form
+  const { control, handleSubmit, formState, reset } = form
+
+  useEffect(() => {
+    reset(initialValues)
+  }, [initialValues, reset])
 
   const submitForm = async (data: TOwner) => {
+    setIsSubmitting(true)
     try {
       const ownerData: Owner = {
         ...data,
@@ -33,16 +49,26 @@ export const OwnerForm: FC<IOwnerFormProps> = ({ onNext, initialValues }) => {
 
       onNext(ownerData)
       updateFormData({ owner: ownerData })
-      console.log("Form enviado com sucesso:", ownerData)
+
+      toast.success("Formulário enviado com sucesso!", {
+        onClose: () => navigate("/clientes-de-venda"),
+        autoClose: 2000,
+      })
     } catch (error) {
       console.error("Erro ao enviar o formulário:", error)
+      toast.error(
+        "Erro ao enviar os dados do proprietário. Por favor, tente novamente."
+      )
+    } finally {
+      reset(initialValues)
+      setIsSubmitting(false)
     }
   }
 
   return (
     <div className="flex flex-col p-4 w-full h-screen">
       <div className="flex w-full items-start justify-start">
-        <HeaderClientForms title="Formulário de Proprietário" />
+        <HeaderClientForms title=" Formulário de Proprietário" />
       </div>
       <FormProvider {...form}>
         <form
@@ -68,7 +94,13 @@ export const OwnerForm: FC<IOwnerFormProps> = ({ onNext, initialValues }) => {
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>CPF/CNPJ</FormLabel>
-                  <Input {...field} />
+                  <Input
+                    {...field}
+                    onChange={e => {
+                      const formattedValue = formatCpfCnpj(e.target.value)
+                      field.onChange(formattedValue)
+                    }}
+                  />
                   <FormMessage>
                     {formState.errors.cpf_cnpj?.message}
                   </FormMessage>
@@ -107,12 +139,18 @@ export const OwnerForm: FC<IOwnerFormProps> = ({ onNext, initialValues }) => {
           </div>
 
           <div className="flex w-full items-center justify-center">
-            <Button className="w-full" type="submit" variant="success">
-              Próximo
+            <Button
+              className="w-full"
+              type="submit"
+              variant="success"
+              disabled={isSubmitting}
+            >
+              Salvar
             </Button>
           </div>
         </form>
       </FormProvider>
+      <ToastContainer />
     </div>
   )
 }

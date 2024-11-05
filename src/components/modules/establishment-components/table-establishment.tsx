@@ -17,6 +17,8 @@ import { ModalEstablishmentDelete } from "./modal-establishment/delete-modal-est
 import { EditEstablishmentModal } from "./modal-establishment/edit-modal-establishment"
 import { useEstablishmentDeleteZustand } from "./zustand-establishment/delete-establisment"
 import { useEstablishmentEditZustand } from "./zustand-establishment/edit-establishment"
+import Paginations from "../client/pagination"
+import usePaginationStore from "@/components/pagination/hook/use-pagination"
 
 const headers = ["Cód.", "Nome Estabelecimento", "Status", ""]
 
@@ -75,6 +77,7 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
   const { isOpen: isOpenEdit, onOpen: onOpenEdit } =
     useEstablishmentEditZustand()
   const queryClient = useQueryClient()
+  const { currentPage, changePage, setTotalPages } = usePaginationStore()
 
   const { data, isLoading, error } = useQuery<TEstablishment[], Error>({
     queryKey: ["get-establishment"],
@@ -83,6 +86,8 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
       return response.data
     },
   })
+
+  const itemsPerPage = 8
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({
@@ -112,6 +117,7 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
     updateStatusMutation.mutate({ id, newStatus })
   }
 
+  // Filter the data based on the search term
   const filteredData = useMemo(() => {
     if (!data) return []
 
@@ -130,6 +136,17 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
     })
   }, [data, searchTerm])
 
+  // Set the total number of pages whenever the filtered data changes
+  useMemo(() => {
+    setTotalPages(filteredData.length, itemsPerPage)
+  }, [filteredData.length, setTotalPages])
+
+  // Get the current page of data
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
+
   const tableContent = useMemo(() => {
     if (isLoading || !filteredData || filteredData.length === 0) {
       return <LoadingRow />
@@ -146,32 +163,50 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
       )
     }
 
-    return filteredData.map(data => (
+    return paginatedData.map(establishment => (
       <EstablishmentRow
-        key={data.id}
-        establishment={data}
+        key={establishment.id}
+        establishment={establishment}
         onOpenEdit={onOpenEdit}
         onOpenDelete={onOpen}
         onStatusChange={handleStatusChange}
       />
     ))
+  }, [
+    isLoading,
+    error,
+    filteredData,
+    paginatedData,
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  }, [isLoading, error, filteredData, handleStatusChange, onOpenEdit, onOpen])
+    handleStatusChange,
+    onOpenEdit,
+    onOpen,
+  ])
 
   return (
-    <div className="flex flex-col mt-4">
-      <Table className="min-w-full py-2 text-lg">
-        <TableHeader>
-          <TableRow className="bg-gray-300 w-auto">
-            {headers.map(header => (
-              <TableHead key={header} className="text-black w-auto">
-                {header}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>{tableContent}</TableBody>
-      </Table>
+    <div className="flex flex-col h-[80vh] overflow-y-auto">
+      <div className="flex-grow">
+        <Table className="min-w-full py-2 text-lg">
+          <TableHeader>
+            <TableRow className="bg-gray-300 w-auto">
+              {headers.map(header => (
+                <TableHead key={header} className="text-black w-auto">
+                  {header}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>{tableContent}</TableBody>
+        </Table>
+        <div className="flex justify-end mt-2">
+          <Paginations
+            totalItems={filteredData.length}
+            itemsPerPage={itemsPerPage}
+            currentPage={currentPage}
+            onPageChange={changePage}
+          />
+        </div>
+      </div>
       {isOpen && <ModalEstablishmentDelete />}
       {isOpenEdit && <EditEstablishmentModal />}
     </div>

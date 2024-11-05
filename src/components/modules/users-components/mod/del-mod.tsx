@@ -1,10 +1,10 @@
-import { Button } from '@/components/ui/button'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { FaRocket } from 'react-icons/fa'
-import { Flip, toast } from 'react-toastify'
-import { useUserDeleteZustand } from '../zustand/del-zustand'
+import { Button } from "@/components/ui/button"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
+import { FaRocket } from "react-icons/fa"
+import { Flip, toast } from "react-toastify"
+import { useUserDeleteZustand } from "../zustand/del-zustand"
 
 export const ModalUserDelete = () => {
   const { id, isOpen, onClose } = useUserDeleteZustand()
@@ -12,24 +12,24 @@ export const ModalUserDelete = () => {
   const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
-    mutationKey: ['delete-user'],
+    mutationKey: ["delete-user"],
     mutationFn: async () => {
-      const res = await api.delete(`/user`, { params: { id } })
+      const res = await api.delete("/user", { params: { id } })
       return res.data
     },
     onSuccess: () => {
-      toast.success('Usuário excluído com sucesso!', {
-        theme: 'dark',
+      toast.success("Usuário excluído com sucesso!", {
+        theme: "dark",
         icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
+        progressStyle: { background: "#1f62cf" },
         transition: Flip,
       })
-      queryClient.invalidateQueries({ queryKey: ['get-users'] })
+      queryClient.invalidateQueries({ queryKey: ["get-users"] })
       onClose()
     },
     onError: error => {
-      console.error('Erro ao excluir o usuário:', error)
-      toast.error('Erro ao excluir o usuário. Por favor, tente novamente.')
+      console.error("Erro ao excluir o usuário:", error)
+      toast.error("Erro ao excluir o usuário. Por favor, tente novamente.")
     },
     onSettled: () => {
       setIsDeleting(false)
@@ -56,7 +56,7 @@ export const ModalUserDelete = () => {
         <div className="flex w-full flex-col sm:flex-row justify-center gap-2">
           <Button
             className="w-full"
-            variant="outline"
+            variant="destructive"
             onClick={onClose}
             disabled={isDeleting}
           >
@@ -64,11 +64,11 @@ export const ModalUserDelete = () => {
           </Button>
           <Button
             className="w-full"
-            variant="destructive"
+            variant="success"
             onClick={handleDelete}
             disabled={isDeleting}
           >
-            {isDeleting ? 'Excluindo...' : 'Excluir'}
+            {isDeleting ? "Excluindo..." : "Excluir"}
           </Button>
         </div>
       </div>

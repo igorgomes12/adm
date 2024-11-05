@@ -6,7 +6,7 @@ export const addressSchema = z.object({
   neighborhood: z.string().min(1, 'O bairro é obrigatório'),
   municipality_name: z.string().min(1, 'O município é obrigatório'),
   state: z.string().length(2, 'UF deve ter 2 caracteres'),
-  number: z.string().optional(),
+  number: z.string().min(1, 'O número do endereço é obrigatório'),
   complement: z.string().optional(),
 })
 

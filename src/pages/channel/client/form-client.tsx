@@ -7,7 +7,7 @@ import {
   ClientNavigationComponent,
   navClients,
 } from "@/components/client-forms/client-navigation-component"
-import { toast } from "react-toastify"
+import { toast, ToastContainer } from "react-toastify"
 import { EnterpriseForm } from "@/components/modules/client/forms/enterprise-form"
 import { ContactClientForm } from "@/components/modules/client/forms/contact-client-form"
 import { AddressClientForm } from "@/components/modules/client/forms/address-client-form"
@@ -138,6 +138,7 @@ export const FormClientComponent = () => {
           renderForm()
         )}
       </main>
+      <ToastContainer />
     </div>
   )
 }

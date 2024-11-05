@@ -147,7 +147,7 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
       <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
         {title}
       </h1>
-      <Button onClick={handleSave} variant="blue">
+      <Button onClick={handleSave} variant="destructive">
         Salvar
       </Button>
     </div>

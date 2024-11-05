@@ -9,17 +9,22 @@ import {
 } from "@/components/ui/select"
 import { type FC, useEffect } from "react"
 import { FormProvider, useForm, Controller } from "react-hook-form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { HeaderClientForms } from "../header-client"
 import type { representative } from "../../representative-component/zod/types-representative"
 import api from "@/infra/auth/database/acess-api/interceptors-axios"
 import type { Representative } from "../zustand/form-client.zustand"
 
-type FormValues = {
-  representative: string
-  channel_entry: string
-  region: string
-}
+// Defina o esquema de validação usando Zod
+const schema = z.object({
+  representative: z.string().min(1, "Selecione um representante"),
+  channel_entry: z.string().min(1, "Selecione um canal de entrada"),
+  region: z.string().min(1, "Selecione uma região"),
+})
+
+type FormValues = z.infer<typeof schema>
 
 interface IRepresentativeFormProps {
   onNext: (data: Representative) => void
@@ -31,6 +36,7 @@ export const RepresentativeForm: FC<IRepresentativeFormProps> = ({
   initialValues,
 }) => {
   const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
     defaultValues: {
       representative: initialValues.representative || "",
       channel_entry: initialValues.channel_entry || "",
@@ -61,12 +67,10 @@ export const RepresentativeForm: FC<IRepresentativeFormProps> = ({
   })
 
   const submitForm = async (data: FormValues) => {
-    console.log("Dados do formulário:", data)
     try {
       onNext(data)
-      console.log("Form enviado com sucesso:", data)
     } catch (error) {
-      console.error("Erro ao enviar o formulário:", error)
+      alert("Ocorreu um erro ao salvar o formulário.")
     }
   }
 

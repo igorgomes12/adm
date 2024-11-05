@@ -1,46 +1,46 @@
-import { Button } from '@/components/ui/button'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { FaRocket } from 'react-icons/fa'
-import { IoWarningOutline } from 'react-icons/io5'
-import { Flip, toast } from 'react-toastify'
-import { useRepresentativeDeleteZustand } from '../zustand/delete-representative'
+import { Button } from "@/components/ui/button"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
+import { FaRocket } from "react-icons/fa"
+import { IoWarningOutline } from "react-icons/io5"
+import { Flip, toast } from "react-toastify"
+import { useRepresentativeDeleteZustand } from "../zustand/delete-representative"
 
 export const ModalRepresentativeDelete = () => {
   const { id, isOpen, onClose } = useRepresentativeDeleteZustand()
   const [isDeleting, setIsDeleting] = useState(false)
   const queryClient = useQueryClient()
 
-  console.log('Modal Delete - isOpen:', isOpen, 'id:', id)
+  console.log("Modal Delete - isOpen:", isOpen, "id:", id)
 
   const { mutate } = useMutation({
-    mutationKey: ['delete-representative'],
+    mutationKey: ["delete-representative"],
     mutationFn: async () => {
-      const res = await api.delete(`/representative`, {
+      const res = await api.delete("/representative", {
         params: { id },
       })
       return res.data
     },
     onSuccess: () => {
-      toast.success('Representante excluído com sucesso!', {
-        theme: 'dark',
+      toast.success("Representante excluído com sucesso!", {
+        theme: "dark",
         icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
+        progressStyle: { background: "#1f62cf" },
         transition: Flip,
       })
-      queryClient.invalidateQueries({ queryKey: ['get-representative'] })
+      queryClient.invalidateQueries({ queryKey: ["get-representative"] })
       onClose()
     },
     onError: error => {
-      console.error('Erro ao excluir o representante:', error)
+      console.error("Erro ao excluir o representante:", error)
       toast.error(
-        'Erro ao excluir o representante. Por favor, tente novamente.',
+        "Erro ao excluir o representante. Por favor, tente novamente.",
         {
-          theme: 'colored',
+          theme: "colored",
           icon: <IoWarningOutline />,
           transition: Flip,
-        },
+        }
       )
     },
     onSettled: () => {
@@ -68,7 +68,7 @@ export const ModalRepresentativeDelete = () => {
         <div className="flex w-full flex-col sm:flex-row justify-center gap-2">
           <Button
             className="w-full"
-            variant="outline"
+            variant="destructive"
             onClick={onClose}
             disabled={isDeleting}
           >
@@ -76,11 +76,11 @@ export const ModalRepresentativeDelete = () => {
           </Button>
           <Button
             className="w-full"
-            variant="destructive"
+            variant="success"
             onClick={handleDelete}
             disabled={isDeleting}
           >
-            {isDeleting ? 'Excluindo...' : 'Excluir'}
+            {isDeleting ? "Excluindo..." : "Excluir"}
           </Button>
         </div>
       </div>

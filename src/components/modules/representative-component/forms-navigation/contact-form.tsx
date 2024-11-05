@@ -30,6 +30,7 @@ import {
   ContactSchema,
   type TContact,
 } from "../../client/zod-form/zod_contact.schema"
+import { toast } from "react-toastify"
 
 const applyMask = (value: string, mask: string): string => {
   let formattedValue = ""
@@ -53,7 +54,12 @@ export const ContactForm: FC<{
   const { updateFormData } = useFormStore()
   const form = useForm<TContact>({
     resolver: zodResolver(ContactSchema),
-    defaultValues: initialValues,
+    defaultValues: {
+      name: initialValues?.name || "",
+      contact: initialValues?.contact || "",
+      telefones: initialValues?.telefones || [],
+      description: initialValues?.description || "",
+    },
   })
 
   const {
@@ -64,7 +70,9 @@ export const ContactForm: FC<{
   } = form
 
   useEffect(() => {
-    reset(initialValues)
+    if (initialValues) {
+      reset(initialValues)
+    }
   }, [initialValues, reset])
 
   const { fields, append, remove } = useFieldArray({
@@ -103,9 +111,8 @@ export const ContactForm: FC<{
         },
       })
       onNext?.(data)
-      console.log("contact", data)
     } catch (error) {
-      console.error("Erro ao enviar o formulário:", error)
+      if (error instanceof Error) return toast.error(error.message)
     }
   }
 

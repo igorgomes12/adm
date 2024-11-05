@@ -1,15 +1,13 @@
 import { z } from 'zod'
 
 export const OwnerSchema = z.object({
-  id: z.number().int().positive().optional(),
-  name: z.string().min(1),
-  cpf_cnpj: z.string().min(11).max(14),
-  birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  name: z.string().min(1, 'O nome deve ter pelo menos 1 caractere'),
+  cpf_cnpj: z.string().min(11, 'CPF/CNPJ deve ter pelo menos 11 caracteres'),
+  // biome-ignore lint/suspicious/noGlobalIsNan: <explanation>
+  birth_date: z.string().refine(date => !isNaN(Date.parse(date)), {
+    message: 'Data de nascimento inválida',
+  }),
   observation: z.string().optional(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
-  deletedAt: z.date().nullable().optional(),
-  clientId: z.number().int().positive().optional(),
 })
 
 export type TOwner = z.infer<typeof OwnerSchema>

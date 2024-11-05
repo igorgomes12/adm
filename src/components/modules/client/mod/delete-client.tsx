@@ -58,7 +58,7 @@ export const ModalClientDelete = () => {
         <div className="flex w-full flex-col sm:flex-row justify-center gap-2">
           <Button
             className="w-full"
-            variant="outline"
+            variant="destructive"
             onClick={onClose}
             disabled={isSuccess}
           >
@@ -66,7 +66,7 @@ export const ModalClientDelete = () => {
           </Button>
           <Button
             className="w-full"
-            variant="destructive"
+            variant="success"
             onClick={handleDelete}
             disabled={isSuccess}
           >

@@ -18,7 +18,7 @@ export const ClientSchema = z.object({
   addresses: z.array(AddressSchema).min(1).max(10),
   name_account: z.string(),
   id_account: z.number().int().positive(),
-  representative: z.string().nullable(),
+  representativeName: z.string(),
   establishment_typeId: z.number().int().positive(),
   systemsId: z.number().int().positive(),
   owner: z.array(OwnerSchema).min(1).max(1),

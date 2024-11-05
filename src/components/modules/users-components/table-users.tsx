@@ -1,5 +1,7 @@
-import { SkeletonCard } from '@/components/skeleton-component/skeleton'
-import { Switch } from '@/components/ui/switch'
+// Importe necessário
+import { useCallback, useEffect, useMemo } from "react"
+import { SkeletonCard } from "@/components/skeleton-component/skeleton"
+import { Switch } from "@/components/ui/switch"
 import {
   Table,
   TableBody,
@@ -7,17 +9,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import React, { useCallback, useEffect, useMemo } from 'react'
-import { FaEdit, FaTrash } from 'react-icons/fa'
-import { toast } from 'react-toastify'
-import { ModalUserDelete } from './mod/del-mod'
-import { ModalUserEdit } from './mod/edit-mod'
-import type { TUserSchemaDto } from './zod-types-user/zod-users'
-import { useUserDeleteZustand } from './zustand/del-zustand'
-import { useUserEditZustand } from './zustand/edit-zustand'
+} from "@/components/ui/table"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import React from "react"
+import { FaEdit, FaTrash } from "react-icons/fa"
+import { toast } from "react-toastify"
+import { ModalUserDelete } from "./mod/del-mod"
+import { ModalUserEdit } from "./mod/edit-mod"
+import type { TUserSchemaDto } from "./zod-types-user/zod-users"
+import { useUserDeleteZustand } from "./zustand/del-zustand"
+import { useUserEditZustand } from "./zustand/edit-zustand"
 
 interface UsersRowProps {
   user: TUserSchemaDto
@@ -27,52 +29,46 @@ interface UsersRowProps {
 }
 
 export type ProfileType =
-  | 'ADMIN'
-  | 'FINANCE'
-  | 'REPRESENTATIVE'
-  | 'REPRESENTATIVE_SUPERVISOR'
-  | 'PROGRAMMING'
-  | 'PROGRAMMING_SUPERVISOR'
-  | 'SUPPORT'
-  | 'SUPPORT_SUPERVISOR'
+  | "ADMIN"
+  | "FINANCE"
+  | "REPRESENTATIVE"
+  | "REPRESENTATIVE_SUPERVISOR"
+  | "PROGRAMMING"
+  | "PROGRAMMING_SUPERVISOR"
+  | "SUPPORT"
+  | "SUPPORT_SUPERVISOR"
 
 const profileMap: Record<ProfileType, string> = {
-  ADMIN: 'Administrador',
-  FINANCE: 'Financeiro',
-  REPRESENTATIVE: 'Representante',
-  REPRESENTATIVE_SUPERVISOR: 'Supervisor de Representantes',
-  PROGRAMMING: 'Programação',
-  PROGRAMMING_SUPERVISOR: 'Supervisor de Programação',
-  SUPPORT: 'Suporte',
-  SUPPORT_SUPERVISOR: 'Supervisor de Suporte',
+  ADMIN: "Administrador",
+  FINANCE: "Financeiro",
+  REPRESENTATIVE: "Representante",
+  REPRESENTATIVE_SUPERVISOR: "Supervisor de Representantes",
+  PROGRAMMING: "Programação",
+  PROGRAMMING_SUPERVISOR: "Supervisor de Programação",
+  SUPPORT: "Suporte",
+  SUPPORT_SUPERVISOR: "Supervisor de Suporte",
 }
 
 function getProfileNames(
-  profiles:
-    | ProfileType
-    | ProfileType[]
-    | string
-    | string[]
-    | number
-    | undefined,
+  profiles: ProfileType | ProfileType[] | string | string[] | number | undefined
 ): string | undefined {
-  if (!profiles) return 'Sem perfil'
+  if (!profiles) return "Sem perfil"
 
-  if (typeof profiles === 'number') {
+  if (typeof profiles === "number") {
     return (
       profileMap[Object.keys(profileMap)[profiles - 1] as ProfileType] ||
       `Perfil ${profiles}`
     )
   }
 
-  if (typeof profiles === 'string') {
+  if (typeof profiles === "string") {
     return profileMap[profiles as ProfileType] || profiles
   }
 
   return Array.isArray(profiles)
     ? profiles
         .map(profile => profileMap[profile as ProfileType] || profile)
-        .join(', ')
+        .join(", ")
     : undefined
 }
 
@@ -87,18 +83,20 @@ const UserRow: React.FC<UsersRowProps> = React.memo(
       <TableCell className="text-sm items-center">{user.email}</TableCell>
       <TableCell className="text-sm items-center">
         <Switch
-          checked={user.status === 'ativo'}
+          checked={user.status === "ativo"}
           onCheckedChange={checked => onStatusChange(user.id || 0, checked)}
         />
       </TableCell>
       <TableCell className="flex items-center justify-center w-full h-full space-x-2">
         <button
+          type="button"
           onClick={() => onEdit(user.id || 0)}
           className="text-blue-200 hover:text-blue-500"
         >
           <FaEdit size={24} />
         </button>
         <button
+          type="button"
           onClick={() => onDelete(user.id || 0)}
           className="text-red-200 hover:text-red-500"
         >
@@ -106,7 +104,7 @@ const UserRow: React.FC<UsersRowProps> = React.memo(
         </button>
       </TableCell>
     </TableRow>
-  ),
+  )
 )
 
 export const TableUsers: React.FC<{ searchTerm: string }> = ({
@@ -117,9 +115,9 @@ export const TableUsers: React.FC<{ searchTerm: string }> = ({
   const queryClient = useQueryClient()
 
   const { data, isLoading, error } = useQuery<TUserSchemaDto[], Error>({
-    queryKey: ['get-users'],
+    queryKey: ["get-users"],
     queryFn: async () => {
-      const res = await api.get<TUserSchemaDto[]>('/user')
+      const res = await api.get<TUserSchemaDto[]>("/user")
       return res.data
     },
     refetchOnWindowFocus: true,
@@ -130,59 +128,59 @@ export const TableUsers: React.FC<{ searchTerm: string }> = ({
     mutationFn: async ({
       id,
       newStatus,
-    }: {
-      id: number
-      newStatus: boolean
-    }) => {
+    }: { id: number; newStatus: boolean }) => {
       const response = await api.patch(
-        '/user',
-        { status: newStatus ? 'ativo' : 'inativo' },
-        { params: { id } },
+        "/user",
+        { status: newStatus ? "ativo" : "inativo" },
+        { params: { id } }
       )
       return response.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['get-users'] })
-      toast.success('Status atualizado com sucesso!')
+      queryClient.invalidateQueries({ queryKey: ["get-users"] })
+      toast.success("Status atualizado com sucesso!")
     },
     onError: () => {
-      toast.error('Erro ao atualizar o status. Por favor, tente novamente.')
+      toast.error("Erro ao atualizar o status. Por favor, tente novamente.")
     },
   })
 
-  const handleStatusChange = (id: number, newStatus: boolean) => {
-    updateStatusMutation.mutate({ id, newStatus })
-  }
+  const handleStatusChange = useCallback(
+    (id: number, newStatus: boolean) => {
+      updateStatusMutation.mutate({ id, newStatus })
+    },
+    [updateStatusMutation]
+  )
 
   const headers = useMemo(
-    () => ['Cód.', 'Nome', 'Perfil', 'Email', 'Status', ''],
-    [],
+    () => ["Cód.", "Nome", "Perfil", "Email", "Status", ""],
+    []
   )
 
   const handleEdit = useCallback(
     (id: number) => {
       onOpenEdit(id)
     },
-    [onOpenEdit],
+    [onOpenEdit]
   )
 
   const handleDelete = useCallback(
     (id: number) => {
       onOpen(id)
     },
-    [onOpen],
+    [onOpen]
   )
 
   useEffect(() => {
     if (!isOpen) {
-      queryClient.refetchQueries({ queryKey: ['get-users'] })
+      queryClient.refetchQueries({ queryKey: ["get-users"] })
     }
   }, [isOpen, queryClient])
 
   const filteredData = data?.filter(user =>
     Object.values(user).some(value =>
-      value.toString().toLowerCase().includes(searchTerm.toLowerCase()),
-    ),
+      value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    )
   )
 
   const tableContent = useMemo(() => {
@@ -202,24 +200,23 @@ export const TableUsers: React.FC<{ searchTerm: string }> = ({
       <Table className="min-w-full py-2 text-md">
         <TableHeader>
           <TableRow className="bg-gray-300 w-auto">
-            {headers.map((header, index) => (
-              <TableHead key={index} className="text-black w-auto">
+            {headers.map(header => (
+              <TableHead key={header} className="text-black w-auto">
                 {header}
               </TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredData &&
-            filteredData.map(user => (
-              <UserRow
-                key={user.id}
-                user={user}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onStatusChange={handleStatusChange}
-              />
-            ))}
+          {filteredData?.map(user => (
+            <UserRow
+              key={user.id}
+              user={user}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onStatusChange={handleStatusChange}
+            />
+          ))}
         </TableBody>
       </Table>
     )

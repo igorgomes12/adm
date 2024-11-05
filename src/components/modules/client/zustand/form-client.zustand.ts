@@ -1,10 +1,19 @@
 import { create } from 'zustand'
 
+// Define a interface para cada telefone
+interface Telefone {
+  number: string
+  type: 'TELEFONE' | 'WHATSAPP' | 'CELULAR'
+  favorite: boolean
+}
+
+// Expande a interface Contact para incluir uma lista de telefones
 interface Contact {
   description: string
   contact: string
   type: 'TELEFONE' | 'WHATSAPP' | 'CELULAR'
   favorite: boolean
+  telefones: Telefone[] // Corrigido para ser um array de objetos Telefone
 }
 
 interface Address {
@@ -29,6 +38,7 @@ export interface Owner {
   birth_date: string
   observation: string
 }
+
 export interface Representative {
   representative: string
   channel_entry: string
@@ -78,6 +88,7 @@ export const useFormStore = create<FormStore>(set => ({
         contact: '',
         type: 'TELEFONE',
         favorite: false,
+        telefones: [],
       },
     ],
     address: [
@@ -107,7 +118,32 @@ export const useFormStore = create<FormStore>(set => ({
     },
   },
   updateFormData: data =>
-    set(state => ({
-      formData: { ...state.formData, ...data },
-    })),
+    set(state => {
+      // Atualize o owner com valores padrão se não forem fornecidos
+      const updatedOwner: Owner = {
+        name: data.owner?.name ?? state.formData.owner.name,
+        cpf_cnpj: data.owner?.cpf_cnpj ?? state.formData.owner.cpf_cnpj,
+        birth_date: data.owner?.birth_date ?? state.formData.owner.birth_date,
+        observation:
+          data.owner?.observation ?? state.formData.owner.observation,
+      }
+
+      const updatedContacts =
+        data.contacts?.map(contact => ({
+          description: contact?.description || '',
+          contact: contact?.contact || '',
+          type: contact?.type || 'TELEFONE',
+          favorite: contact?.favorite ?? false,
+          telefones: contact?.telefones || [],
+        })) || state.formData.contacts
+
+      return {
+        formData: {
+          ...state.formData,
+          ...data,
+          owner: updatedOwner,
+          contacts: updatedContacts,
+        },
+      }
+    }),
 }))

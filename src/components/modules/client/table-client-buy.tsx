@@ -15,6 +15,8 @@ import Paginations from "./pagination"
 import type { TAddress } from "./zod-form/zod_address.schema"
 import type { TClient } from "./zod-form/zod_client.schema"
 import type { TContact } from "./zod-form/zod_contact.schema"
+import { useClientDeleteZustand } from "./zustand/use-delete-client"
+import { ModalClientDelete } from "./mod/delete-client"
 
 interface ITableClientBuyProps {
   searchTerm: string
@@ -27,9 +29,8 @@ const headers = [
   "CNPJ",
   "Contato",
   "Representante",
-  "Sistema Em Uso",
   "Sistema",
-  "Município",
+  "Endereço",
   "",
 ]
 
@@ -38,13 +39,13 @@ export const TableClientBuy: FC<ITableClientBuyProps> = ({
   onOpenFormClient,
 }) => {
   const [currentPage, setCurrentPage] = useState(1)
+  const { onOpen, isOpen } = useClientDeleteZustand()
   const itemsPerPage = 4
 
   const { data, isLoading, error } = useQuery<TClient[]>({
     queryKey: ["clients"],
     queryFn: async () => {
       const response = await api.get("/client")
-      console.log("Raw API Response:", response.data) // Verifique o formato aqui
       return response.data
     },
   })
@@ -59,19 +60,13 @@ export const TableClientBuy: FC<ITableClientBuyProps> = ({
           value.toLowerCase().includes(lowerCaseSearchTerm)
       )
     )
-    console.log("Filtered Data:", result) // Verifique o formato aqui
     return result
   }, [data, searchTerm])
 
-  const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage
-    const result = filteredData.slice(startIndex, startIndex + itemsPerPage)
-    console.log("Paginated Data:", result) // Verifique o formato aqui
-    return result
-  }, [filteredData, currentPage])
+  console.log(data)
 
   const tableContent = useMemo(() => {
-    if (isLoading || !filteredData || filteredData.length === 0) {
+    if (isLoading || !data || data.length === 0) {
       return (
         <TableRow>
           <TableCell colSpan={9}>
@@ -92,7 +87,7 @@ export const TableClientBuy: FC<ITableClientBuyProps> = ({
       )
     }
 
-    return paginatedData.map((item: TClient) => (
+    return data.map((item: TClient) => (
       <TableRow
         key={item.id}
         className={
@@ -103,7 +98,7 @@ export const TableClientBuy: FC<ITableClientBuyProps> = ({
       >
         <TableCell className="text-sm items-center">{item.id}</TableCell>
         <TableCell className="text-sm items-center">
-          <p className="font-bold">{item.fantasy_name}</p> -
+          <p className="font-bold">{item.fantasy_name}</p> -{" "}
           {item.corporate_name}
         </TableCell>
         <TableCell className="text-sm items-center">{item.cpf_cnpj}</TableCell>
@@ -113,15 +108,20 @@ export const TableClientBuy: FC<ITableClientBuyProps> = ({
             .join(", ")}
         </TableCell>
         <TableCell className="text-sm items-center">
-          {item.rural_registration}
+          {item.representative}
         </TableCell>
         <TableCell className="text-sm items-center">{item.systemsId}</TableCell>
+
         <TableCell className="text-sm items-center">
-          {item.state_registration}
-        </TableCell>
-        <TableCell className="text-sm items-center">
-          {(item.address || []).map((address: TAddress) => address.street)} -{" "}
-          {(item.address || []).map((address: TAddress) => address.postal_code)}
+          {(item.addresses || []).map((address: TAddress) => (
+            <div key={address.id} className="flex gap-2 text-xs">
+              <p className="font-bold">{address.neighborhood}</p>
+              {"-"}
+              <p>
+                {address.street}, {address.number}
+              </p>
+            </div>
+          ))}
         </TableCell>
         <TableCell className="flex items-center justify-center w-full h-full space-x-2">
           <button
@@ -132,13 +132,17 @@ export const TableClientBuy: FC<ITableClientBuyProps> = ({
             <FaEdit size={24} />
           </button>
 
-          <button type="button" className="text-red-200 hover:text-red-500">
+          <button
+            onClick={() => onOpen(item.id || 0)}
+            type="button"
+            className="text-red-200 hover:text-red-500"
+          >
             <FaTrash size={24} />
           </button>
         </TableCell>
       </TableRow>
     ))
-  }, [isLoading, error, filteredData, paginatedData, onOpenFormClient])
+  }, [isLoading, error, data, onOpenFormClient, onOpen])
 
   return (
     <div className="flex flex-col mt-4">
@@ -162,6 +166,7 @@ export const TableClientBuy: FC<ITableClientBuyProps> = ({
           onPageChange={setCurrentPage}
         />
       </div>
+      {isOpen && <ModalClientDelete />}
     </div>
   )
 }

@@ -39,8 +39,6 @@ export const FormClientComponent = () => {
     }
   }, [clientData, updateFormData])
 
-  console.log("Dados do cliente:", clientData)
-
   const handleNext = (currentForm: string, data: unknown) => {
     updateFormData({ [currentForm.toLowerCase()]: data })
 

@@ -84,7 +84,7 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
     const completeData: any = {
       corporate_name: formData.corporate_name,
       fantasy_name: formData.fantasy_name || "",
-      contacts: formData.contacts || [], // Certifique-se de que contacts está no formato esperado
+      contacts: formData.contacts || [],
       cpf_cnpj: formData.cpf_cnpj,
       state_registration: formData.state_registration,
       municipal_registration: formData.municipal_registration || null,

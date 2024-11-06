@@ -1,11 +1,12 @@
 import { z } from 'zod'
 
 export const ContactSchema = z.object({
-  name: z.string().nonempty('O nome é obrigatório'),
+  name: z.string().nonempty('O nome é obrigatório').optional(),
   contact: z
     .string()
     .email('Digite um e-mail válido')
-    .nonempty('O e-mail é obrigatório'),
+    .nonempty('O e-mail é obrigatório')
+    .optional(),
   telefones: z.array(
     z.object({
       number: z.string().nonempty('O número é obrigatório'),

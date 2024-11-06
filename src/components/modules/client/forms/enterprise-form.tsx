@@ -39,7 +39,6 @@ export const EnterpriseForm: FC<{
 
   const {
     handleSubmit,
-
     reset,
     watch,
     setValue,
@@ -58,12 +57,20 @@ export const EnterpriseForm: FC<{
   }, [watch, updateFormData])
 
   const onSubmit = (data: EnterpriseDto) => {
+    // Convert empty strings to undefined if not required for submission
+    const sanitizedData = {
+      ...data,
+      state_registration: data.state_registration || undefined,
+      municipal_registration: data.municipal_registration || undefined,
+      rural_registration: data.rural_registration || undefined,
+    }
+
     if (Object.keys(errors).length > 0) {
       toast.error("Por favor, preencha todos os campos obrigatórios.")
       console.log(errors)
     } else {
-      updateFormData(data)
-      onNext(data)
+      updateFormData(sanitizedData)
+      onNext(sanitizedData)
     }
   }
 

@@ -1,35 +1,42 @@
 import { create } from 'zustand'
 
-// Define a interface para cada telefone
+enum TelefoneType {
+  TELEFONE = 'TELEFONE',
+  CELULAR = 'CELULAR',
+  WHATSAPP = 'WHATSAPP',
+}
+
 interface Telefone {
   number: string
-  type: 'TELEFONE' | 'WHATSAPP' | 'CELULAR'
+  type: TelefoneType
   favorite: boolean
 }
 
-// Expande a interface Contact para incluir uma lista de telefones
+type TelefonesArray = [Telefone, ...Telefone[]]
+
 interface Contact {
   description: string
   contact: string
-  type: 'TELEFONE' | 'WHATSAPP' | 'CELULAR'
+  type: TelefoneType
   favorite: boolean
-  telefones: Telefone[] // Corrigido para ser um array de objetos Telefone
+  telefones: TelefonesArray
 }
 
-interface Address {
-  street: string
-  complement: string
-  postal_code: string
-  number: string
-  neighborhood: string
-  municipality_id: number
-  municipality_name: string
-  state_id: number
-  state: string
-  country_id: number
-  region_id: number
-  description: string
-  favorite: boolean
+export interface Address {
+  street?: string // Updated to optional to match variant interface
+  complement?: string
+  postal_code?: string
+  number?: string
+  neighborhood?: string
+  municipality_id?: number
+  municipality_name?: string
+  state_id?: number
+  state?: string
+  country_id?: number
+  region_id?: number
+  description?: string
+  favorite?: boolean
+  main?: boolean
 }
 
 export interface Owner {
@@ -56,7 +63,7 @@ interface FormDataStore {
   establishment_typeId: number
   systemsId: number
   contacts: Contact[]
-  address: Address[]
+  addresses: Address[]
   id_account: number
   name_account: string
   owner: Owner
@@ -65,6 +72,8 @@ interface FormDataStore {
 interface FormStore {
   formData: FormDataStore
   updateFormData: (data: Partial<FormDataStore>) => void
+  isMutationSuccess: boolean
+  setMutationSuccess: (success: boolean) => void
 }
 
 export const useFormStore = create<FormStore>(set => ({
@@ -86,12 +95,18 @@ export const useFormStore = create<FormStore>(set => ({
       {
         description: '',
         contact: '',
-        type: 'TELEFONE',
+        type: TelefoneType.TELEFONE,
         favorite: false,
-        telefones: [],
+        telefones: [
+          {
+            number: '',
+            type: TelefoneType.TELEFONE,
+            favorite: true,
+          },
+        ] as TelefonesArray,
       },
     ],
-    address: [
+    addresses: [
       {
         street: '',
         complement: '',
@@ -106,6 +121,7 @@ export const useFormStore = create<FormStore>(set => ({
         region_id: 0,
         description: '',
         favorite: false,
+        main: false,
       },
     ],
     id_account: 1,
@@ -118,32 +134,27 @@ export const useFormStore = create<FormStore>(set => ({
     },
   },
   updateFormData: data =>
-    set(state => {
-      // Atualize o owner com valores padrão se não forem fornecidos
-      const updatedOwner: Owner = {
-        name: data.owner?.name ?? state.formData.owner.name,
-        cpf_cnpj: data.owner?.cpf_cnpj ?? state.formData.owner.cpf_cnpj,
-        birth_date: data.owner?.birth_date ?? state.formData.owner.birth_date,
-        observation:
-          data.owner?.observation ?? state.formData.owner.observation,
-      }
-
-      const updatedContacts =
-        data.contacts?.map(contact => ({
-          description: contact?.description || '',
-          contact: contact?.contact || '',
-          type: contact?.type || 'TELEFONE',
-          favorite: contact?.favorite ?? false,
-          telefones: contact?.telefones || [],
-        })) || state.formData.contacts
-
-      return {
-        formData: {
-          ...state.formData,
-          ...data,
-          owner: updatedOwner,
-          contacts: updatedContacts,
+    set(state => ({
+      formData: {
+        ...state.formData,
+        ...data,
+        owner: {
+          ...state.formData.owner,
+          ...data.owner,
         },
-      }
-    }),
+        contacts: data.contacts
+          ? data.contacts.map(contact => ({
+              description: contact.description || '',
+              contact: contact.contact || '',
+              type: contact.type || TelefoneType.TELEFONE,
+              favorite: contact.favorite ?? false,
+              telefones: contact.telefones?.length
+                ? contact.telefones
+                : [{ number: '', type: TelefoneType.TELEFONE, favorite: true }],
+            }))
+          : state.formData.contacts,
+      },
+    })),
+  isMutationSuccess: false,
+  setMutationSuccess: success => set({ isMutationSuccess: success }),
 }))

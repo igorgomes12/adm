@@ -55,6 +55,9 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
 
   const updateMutation = useMutation({
     mutationFn: async (data: TClient) => {
+      if (!data || !id) {
+        throw new Error("Dados ou ID inválidos fornecidos.")
+      }
       const res = await api.patch(`/client/${id}`, data)
       return res.data
     },
@@ -80,21 +83,44 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
   })
 
   const handleSave = () => {
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    const completeData: any = {
-      corporate_name: formData.corporate_name,
-      fantasy_name: formData.fantasy_name || "",
-      contacts: formData.contacts || [],
-      cpf_cnpj: formData.cpf_cnpj,
-      state_registration: formData.state_registration,
-      municipal_registration: formData.municipal_registration || null,
-      rural_registration: formData.rural_registration || null,
-      address: formData.address,
-      name_account: formData.name_account || "",
-      id_account: formData.id_account || 1,
+    const representativeId =
+      Number.parseInt(formData.representative as unknown as string, 10) || 1
+
+    const completeData: TClient = {
+      corporate_name: formData.corporate_name.trim(),
+      fantasy_name: formData.fantasy_name.trim(),
+      cpf_cnpj: formData.cpf_cnpj.replace(/\D/g, ""),
+      state_registration: formData.state_registration || "", // Ensure non-undefined
+      municipal_registration: formData.municipal_registration || "", // Ensure non-undefined
+      rural_registration: formData.rural_registration || "", // Ensure non-undefined
+      contacts: formData.contacts,
+      name_account: formData.name_account.trim(),
       establishment_typeId: formData.establishment_typeId || 1,
       systemsId: formData.systemsId || 1,
-      owner: formData.owner,
+      owner: {
+        name: formData.owner.name.trim(),
+        cpf_cnpj: formData.owner.cpf_cnpj.replace(/\D/g, ""),
+        birth_date:
+          formData.owner.birth_date || new Date().toISOString().split("T")[0],
+        observation: formData.owner.observation || "",
+      },
+      addresses: formData.addresses.map(address => ({
+        street: address.street || "Unknown street", // Provide defaults
+        complement: address.complement || "",
+        postal_code: address.postal_code || "00000-000", // Provide defaults
+        number: address.number || "N/A", // Provide defaults
+        neighborhood: address.neighborhood || "Unknown neighborhood", // Provide defaults
+        municipality_id: address.municipality_id || 1, // Provide defaults
+        municipality_name: address.municipality_name || "Unknown municipality", // Provide defaults
+        state_id: address.state_id || 1, // Provide defaults
+        state: address.state || "Unknown state", // Provide defaults
+        country_id: address.country_id || 1, // Provide defaults
+        region_id: address.region_id || 1, // Provide defaults
+        description: address.description || "",
+        favorite: address.favorite ?? false,
+        main: address.main ?? false,
+      })),
+      representativeId,
     }
 
     if (id) {
@@ -103,7 +129,6 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
       createMutation.mutate(completeData)
     }
   }
-
   const resetFormData = () => {
     updateFormData({
       corporate_name: "",
@@ -113,21 +138,22 @@ export const HeaderClientForms: FC<IHeaderClientFormsProps> = ({
       municipal_registration: "",
       rural_registration: "",
       contacts: [],
-      address: [
+      addresses: [
         {
-          description: "",
-          postal_code: "",
           street: "",
+          complement: "",
+          postal_code: "",
           number: "",
           neighborhood: "",
+          municipality_id: 0,
           municipality_name: "",
+          state_id: 0,
           state: "",
-          complement: "",
-          favorite: false,
           country_id: 0,
           region_id: 0,
-          municipality_id: 0,
-          state_id: 0,
+          description: "",
+          favorite: false,
+          main: false,
         },
       ],
       name_account: "",

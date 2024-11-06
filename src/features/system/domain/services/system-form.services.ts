@@ -1,4 +1,4 @@
-import { useForm, UseFormReturn } from 'react-hook-form'
+import { useForm, type UseFormReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { SystemSchemaDto, type TSystemSchemaDto } from '../dto/system.dto'
 

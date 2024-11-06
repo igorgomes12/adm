@@ -1,14 +1,14 @@
-import { FormFilter } from '@/components/form-utils/form-filter/form-filter'
-import { FormHeader } from '@/components/form-utils/form-header/form-header'
-import { PaymentModal } from '@/components/modules/Forms-payment/models/model-payment'
-import { TablePayment } from '@/components/modules/Forms-payment/table-payment'
-import { usePaymentZustand } from '@/components/modules/Forms-payment/zustand-payment/payment-zustand'
-import { useState, type FC } from 'react'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { FormFilter } from "@/components/form-utils/form-filter/form-filter"
+import { FormHeader } from "@/components/form-utils/form-header/form-header"
+import { PaymentModal } from "@/components/modules/Forms-payment/models/model-payment"
+import { TablePayment } from "@/components/modules/Forms-payment/table-payment"
+import { usePaymentZustand } from "@/components/modules/Forms-payment/zustand-payment/payment-zustand"
+import { useState, type FC } from "react"
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 export const PaymentComponent: FC = () => {
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm, setSearchTerm] = useState("")
   const { isOpen, mode, onOpen } = usePaymentZustand()
 
   return (
@@ -17,11 +17,11 @@ export const PaymentComponent: FC = () => {
       <FormFilter
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-        onOpen={() => onOpen('add')}
-        showPrinterButton={true}
+        onOpen={() => onOpen("add")}
+        showPrinterButton={false}
       />
       <TablePayment searchTerm={searchTerm} />
-      {isOpen && mode === 'add' && <PaymentModal />}
+      {isOpen && mode === "add" && <PaymentModal />}
       <ToastContainer />
     </div>
   )

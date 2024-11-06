@@ -86,14 +86,18 @@ export const FormClientComponent = () => {
       case "Contatos":
         return (
           <ContactClientForm
-            initialValues={formData.contacts[0]}
+            initialValues={{
+              contact: formData.contacts[0].contact,
+              telefones: formData.contacts[0].telefones,
+              description: formData.contacts[0].description,
+            }}
             onNext={data => handleNext("Contatos", [data])}
           />
         )
       case "Endereços":
         return (
           <AddressClientForm
-            initialValues={formData.address[0]}
+            initialValues={formData.addresses[0]}
             onNext={data => handleNext("Endereços", [data])}
           />
         )

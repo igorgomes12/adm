@@ -107,14 +107,7 @@ export const TableClientBuy: FC<ITableClientBuyProps> = ({
       )
     }
     return paginatedData.map((item: TClient) => (
-      <TableRow
-        key={item.id}
-        className={
-          item.inDebt
-            ? "bg-rose-100 hover:bg-rose-400"
-            : "animate-none hover:bg-gray-100"
-        }
-      >
+      <TableRow key={item.id}>
         <TableCell className="text-sm items-center">{item.id}</TableCell>
         <TableCell className="text-sm items-center">
           <p className="font-bold uppercase">{item.fantasy_name}</p>
@@ -127,7 +120,7 @@ export const TableClientBuy: FC<ITableClientBuyProps> = ({
             .join(", ")}
         </TableCell>
         {/* <TableCell className="text-sm items-center">
-          {item.representativeName}
+          {item.representativeId}
         </TableCell> */}
         <TableCell className="text-sm items-center">{item.systemsId}</TableCell>
         <TableCell className="text-sm items-center">

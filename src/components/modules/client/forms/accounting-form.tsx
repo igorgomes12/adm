@@ -1,153 +1,170 @@
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { useEffect } from "react"
+import { useForm, FormProvider, useWatch } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Flip, ToastContainer, toast } from "react-toastify"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { FormProvider, useForm, Controller } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Button } from "@/components/ui/button"
 import { OwnerSchema, type TOwner } from "../zod-form/zod_owner.schema"
-import { type Owner, useFormStore } from "../zustand/form-client.zustand"
-import { toast, ToastContainer } from "react-toastify"
 import { useNavigate } from "react-router-dom"
-import type { FC } from "react"
 import { formatCpfCnpj } from "@/common/regex/cpf-cnpj"
-import { HeaderClientForms } from "../header-client"
+import { useFormStore } from "../zustand/form-client.zustand"
 
-interface IOwnerFormProps {
-  onNext: (data: Owner) => void
-  initialValues: Owner
-}
-
-export const OwnerForm: FC<IOwnerFormProps> = ({ onNext, initialValues }) => {
-  const { updateFormData } = useFormStore()
+export const OwnerForm: React.FC<{
+  onNext?: (data: TOwner) => void
+  initialValues?: TOwner
+}> = ({ onNext, initialValues }) => {
+  const { formData, updateFormData, setMutationSuccess } = useFormStore()
   const navigate = useNavigate()
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<TOwner>({
-    resolver: zodResolver(OwnerSchema),
     defaultValues: {
-      name: initialValues.name || "",
-      cpf_cnpj: initialValues.cpf_cnpj || "",
-      birth_date: initialValues.birth_date || "",
-      observation: initialValues.observation || "",
+      name: initialValues?.name || formData.owner?.name || "",
+      cpf_cnpj: initialValues?.cpf_cnpj || formData.owner?.cpf_cnpj || "",
+      birth_date: initialValues?.birth_date || formData.owner?.birth_date || "",
+      observation:
+        initialValues?.observation || formData.owner?.observation || "",
     },
+    resolver: zodResolver(OwnerSchema),
   })
 
-  const { control, handleSubmit, formState, reset } = form
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = form
+
+  const watchedFields = useWatch({ control })
 
   useEffect(() => {
-    reset(initialValues)
-  }, [initialValues, reset])
+    updateFormData({
+      owner: {
+        name: watchedFields.name || "",
+        cpf_cnpj: watchedFields.cpf_cnpj || "",
+        birth_date: watchedFields.birth_date || "",
+        observation: watchedFields.observation || "",
+      },
+    })
+  }, [watchedFields, updateFormData])
 
   const submitForm = async (data: TOwner) => {
-    setIsSubmitting(true)
     try {
-      const ownerData: Owner = {
-        ...data,
-        observation: data.observation || "",
-      }
-
-      onNext(ownerData)
-      updateFormData({ owner: ownerData })
-
+      updateFormData({
+        owner: {
+          name: data.name || "",
+          cpf_cnpj: data.cpf_cnpj || "",
+          birth_date: data.birth_date || "",
+          observation: data.observation || "",
+        },
+      })
+      if (onNext) onNext(data)
+      setMutationSuccess(true)
       toast.success("Formulário enviado com sucesso!", {
         onClose: () => navigate("/clientes-de-venda"),
         autoClose: 2000,
+        transition: Flip,
       })
+      reset()
     } catch (error) {
       console.error("Erro ao enviar o formulário:", error)
-      toast.error(
-        "Erro ao enviar os dados do proprietário. Por favor, tente novamente."
-      )
-    } finally {
-      reset(initialValues)
-      setIsSubmitting(false)
+      toast.error("Erro ao enviar o formulário. Tente novamente.")
     }
   }
 
   return (
     <div className="flex flex-col p-4 w-full h-screen">
-      <div className="flex w-full items-start justify-start">
-        <HeaderClientForms title=" Formulário de Proprietário" />
-      </div>
+      <h1 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
+        Formulário de Proprietário
+      </h1>
       <FormProvider {...form}>
         <form
           onSubmit={handleSubmit(submitForm)}
           className="flex border bg-white rounded-xl shadow-lg p-4 flex-col space-y-4 w-full"
         >
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
-            <Controller
+            <FormField
               name="name"
               control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Proprietário</FormLabel>
-                  <Input {...field} />
-                  <FormMessage>{formState.errors.name?.message}</FormMessage>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage>{errors.name?.message}</FormMessage>
                 </FormItem>
               )}
             />
-
-            <Controller
+            <FormField
               name="cpf_cnpj"
               control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>CPF/CNPJ</FormLabel>
-                  <Input
-                    {...field}
-                    onChange={e => {
-                      const formattedValue = formatCpfCnpj(e.target.value)
-                      field.onChange(formattedValue)
-                    }}
-                  />
-                  <FormMessage>
-                    {formState.errors.cpf_cnpj?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-
-            <Controller
-              name="birth_date"
-              control={control}
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Data de Nascimento</FormLabel>
-                  <Input type="date" {...field} />
-                  <FormMessage>
-                    {formState.errors.birth_date?.message}
-                  </FormMessage>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      onChange={e => {
+                        const formattedValue = formatCpfCnpj(e.target.value)
+                        field.onChange(formattedValue)
+                        updateFormData({
+                          owner: {
+                            ...watchedFields,
+                            cpf_cnpj: formattedValue,
+                            name: watchedFields.name || "",
+                            birth_date: watchedFields.birth_date || "",
+                            observation: watchedFields.observation || "",
+                          },
+                        })
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage>{errors.cpf_cnpj?.message}</FormMessage>
                 </FormItem>
               )}
             />
           </div>
           <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
-            <Controller
+            <FormField
+              name="birth_date"
+              control={control}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Data de Nascimento</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage>{errors.birth_date?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
+            <FormField
               name="observation"
               control={control}
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Observação</FormLabel>
-                  <Textarea {...field} />
-                  <FormMessage>
-                    {formState.errors.observation?.message}
-                  </FormMessage>
+                  <FormControl>
+                    <Textarea {...field} />
+                  </FormControl>
+                  <FormMessage>{errors.observation?.message}</FormMessage>
                 </FormItem>
               )}
             />
           </div>
-
-          <div className="flex w-full items-center justify-center">
-            <Button
-              className="w-full"
-              type="submit"
-              variant="success"
-              disabled={isSubmitting}
-            >
-              Salvar
-            </Button>
-          </div>
+          <Button type="submit" variant="success">
+            Salvar
+          </Button>
         </form>
       </FormProvider>
       <ToastContainer />

@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   FormControl,
@@ -10,7 +11,6 @@ import { Input } from "@/components/ui/input"
 import api from "@/infra/auth/database/acess-api/interceptors-axios"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { FaRocket } from "react-icons/fa"
 import { Flip, toast } from "react-toastify"
@@ -19,6 +19,7 @@ import {
   type TSchemaAccountingDto,
 } from "../zod-types-accounting/zod-accouting"
 import { useAccoutingEditZustand } from "../zustand-accounting/edit-zustand"
+import { formatCpfCnpj } from "@/common/regex/cpf-cnpj"
 
 export const ModalAccountingEdit = () => {
   const { id, isOpen, onClose } = useAccoutingEditZustand()
@@ -120,14 +121,23 @@ export const ModalAccountingEdit = () => {
                     key={field}
                     control={form.control}
                     name={field as keyof TSchemaAccountingDto}
-                    render={({ field: { onChange, ...rest } }) => (
+                    render={({ field: { onChange, value, ...rest } }) => (
                       <FormItem>
                         <FormLabel>{getFieldLabel(field)}</FormLabel>
                         <FormControl>
                           <Input
                             {...rest}
+                            value={
+                              field === "cnpj"
+                                ? formatCpfCnpj(String(value))
+                                : String(value)
+                            }
                             onChange={e => {
-                              onChange(e)
+                              const formattedValue =
+                                field === "cnpj"
+                                  ? formatCpfCnpj(e.target.value)
+                                  : e.target.value
+                              onChange(formattedValue)
                               form.trigger(field as keyof TSchemaAccountingDto)
                             }}
                             type={field === "email" ? "email" : "text"}

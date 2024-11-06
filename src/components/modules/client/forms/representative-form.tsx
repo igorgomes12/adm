@@ -68,7 +68,11 @@ export const RepresentativeForm: FC<IRepresentativeFormProps> = ({
 
   const submitForm = async (data: FormValues) => {
     try {
-      onNext(data)
+      const updatedData = {
+        ...data,
+        representativeId: Number(data.representative),
+      }
+      onNext(updatedData)
     } catch (error) {
       alert("Ocorreu um erro ao salvar o formulário.")
     }

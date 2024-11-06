@@ -36,6 +36,7 @@ type Address = {
   region_id: number
   description: string
   favorite: boolean
+  main: boolean // Ensure this is part of your Address type definition
 }
 
 interface IAddressClientFormProps {
@@ -123,11 +124,12 @@ export const AddressClientForm: FC<IAddressClientFormProps> = ({
         region_id: initialValues.region_id ?? 0,
         description: initialValues.description ?? "",
         favorite: initialValues.favorite ?? false,
+        main: initialValues.main ?? false, // Ensure 'main' is included
         complement: data.complement ?? "",
         number: data.number ?? "",
       }
 
-      updateFormData({ address: [completeAddress] })
+      updateFormData({ addresses: [completeAddress] })
       onNext(completeAddress)
       toast.success("Formulário enviado com sucesso!", {
         onClose: () => navigate("/canais"),
@@ -138,6 +140,7 @@ export const AddressClientForm: FC<IAddressClientFormProps> = ({
       toast.error("Erro ao enviar o formulário. Tente novamente.")
     }
   }
+
   return (
     <div className="flex flex-col p-4 w-full h-screen">
       <div className="flex w-full items-start justify-start">

@@ -1,5 +1,5 @@
+import type React from "react"
 import { ButtonAdd } from "@/components/buttons/buttons-add"
-import type { FC } from "react"
 import { BsFillPrinterFill, BsPlus } from "react-icons/bs"
 
 interface FormFilterProps {
@@ -7,13 +7,15 @@ interface FormFilterProps {
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>
   onOpen: (id: number) => void
   showPrinterButton?: boolean
+  onOpenPDF?: () => void
 }
 
-export const FormFilter: FC<FormFilterProps> = ({
+export const FormFilter: React.FC<FormFilterProps> = ({
   searchTerm,
   setSearchTerm,
   onOpen,
   showPrinterButton = false,
+  onOpenPDF,
 }) => {
   const handleAddClick = () => {
     onOpen(0)
@@ -29,13 +31,14 @@ export const FormFilter: FC<FormFilterProps> = ({
         onChange={e => setSearchTerm(e.target.value)}
       />
 
-      {showPrinterButton && (
+      {showPrinterButton && onOpenPDF && (
         <ButtonAdd
           icon={
             <BsFillPrinterFill
               width="bold"
               className="p-2 bg-lime-600 hover:bg-lime-600 rounded-full"
               size={40}
+              onClick={onOpenPDF}
             />
           }
         />

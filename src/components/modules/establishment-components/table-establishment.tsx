@@ -77,7 +77,9 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
   const { isOpen: isOpenEdit, onOpen: onOpenEdit } =
     useEstablishmentEditZustand()
   const queryClient = useQueryClient()
+
   const { currentPage, changePage, setTotalPages } = usePaginationStore()
+  const itemsPerPage = 8
 
   const { data, isLoading, error } = useQuery<TEstablishment[], Error>({
     queryKey: ["get-establishment"],
@@ -86,8 +88,6 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
       return response.data
     },
   })
-
-  const itemsPerPage = 8
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({
@@ -198,14 +198,14 @@ export const TableEstablishment: FC<{ searchTerm: string }> = ({
           </TableHeader>
           <TableBody>{tableContent}</TableBody>
         </Table>
-        <div className="flex justify-end mt-2">
-          <Paginations
-            totalItems={filteredData.length}
-            itemsPerPage={itemsPerPage}
-            currentPage={currentPage}
-            onPageChange={changePage}
-          />
-        </div>
+      </div>
+      <div className="flex justify-end mt-2">
+        <Paginations
+          totalItems={filteredData.length}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          onPageChange={changePage}
+        />
       </div>
       {isOpen && <ModalEstablishmentDelete />}
       {isOpenEdit && <EditEstablishmentModal />}

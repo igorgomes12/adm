@@ -17,6 +17,8 @@ import { ModalSystemEdit } from "./system-add/modal-edit-system"
 import type { TSystemSchemaDto } from "./system-add/zod-types/types-system"
 import { useSystemDeleteZustand } from "./system-add/zustand-state/system-del-zustand"
 import { useSystemEditZustand } from "./system-add/zustand-state/system-edit-zustand"
+import usePaginationStore from "@/components/pagination/hook/use-pagination"
+import Paginations from "../client/pagination"
 
 interface SystemRowProps {
   system: TSystemSchemaDto
@@ -68,6 +70,10 @@ export const TableSystem: React.FC<{ searchTerm: string }> = ({
   const { isOpen, onOpen } = useSystemDeleteZustand()
   const { isOpen: isOpenEdit, onOpen: onOpenEdit } = useSystemEditZustand()
   const queryClient = useQueryClient()
+
+  //paginação
+  const { currentPage, changePage } = usePaginationStore()
+  const itemsPerPage = 8
 
   const { data, isLoading, error } = useQuery<TSystemSchemaDto[], Error>({
     queryKey: ["get-systems"],
@@ -124,29 +130,50 @@ export const TableSystem: React.FC<{ searchTerm: string }> = ({
     }
 
     return (
-      <Table className="min-w-full py-2 text-sm">
-        <TableHeader>
-          <TableRow className="bg-gray-300 w-auto">
-            {headers.map(header => (
-              <TableHead key={header} className="text-black w-auto">
-                {header}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredData?.map(system => (
-            <SystemRow
-              key={system.id}
-              system={system}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
+      <div className="flex flex-col h-[80vh] overflow-y-auto">
+        <div className="flex-grow">
+          <Table className="min-w-full py-2 text-sm">
+            <TableHeader>
+              <TableRow className="bg-gray-300 w-auto">
+                {headers.map(header => (
+                  <TableHead key={header} className="text-black w-auto">
+                    {header}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredData?.map(system => (
+                <SystemRow
+                  key={system.id}
+                  system={system}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </TableBody>
+          </Table>
+          <div className="flex -mt-[-27rem] justify-end ">
+            <Paginations
+              totalItems={filteredData?.length || 0}
+              itemsPerPage={itemsPerPage}
+              currentPage={currentPage}
+              onPageChange={changePage}
             />
-          ))}
-        </TableBody>
-      </Table>
+          </div>
+        </div>
+      </div>
     )
-  }, [isLoading, error, filteredData, headers, handleEdit, handleDelete])
+  }, [
+    isLoading,
+    error,
+    filteredData,
+    headers,
+    handleEdit,
+    handleDelete,
+    currentPage,
+    changePage,
+  ])
 
   return (
     <div className="flex flex-col mt-4">

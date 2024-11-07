@@ -204,28 +204,30 @@ export const TableRepresentative: FC<{
   ])
 
   return (
-    <div className="flex flex-col mt-4">
-      <Table className="min-w-full py-2 cursor-pointer text-lg">
-        <TableHeader>
-          <TableRow className="bg-gray-300 w-auto">
-            {headers.map(header => (
-              <TableHead key={header} className="text-black w-auto">
-                {header}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>{tableContent}</TableBody>
-      </Table>
-      <div className="flex justify-end mt-2">
-        <Paginations
-          totalItems={filteredData.length}
-          itemsPerPage={itemsPerPage}
-          currentPage={currentPage}
-          onPageChange={changePage}
-        />
+    <div className="flex flex-col h-[80vh] overflow-y-auto">
+      <div className="flex-grow">
+        <Table className="min-w-full py-2 cursor-pointer text-lg">
+          <TableHeader>
+            <TableRow className="bg-gray-300 w-auto">
+              {headers.map(header => (
+                <TableHead key={header} className="text-black w-auto">
+                  {header}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>{tableContent}</TableBody>
+        </Table>
+        <div className="flex justify-end mt-96">
+          <Paginations
+            totalItems={filteredData.length}
+            itemsPerPage={itemsPerPage}
+            currentPage={currentPage}
+            onPageChange={changePage}
+          />
+        </div>
+        {isOpen && <ModalRepresentativeDelete />}
       </div>
-      {isOpen && <ModalRepresentativeDelete />}
     </div>
   )
 }

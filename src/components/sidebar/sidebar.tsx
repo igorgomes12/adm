@@ -178,7 +178,7 @@ export default function Sidebar() {
                   className={`p-1 rounded-full  ${
                     isSidebarPinned
                       ? "bg-lime-600"
-                      : "bg-zinc-700 hover:bg-zinc-600 animate-bounce"
+                      : "bg-zinc-700 hover:bg-zinc-600  animate-bounce"
                   }`}
                   title={
                     isSidebarPinned ? "Desafixar sidebar" : "Fixar sidebar"
@@ -209,7 +209,7 @@ export default function Sidebar() {
             <button
               type="button"
               onClick={() => handleToggleSubmenu(menu.id)}
-              className="cursor-pointer flex items-center px-8 py-4 gap-2 text-lg rounded hover:bg-zinc-700"
+              className="cursor-pointer flex items-center w-full px-8 py-4 gap-2 text-lg rounded hover:bg-zinc-700"
               title={menu.label}
             >
               <div className="w-10 items-center justify-center flex">

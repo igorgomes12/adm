@@ -22,7 +22,6 @@ import {
   type AddressData,
   fetchViaCep,
 } from "@/infra/http/api-via-cep/fecth-viacep"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 export const AddressForm: React.FC<{
@@ -197,9 +196,9 @@ export const AddressForm: React.FC<{
               )}
             />
           </div>
-          <Button type="submit" variant="success">
+          {/* <Button type="submit" variant="success">
             Próximo
-          </Button>
+          </Button> */}
         </form>
       </FormProvider>
       <ToastContainer />

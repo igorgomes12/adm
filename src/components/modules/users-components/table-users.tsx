@@ -20,6 +20,8 @@ import { ModalUserEdit } from "./mod/edit-mod"
 import type { TUserSchemaDto } from "./zod-types-user/zod-users"
 import { useUserDeleteZustand } from "./zustand/del-zustand"
 import { useUserEditZustand } from "./zustand/edit-zustand"
+import Paginations from "../client/pagination"
+import usePaginationStore from "@/components/pagination/hook/use-pagination"
 
 interface UsersRowProps {
   user: TUserSchemaDto
@@ -114,6 +116,10 @@ export const TableUsers: React.FC<{ searchTerm: string }> = ({
   const { isOpen: isOpenEdit, onOpen: onOpenEdit } = useUserEditZustand()
   const queryClient = useQueryClient()
 
+  //paginação
+  const { currentPage, changePage } = usePaginationStore()
+  const itemsPerPage = 8
+
   const { data, isLoading, error } = useQuery<TUserSchemaDto[], Error>({
     queryKey: ["get-users"],
     queryFn: async () => {
@@ -197,33 +203,47 @@ export const TableUsers: React.FC<{ searchTerm: string }> = ({
     }
 
     return (
-      <Table className="min-w-full py-2 text-md">
-        <TableHeader>
-          <TableRow className="bg-gray-300 w-auto">
-            {headers.map(header => (
-              <TableHead key={header} className="text-black w-auto">
-                {header}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredData?.map(user => (
-            <UserRow
-              key={user.id}
-              user={user}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onStatusChange={handleStatusChange}
-            />
-          ))}
-        </TableBody>
-      </Table>
+      <div className="flex flex-col h-[80vh] overflow-y-auto">
+        <div className="flex-grow">
+          <Table className="min-w-full py-2 text-md">
+            <TableHeader>
+              <TableRow className="bg-gray-300 w-auto">
+                {headers.map(header => (
+                  <TableHead key={header} className="text-black w-auto">
+                    {header}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredData?.map(user => (
+                <UserRow
+                  key={user.id}
+                  user={user}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onStatusChange={handleStatusChange}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="flex -mt-[-27rem] justify-end ">
+          <Paginations
+            totalItems={filteredData?.length || 0}
+            itemsPerPage={itemsPerPage}
+            currentPage={currentPage}
+            onPageChange={changePage}
+          />
+        </div>
+      </div>
     )
   }, [
     isLoading,
     error,
     filteredData,
+    currentPage,
+    changePage,
     headers,
     handleEdit,
     handleDelete,

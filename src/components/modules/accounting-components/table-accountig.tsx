@@ -16,6 +16,8 @@ import { ModalAccountingDelete } from "./modal-accouting/modal-delete-accounting
 import { ModalAccountingEdit } from "./modal-accouting/modal-edit-accouting"
 import { useAccoutingDeleteZustand } from "./zustand-accounting/delete-zustand"
 import { useAccoutingEditZustand } from "./zustand-accounting/edit-zustand"
+import usePaginationStore from "@/components/pagination/hook/use-pagination"
+import Paginations from "../client/pagination"
 
 const headers = [
   "Cód.",
@@ -73,6 +75,10 @@ export const TableAccounting: FC<{ searchTerm: string }> = ({ searchTerm }) => {
     useAccoutingDeleteZustand()
   const { onOpen: onOpenEdit, isOpen: isOpenEdit } = useAccoutingEditZustand()
 
+  //paginação
+  const { currentPage, changePage } = usePaginationStore()
+  const itemsPerPage = 8
+
   const { data, error, isLoading } = useQuery<TAccount[]>({
     queryKey: ["get-accounting"],
     queryFn: async () => {
@@ -109,36 +115,48 @@ export const TableAccounting: FC<{ searchTerm: string }> = ({ searchTerm }) => {
     }
 
     return (
-      <div className="flex flex-col mt-4">
-        <Table className="min-w-full py-2 text-md">
-          <TableHeader>
-            <TableRow className="bg-gray-300 w-auto">
-              {headers.map(header => (
-                <TableHead key={header} className="text-black w-auto">
-                  {header}
-                </TableHead>
+      <>
+        <div className="flex flex-col mt-4">
+          <Table className="min-w-full py-2 text-md">
+            <TableHeader>
+              <TableRow className="bg-gray-300 w-auto">
+                {headers.map(header => (
+                  <TableHead key={header} className="text-black w-auto">
+                    {header}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredData.map(account => (
+                <AccountRow
+                  key={account.id}
+                  account={account}
+                  onOpenDelete={onOpenDelete}
+                  onOpenEdit={onOpenEdit}
+                />
               ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredData.map(account => (
-              <AccountRow
-                key={account.id}
-                account={account}
-                onOpenDelete={onOpenDelete}
-                onOpenEdit={onOpenEdit}
-              />
-            ))}
-          </TableBody>
-        </Table>
-        {isOpenDelete && <ModalAccountingDelete />}
-        {isOpenEdit && <ModalAccountingEdit />}
-      </div>
+            </TableBody>
+          </Table>
+
+          {isOpenDelete && <ModalAccountingDelete />}
+          {isOpenEdit && <ModalAccountingEdit />}
+        </div>
+        <div className="flex -mt-[-27rem] justify-end ">
+          <Paginations
+            totalItems={filteredData.length}
+            itemsPerPage={itemsPerPage}
+            currentPage={currentPage}
+            onPageChange={changePage}
+          />
+        </div>
+      </>
     )
   }, [
     isLoading,
     filteredData,
-
+    currentPage,
+    changePage,
     onOpenDelete,
     onOpenEdit,
     isOpenDelete,

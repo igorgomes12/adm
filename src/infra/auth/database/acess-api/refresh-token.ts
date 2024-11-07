@@ -1,7 +1,7 @@
 import { api } from '@/infra/auth/database/acess-api/api'
 export const refreshToken = async () => {
   try {
-    const response = await api.post(`http://localhost:3333/auth/refresh`, {
+    const response = await api.post('http://localhost:3333/auth/refresh', {
       refresh_token: localStorage.getItem('refresh_token'),
     })
     const { access_token, refresh_token } = response.data

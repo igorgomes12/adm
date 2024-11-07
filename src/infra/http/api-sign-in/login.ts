@@ -18,13 +18,12 @@ export const loginUser = async (email: string, password: string) => {
       password,
     })
 
-    if (response && response.data && response.data.access_token) {
+    if (response.data.access_token) {
       const { access_token } = response.data
       localStorage.setItem('access_token', access_token)
       return access_token
-    } else {
-      throw new Error('A resposta da API não contém um token de acesso.')
     }
+    throw new Error('A resposta da API não contém um token de acesso.')
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response) {
@@ -34,7 +33,8 @@ export const loginUser = async (email: string, password: string) => {
             error.response.data.message || 'Erro desconhecido'
           }`,
         )
-      } else if (error.request) {
+      }
+      if (error.request) {
         console.error(
           'Erro de rede ou sem resposta do servidor:',
           error.request,

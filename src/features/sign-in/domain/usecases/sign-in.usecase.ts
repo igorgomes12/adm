@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { SignInFormDto } from '../dto/sign-in.dto'
+import type { SignInFormDto } from '../dto/sign-in.dto'
 import { loginUser } from '@/infra/http/api-sign-in/login'
 import { showMessageSuccess } from '@/common/messages/Success/toast-success'
 import { showMessageError } from '@/common/messages/Err/toast-err'

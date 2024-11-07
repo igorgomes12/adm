@@ -6,7 +6,7 @@ api.interceptors.request.use(
   config => {
     const token = localStorage.getItem('access_token')
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`
+      config.headers.Authorization = `Bearer ${token}`
     }
     return config
   },
@@ -23,7 +23,7 @@ api.interceptors.response.use(
       originalRequest._retry = true
       try {
         const newToken = await refreshToken()
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + newToken
+        axios.defaults.headers.common.Authorization = `Bearer ${newToken}`
         return api(originalRequest)
       } catch (refreshError) {
         window.location.href = '/login'

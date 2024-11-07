@@ -116,7 +116,6 @@ export function MainDashboard() {
               </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
-          {/* ... resto do código ... */}
         </Card>
         <Card className="bg-white bg-opacity-40 backdrop-blur-md shadow-lg">
           <CardHeader>

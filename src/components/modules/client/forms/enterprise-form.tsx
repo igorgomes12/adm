@@ -1,23 +1,23 @@
-import { useForm, FormProvider } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { type FC, useEffect } from "react"
-import { Input } from "@/components/ui/input"
-import { HeaderClientForms } from "../header-client"
+import { useForm, FormProvider } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { type FC, useEffect } from 'react'
+import { Input } from '@/components/ui/input'
+import { HeaderClientForms } from '../header-client'
 import {
   schemaEnterpriseDto,
   type EnterpriseDto,
-} from "../zod-form/zod-enterprise.dto"
+} from '../zod-form/zod-enterprise.dto'
 import {
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { ToastContainer, toast } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
-import { useFormStore } from "../zustand/form-client.zustand"
-import { Button } from "@/components/ui/button"
-import { formatCNPJ } from "@/common/regex/cnpj"
+} from '@/components/ui/form'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { useFormStore } from '../zustand/form-client.zustand'
+import { Button } from '@/components/ui/button'
+import { formatCNPJ } from '@/common/regex/cnpj'
 
 export const EnterpriseForm: FC<{
   onNext: (data: EnterpriseDto) => void
@@ -28,12 +28,12 @@ export const EnterpriseForm: FC<{
   const form = useForm<EnterpriseDto>({
     resolver: zodResolver(schemaEnterpriseDto),
     defaultValues: {
-      corporate_name: initialValues?.corporate_name || "",
-      fantasy_name: initialValues?.fantasy_name || "",
-      cpf_cnpj: initialValues?.cpf_cnpj || "",
-      state_registration: initialValues?.state_registration || "",
-      municipal_registration: initialValues?.municipal_registration || "",
-      rural_registration: initialValues?.rural_registration || "",
+      corporate_name: initialValues?.corporate_name || '',
+      fantasy_name: initialValues?.fantasy_name || '',
+      cpf_cnpj: initialValues?.cpf_cnpj || '',
+      state_registration: initialValues?.state_registration || '',
+      municipal_registration: initialValues?.municipal_registration || '',
+      rural_registration: initialValues?.rural_registration || '',
     },
   })
 
@@ -46,18 +46,23 @@ export const EnterpriseForm: FC<{
   } = form
 
   useEffect(() => {
+    console.log('Form reset with initialValues:', initialValues)
     reset(initialValues)
-  }, [initialValues, reset])
+  }, [JSON.stringify(initialValues), reset])
 
   useEffect(() => {
+    console.log('Watching form changes')
     const subscription = watch(value => {
+      console.log('Form values updated:', value)
       updateFormData(value)
     })
-    return () => subscription.unsubscribe()
-  }, [watch, updateFormData])
+    return () => {
+      console.log('Cleaning up subscription')
+      subscription.unsubscribe()
+    }
+  }, [watch])
 
   const onSubmit = (data: EnterpriseDto) => {
-    // Convert empty strings to undefined if not required for submission
     const sanitizedData = {
       ...data,
       state_registration: data.state_registration || undefined,
@@ -66,7 +71,7 @@ export const EnterpriseForm: FC<{
     }
 
     if (Object.keys(errors).length > 0) {
-      toast.error("Por favor, preencha todos os campos obrigatórios.")
+      toast.error('Por favor, preencha todos os campos obrigatórios.')
       console.log(errors)
     } else {
       updateFormData(sanitizedData)
@@ -113,7 +118,7 @@ export const EnterpriseForm: FC<{
                   <Input
                     {...field}
                     onChange={e =>
-                      setValue("cpf_cnpj", formatCNPJ(e.target.value))
+                      setValue('cpf_cnpj', formatCNPJ(e.target.value))
                     }
                   />
                   <FormMessage>{errors.cpf_cnpj?.message}</FormMessage>

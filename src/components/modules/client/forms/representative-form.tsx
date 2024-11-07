@@ -1,27 +1,27 @@
-import { Button } from "@/components/ui/button"
-import { FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Button } from '@/components/ui/button'
+import { FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { type FC, useEffect } from "react"
-import { FormProvider, useForm, Controller } from "react-hook-form"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useQuery } from "@tanstack/react-query"
-import { HeaderClientForms } from "../header-client"
-import type { representative } from "../../representative-component/zod/types-representative"
-import api from "@/infra/auth/database/acess-api/interceptors-axios"
-import type { Representative } from "../zustand/form-client.zustand"
+} from '@/components/ui/select'
+import { type FC, useEffect } from 'react'
+import { FormProvider, useForm, Controller } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
+import { HeaderClientForms } from '../header-client'
+import type { representative } from '../../representative-component/zod/types-representative'
+import api from '@/infra/auth/database/acess-api/interceptors-axios'
+import type { Representative } from '../zustand/form-client.zustand'
 
 // Defina o esquema de validação usando Zod
 const schema = z.object({
-  representative: z.string().min(1, "Selecione um representante"),
-  channel_entry: z.string().min(1, "Selecione um canal de entrada"),
-  region: z.string().min(1, "Selecione uma região"),
+  representative: z.string().optional(),
+  channel_entry: z.string().min(1, 'Selecione um canal de entrada'),
+  region: z.string().min(1, 'Selecione uma região'),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -38,9 +38,9 @@ export const RepresentativeForm: FC<IRepresentativeFormProps> = ({
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      representative: initialValues.representative || "",
-      channel_entry: initialValues.channel_entry || "",
-      region: initialValues.region || "",
+      representative: initialValues.representative || '',
+      channel_entry: initialValues.channel_entry || '',
+      region: initialValues.region || '',
     },
   })
 
@@ -48,9 +48,9 @@ export const RepresentativeForm: FC<IRepresentativeFormProps> = ({
 
   useEffect(() => {
     if (initialValues) {
-      setValue("representative", initialValues.representative || "")
-      setValue("channel_entry", initialValues.channel_entry || "")
-      setValue("region", initialValues.region || "")
+      setValue('representative', initialValues.representative || '')
+      setValue('channel_entry', initialValues.channel_entry || '')
+      setValue('region', initialValues.region || '')
     }
   }, [initialValues, setValue])
 
@@ -59,22 +59,28 @@ export const RepresentativeForm: FC<IRepresentativeFormProps> = ({
     isLoading,
     isError,
   } = useQuery<representative[], Error>({
-    queryKey: ["get-representative"],
+    queryKey: ['get-representative'],
     queryFn: async () => {
-      const response = await api.get("/representative")
+      const response = await api.get('/representative')
       return response.data
     },
   })
 
   const submitForm = async (data: FormValues) => {
     try {
+      if (!data.representative) {
+        alert('Por favor, selecione um representante.')
+        return
+      }
+
       const updatedData = {
         ...data,
         representativeId: Number(data.representative),
+        representative: data.representative,
       }
       onNext(updatedData)
     } catch (error) {
-      alert("Ocorreu um erro ao salvar o formulário.")
+      alert('Ocorreu um erro ao salvar o formulário.')
     }
   }
 

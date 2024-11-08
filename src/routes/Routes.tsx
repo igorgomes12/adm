@@ -1,5 +1,6 @@
 import { SignIn } from "@/components/sing-in/sing-in"
 import { AccountingComponent } from "@/pages/channel/accounting/accounting"
+import { Account } from "@/pages/channel/accounts/account"
 import { ClientComponent } from "@/pages/channel/client/client"
 import { FormClientComponent } from "@/pages/channel/client/form-client"
 import { EstablishmentComponent } from "@/pages/channel/establishment/establishment"
@@ -41,6 +42,7 @@ export const AppRoutes = () => {
           />
           <Route path="/usuarios" element={<UsersComponent />} />
           <Route path="/chamados" element={<CalledComponent />} />
+          <Route path="/contas" element={<Account />} />
 
           <Route path="*" element={<Navigate to="/tela-principal" />} />
         </Route>

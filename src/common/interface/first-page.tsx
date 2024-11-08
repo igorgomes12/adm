@@ -11,6 +11,8 @@ import {
   FaHeadset,
   FaUser,
 } from "react-icons/fa"
+import { RiSafe2Line } from "react-icons/ri"
+
 import { HiOutlineChatBubbleLeftEllipsis } from "react-icons/hi2"
 import { ImUsers } from "react-icons/im"
 
@@ -82,7 +84,17 @@ export const menuNavigation = [
       // },
     ],
   },
-  // { id: "financeiro", label: "Financeiro", link: "#", icon: <FaDollarSign /> },
+  {
+    id: "financeiro",
+    label: "Financeiro",
+    icon: <FaDollarSign />,
+    subcategories: [
+      {
+        title: "Conta",
+        items: [{ label: "Contas", icon: <RiSafe2Line /> }],
+      },
+    ],
+  },
   // { id: "programacao", label: "Programação", link: "#", icon: <FaDesktop /> },
   // { id: "monitoramento", label: "Monitoramento", link: "#", icon: <FaBell /> },
   // {

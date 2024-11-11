@@ -1,67 +1,61 @@
+import type { FC } from "react"
+import axios from "axios"
+import { showMessageError } from "@/common/messages/Err/toast-err"
+import { showMessageSuccess } from "@/common/messages/Success/toast-success"
 import { Button } from "@/components/ui/button"
-// import { useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
+import { api } from "@/infra/auth/database/acess-api/api"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAccountsStore } from "../service/zustand"
+import { TitleMessageDelete } from "@/common/utils/delete-of-message-and-title/title-message-delete"
 
-export const ModalAccountDelete = () => {
+export const ModalAccountDelete: FC = () => {
   const { id, isOpen, onClose } = useAccountsStore()
-  const [isDeleting, setIsDeleting] = useState(false) // tirar isso com o mutate
-  // const queryClient = useQueryClient()
+  const queryClient = useQueryClient()
 
-  // const { mutate } = useMutation({
-  //   mutationKey: ["delete-system"],
-  //   mutationFn: async () => {
-  //     const res = await api.delete("/accouting", {
-  //       params: { id },
-  //     })
-  //     return res.data
-  //   },
-  //   onSuccess: () => {
-  //     toast.success("conta excluído com sucesso!", {
-  //       theme: "dark",
-  //       icon: <FaRocket />,
-  //       progressStyle: { background: "#1f62cf" },
-  //       transition: Flip,
-  //     })
-  //     queryClient.invalidateQueries({ queryKey: ["get-accounting"] })
-  //     onClose()
-  //   },
-  //   onError: error => {
-  //     console.error("Erro ao excluir o sistema:", error)
-  //     toast.error("Erro ao excluir o sistema. Por favor, tente novamente.", {
-  //       theme: "colored",
-  //       icon: <IoWarningOutline />,
-  //       transition: Flip,
-  //     })
-  //   },
-  //   onSettled: () => {
-  //     setIsDeleting(false)
-  //   },
-  // })
+  const { mutate, isSuccess } = useMutation({
+    mutationKey: ["account"],
+    mutationFn: async () => {
+      const res = await api.delete("/account", {
+        params: { id },
+      })
+      return res.data
+    },
+    onSuccess: () => {
+      const message = "Conta excluída com sucesso!"
+      showMessageSuccess({ message })
+      queryClient.invalidateQueries({ queryKey: ["get-account"] })
+      onClose()
+    },
+    onError: (error: unknown) => {
+      let errorMessage = "Verifique sua conta."
+
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || errorMessage
+      }
+
+      showMessageError(errorMessage)
+      console.error("Erro de login:", error)
+    },
+  })
 
   const handleDelete = () => {
-    setIsDeleting(true)
-    // mutate()
+    mutate()
   }
-
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 backdrop-blur-sm">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4 sm:w-2/3 lg:w-1/3">
-        <h1 className="text-lg sm:text-xl font-semibold mb-4 text-center">
-          Tem certeza que deseja excluir a Conta?
-        </h1>
-        <p className="text-center mb-4">
-          Esta ação não pode ser desfeita. A conta com ID {id} será
-          permanentemente removido.
-        </p>
+        <TitleMessageDelete
+          title="Tem certeza que deseja excluir a Conta?"
+          message={`Esta ação não pode ser desfeita. A conta com ID ${id} sera permanentemente removido.`}
+        />
         <div className="flex w-full flex-col sm:flex-row justify-center gap-2">
           <Button
             className="w-full"
             variant="destructive"
             onClick={onClose}
-            disabled={isDeleting}
+            disabled={isSuccess}
           >
             Cancelar
           </Button>
@@ -69,9 +63,9 @@ export const ModalAccountDelete = () => {
             className="w-full"
             variant="success"
             onClick={handleDelete}
-            disabled={isDeleting}
+            disabled={isSuccess}
           >
-            {isDeleting ? "Excluindo..." : "Excluir"}
+            {isSuccess ? "Excluindo..." : "Excluir"}
           </Button>
         </div>
       </div>

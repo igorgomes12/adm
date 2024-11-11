@@ -1,12 +1,13 @@
-import { Button } from '@/components/ui/button'
-import api from '@/infra/auth/database/acess-api/interceptors-axios'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { Flip, toast } from 'react-toastify'
+import { Button } from "@/components/ui/button"
+import api from "@/infra/auth/database/acess-api/interceptors-axios"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
+import { Flip, toast } from "react-toastify"
 
-import { FaRocket } from 'react-icons/fa'
-import { IoWarningOutline } from 'react-icons/io5'
-import { usePaymentZustand } from '../zustand-payment/payment-zustand'
+import { FaRocket } from "react-icons/fa"
+import { IoWarningOutline } from "react-icons/io5"
+import { usePaymentZustand } from "../zustand-payment/payment-zustand"
+import { TitleMessageDelete } from "@/common/utils/delete-of-message-and-title/title-message-delete"
 
 export const ModalPaymentDelete = () => {
   const { id, isOpen, onClose } = usePaymentZustand()
@@ -14,32 +15,31 @@ export const ModalPaymentDelete = () => {
   const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
-    mutationKey: ['delete-payment'],
+    mutationKey: ["delete-payment"],
     mutationFn: async () => {
-      const res = await api.delete(`/payment`, {
+      const res = await api.delete("/payment", {
         params: { id },
       })
       return res.data
     },
     onSuccess: () => {
-      toast.success('Forma excluída com sucesso!', {
-        theme: 'dark',
+      toast.success("Forma excluída com sucesso!", {
+        theme: "dark",
         icon: <FaRocket />,
-        progressStyle: { background: '#1f62cf' },
+        progressStyle: { background: "#1f62cf" },
         transition: Flip,
       })
-      queryClient.invalidateQueries({ queryKey: ['get-payment'] })
+      queryClient.invalidateQueries({ queryKey: ["get-payment"] })
       onClose()
     },
     onError: error => {
       toast.error(
-        'Erro ao excluir a forma de pagamento. Por favor, tente novamente. ' +
-          error.message,
+        `Erro ao excluir a forma de pagamento. Por favor, tente novamente. ${error.message}`,
         {
-          theme: 'colored',
+          theme: "colored",
           icon: <IoWarningOutline />,
           transition: Flip,
-        },
+        }
       )
     },
     onSettled: () => {
@@ -57,13 +57,10 @@ export const ModalPaymentDelete = () => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 backdrop-blur-sm">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4 sm:w-2/3 lg:w-1/3">
-        <h1 className="text-lg sm:text-xl font-semibold mb-4 text-center">
-          Tem certeza que deseja excluir a Forma de pagamento?
-        </h1>
-        <p className="text-center mb-4">
-          Esta ação não pode ser desfeita. A Forma de pagamento com ID {id} será
-          permanentemente removido.
-        </p>
+        <TitleMessageDelete
+          title="Tem certeza que deseja excluir a Forma de pagamento?"
+          message={`Esta ação não pode ser desfeita. A Forma de pagamento com ID ${id} será permanentemente removido.`}
+        />
         <div className="flex w-full flex-col sm:flex-row justify-center gap-2">
           <Button
             className="w-full"
@@ -79,7 +76,7 @@ export const ModalPaymentDelete = () => {
             onClick={handleDelete}
             disabled={isDeleting}
           >
-            {isDeleting ? 'Excluindo...' : 'Excluir'}
+            {isDeleting ? "Excluindo..." : "Excluir"}
           </Button>
         </div>
       </div>

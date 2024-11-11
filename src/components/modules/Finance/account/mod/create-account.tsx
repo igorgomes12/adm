@@ -26,8 +26,7 @@ export const CreateAccount: FC = () => {
 
   useEffect(() => {
     if (id) {
-      // Se um id estiver presente, estamos editando, então carregue os dados relevantes
-      setFormattedValue(value) // Supondo que value já está formatado
+      setFormattedValue(value)
     }
   }, [id, value])
 
@@ -49,15 +48,13 @@ export const CreateAccount: FC = () => {
 
   const onSubmit = (data: TAccounts) => {
     if (id) {
-      // Fazer lógica de atualização
       console.log("Atualizar conta:", data)
       toast.success("Conta atualizada com sucesso!")
     } else {
-      // Fazer lógica de criação
       console.log("Criar nova conta:", data)
       toast.success("Conta criada com sucesso!")
     }
-    onClose() // Fechar o modal após finalizar
+    onClose()
   }
 
   const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,7 +74,6 @@ export const CreateAccount: FC = () => {
             className="gap-2 flex flex-col"
             onSubmit={form.handleSubmit(onSubmit)}
           >
-            {/* Campos do formulário, logicamente não precisam mudar */}
             <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
               <FormField
                 control={form.control}

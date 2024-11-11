@@ -139,27 +139,31 @@ export const CreateAccount: FC = () => {
                 )}
               />
 
-              <FormItem className="w-full flex items-baseline gap-2 lg:mt-8 justify-start">
+              <FormItem className="w-full lg:mt-8 flex items-center gap-2 h-full justify-center">
                 <FormField
                   control={form.control}
                   name="bank"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        <Checkbox
-                          {...register("bank")}
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          id="bank-checkbox"
-                        />
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        className="w-6 h-6"
+                        {...register("bank")}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        id="bank-checkbox"
+                      />
+                      <FormLabel
+                        htmlFor="bank-checkbox"
+                        className="cursor-pointer"
+                      >
+                        Conta bancária
                       </FormLabel>
-                      <FormMessage>
-                        {errors.bank && <span>{errors.bank.message}</span>}
-                      </FormMessage>
-                    </FormItem>
+                    </div>
                   )}
                 />
-                <FormLabel htmlFor="bank-checkbox">Conta bancária</FormLabel>
+                <FormMessage>
+                  {errors.bank && <span>{errors.bank.message}</span>}
+                </FormMessage>
               </FormItem>
             </div>
 

@@ -1,17 +1,17 @@
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button"
 import {
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { useSystemZustand } from '@/features/system/domain/entity/system.entity'
-import { useSystemForm } from '@/features/system/domain/services/system-form.services'
-import { SystemAdd } from '@/features/system/domain/usecases/system-add.usecase'
-import { FormProvider } from 'react-hook-form'
-import { ImageDropzone } from '../image-dropzone/image-drop'
-import { TSystemSchemaDto } from './zod-types/types-system'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { useSystemZustand } from "@/features/system/domain/entity/system.entity"
+import { useSystemForm } from "@/features/system/domain/services/system-form.services"
+import { SystemAdd } from "@/features/system/domain/usecases/system-add.usecase"
+import { FormProvider } from "react-hook-form"
+import { ImageDropzone } from "../image-dropzone/image-drop"
+import type { TSystemSchemaDto } from "./zod-types/types-system"
 
 export const ModalSystemAdd = () => {
   const { isOpen, onClose } = useSystemZustand()
@@ -26,7 +26,7 @@ export const ModalSystemAdd = () => {
 
   const handleFileSelect = (
     file: File | null,
-    onChange: (...event: any[]) => void,
+    onChange: (...event: any[]) => void
   ) => {
     if (file) {
       onChange(file)
@@ -110,7 +110,7 @@ export const ModalSystemAdd = () => {
                 variant="success"
                 disabled={isSuccess}
               >
-                {isSuccess ? 'Salvando...' : 'Salvar'}
+                {isSuccess ? "Salvando..." : "Salvar"}
               </Button>
             </div>
           </form>

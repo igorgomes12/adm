@@ -4,7 +4,7 @@ type TAccount = {
   id: number;
   value: string;
   description: string;
-  observations: string;
+  observation: string;
   status: boolean;
   bank: boolean;
   isOpen: boolean;
@@ -19,7 +19,7 @@ export const useAccountsStore = create<TAccount>((set) => ({
   id: 0,
   value: "",
   description: "",
-  observations: "",
+  observation: "",
   status: false,
   bank: false,
   isOpen: false,

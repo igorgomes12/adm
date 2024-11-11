@@ -17,50 +17,90 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useState, useEffect } from "react"
 import { toast } from "react-toastify"
 import { formatCurrency } from "@/common/regex/money"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { api } from "@/infra/auth/database/acess-api/api"
+import axios from "axios"
 
 export const CreateAccount: FC = () => {
-  const { onClose, id, value, status, observations, bank, description } =
-    useAccountsStore()
+  const { onClose, id, value } = useAccountsStore()
 
   const [formattedValue, setFormattedValue] = useState(value)
-
-  useEffect(() => {
-    if (id) {
-      setFormattedValue(value)
-    }
-  }, [id, value])
 
   const form = useForm<TAccounts>({
     resolver: zodResolver(accountSchema),
     defaultValues: {
-      value: formattedValue,
-      description,
-      observations,
-      status,
-      bank,
+      value: "",
+      description: "",
+      observation: "",
+      status: true, // Default status for creation
+      bank: false,
     },
   })
 
   const {
     register,
+    setValue,
     formState: { errors },
+    handleSubmit,
+    reset,
   } = form
 
-  const onSubmit = (data: TAccounts) => {
+  // Load existing account data for editing
+  useEffect(() => {
     if (id) {
-      console.log("Atualizar conta:", data)
-      toast.success("Conta atualizada com sucesso!")
-    } else {
-      console.log("Criar nova conta:", data)
-      toast.success("Conta criada com sucesso!")
+      api
+        .get(`/account/${id}`)
+        .then(response => {
+          const account = response.data
+          setFormattedValue(account.value)
+          reset({
+            ...account,
+            value: formatCurrency(account.value),
+          })
+        })
+        .catch(error => {
+          console.error("Erro ao carregar conta:", error)
+          toast.error("Erro ao carregar conta para edição.")
+        })
     }
-    onClose()
+  }, [id, reset])
+
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: async (account: TAccounts) => {
+      if (account.id) {
+        // Atualizar conta existente
+        const response = await api.put(`/account?id=${account.id}`, account)
+        return response.data
+      }
+      // Criar nova conta
+      const response = await api.post("/account", { ...account, status: true })
+      return response.data
+    },
+    onSuccess: () => {
+      toast.success(`Conta ${id ? "atualizada" : "criada"} com sucesso!`)
+      queryClient.invalidateQueries({ queryKey: ["get-account"] })
+      onClose()
+    },
+    onError: (error: unknown) => {
+      let errorMessage = "Erro ao processar a solicitação."
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || errorMessage
+      }
+      toast.error(errorMessage)
+    },
+  })
+
+  const onSubmit = (data: TAccounts) => {
+    mutation.mutate({ ...data, id })
   }
 
   const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = event.target.value
     const formatted = formatCurrency(rawValue)
     setFormattedValue(formatted)
+    setValue("value", formatted)
   }
 
   return (
@@ -72,7 +112,7 @@ export const CreateAccount: FC = () => {
         <FormProvider {...form}>
           <form
             className="gap-2 flex flex-col"
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit)}
           >
             <div className="flex lg:flex-row flex-col w-full gap-2 items-start justify-between">
               <FormField
@@ -143,16 +183,16 @@ export const CreateAccount: FC = () => {
 
             <FormField
               control={form.control}
-              name="observations"
+              name="observation"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Observações</FormLabel>
                   <FormControl>
-                    <Textarea {...register("observations")} {...field} />
+                    <Textarea {...register("observation")} {...field} />
                   </FormControl>
                   <FormMessage>
-                    {errors.observations && (
-                      <span>{errors.observations.message}</span>
+                    {errors.observation && (
+                      <span>{errors.observation.message}</span>
                     )}
                   </FormMessage>
                 </FormItem>

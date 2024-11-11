@@ -13,7 +13,7 @@ export const accountSchema = z.object({
     .string()
     .min(1, "A descrição é obrigatória.")
     .max(100, "A descrição não pode ter mais que 100 caracteres."),
-  observations: z
+  observation: z
     .string()
     .max(200, "As observações não podem ter mais que 200 caracteres.")
     .optional(),

@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Switch } from "@radix-ui/react-switch";
 import { format } from "date-fns";
-import { FC, useEffect, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
 // Objeto mockado
@@ -44,11 +44,11 @@ export const CalledRow: FC<CalledRowProps> = ({
         (now.getTime() - startTime.getTime()) / (1000 * 60 * 60);
 
       if (timeElapsed <= 1) {
-        setColor("bg-green-400 font-semibold");
+        setColor("text-green-500 font-bold text-lg");
       } else if (timeElapsed <= 2) {
-        setColor("bg-yellow-400 font-semibold");
+        setColor("text-yellow-500 font-bold text-lg");
       } else {
-        setColor("bg-red-400 font-semibold");
+        setColor("text-red-500 font-bold text-lg");
       }
     };
 

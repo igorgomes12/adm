@@ -1,41 +1,41 @@
-import { useForm, FormProvider } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { type FC, useEffect } from 'react'
-import { Input } from '@/components/ui/input'
-import { HeaderClientForms } from '../header-client'
-import {
-  schemaEnterpriseDto,
-  type EnterpriseDto,
-} from '../zod-form/zod-enterprise.dto'
+import { formatCNPJ } from "@/common/regex/cnpj";
+import { Button } from "@/components/ui/button";
 import {
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import { useFormStore } from '../zustand/form-client.zustand'
-import { Button } from '@/components/ui/button'
-import { formatCNPJ } from '@/common/regex/cnpj'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { type FC, useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { HeaderClientForms } from "../header-client";
+import {
+  type EnterpriseDto,
+  schemaEnterpriseDto,
+} from "../zod-form/zod-enterprise.dto";
+import { useFormStore } from "../zustand/form-client.zustand";
 
 export const EnterpriseForm: FC<{
-  onNext: (data: EnterpriseDto) => void
-  initialValues: EnterpriseDto & { id?: number }
+  onNext: (data: EnterpriseDto) => void;
+  initialValues: EnterpriseDto & { id?: number };
 }> = ({ onNext, initialValues }) => {
-  const { updateFormData } = useFormStore()
+  const { updateFormData } = useFormStore();
 
   const form = useForm<EnterpriseDto>({
     resolver: zodResolver(schemaEnterpriseDto),
     defaultValues: {
-      corporate_name: initialValues?.corporate_name || '',
-      fantasy_name: initialValues?.fantasy_name || '',
-      cpf_cnpj: initialValues?.cpf_cnpj || '',
-      state_registration: initialValues?.state_registration || '',
-      municipal_registration: initialValues?.municipal_registration || '',
-      rural_registration: initialValues?.rural_registration || '',
+      corporate_name: initialValues?.corporate_name || "",
+      fantasy_name: initialValues?.fantasy_name || "",
+      cpf_cnpj: initialValues?.cpf_cnpj || "",
+      state_registration: initialValues?.state_registration || "",
+      municipal_registration: initialValues?.municipal_registration || "",
+      rural_registration: initialValues?.rural_registration || "",
     },
-  })
+  });
 
   const {
     handleSubmit,
@@ -43,24 +43,26 @@ export const EnterpriseForm: FC<{
     watch,
     setValue,
     formState: { errors },
-  } = form
+  } = form;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    console.log('Form reset with initialValues:', initialValues)
-    reset(initialValues)
-  }, [JSON.stringify(initialValues), reset])
+    console.log("Form reset with initialValues:", initialValues);
+    reset(initialValues);
+  }, [JSON.stringify(initialValues), reset]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    console.log('Watching form changes')
-    const subscription = watch(value => {
-      console.log('Form values updated:', value)
-      updateFormData(value)
-    })
+    console.log("Watching form changes");
+    const subscription = watch((value) => {
+      console.log("Form values updated:", value);
+      updateFormData(value);
+    });
     return () => {
-      console.log('Cleaning up subscription')
-      subscription.unsubscribe()
-    }
-  }, [watch])
+      console.log("Cleaning up subscription");
+      subscription.unsubscribe();
+    };
+  }, [watch]);
 
   const onSubmit = (data: EnterpriseDto) => {
     const sanitizedData = {
@@ -68,16 +70,16 @@ export const EnterpriseForm: FC<{
       state_registration: data.state_registration || undefined,
       municipal_registration: data.municipal_registration || undefined,
       rural_registration: data.rural_registration || undefined,
-    }
+    };
 
     if (Object.keys(errors).length > 0) {
-      toast.error('Por favor, preencha todos os campos obrigatórios.')
-      console.log(errors)
+      toast.error("Por favor, preencha todos os campos obrigatórios.");
+      console.log(errors);
     } else {
-      updateFormData(sanitizedData)
-      onNext(sanitizedData)
+      updateFormData(sanitizedData);
+      onNext(sanitizedData);
     }
-  }
+  };
 
   return (
     <section className="w-full items-start justify-center p-4 flex flex-col">
@@ -117,8 +119,8 @@ export const EnterpriseForm: FC<{
                   <FormLabel>CNPJ</FormLabel>
                   <Input
                     {...field}
-                    onChange={e =>
-                      setValue('cpf_cnpj', formatCNPJ(e.target.value))
+                    onChange={(e) =>
+                      setValue("cpf_cnpj", formatCNPJ(e.target.value))
                     }
                   />
                   <FormMessage>{errors.cpf_cnpj?.message}</FormMessage>
@@ -173,5 +175,5 @@ export const EnterpriseForm: FC<{
       </FormProvider>
       <ToastContainer />
     </section>
-  )
-}
+  );
+};

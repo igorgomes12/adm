@@ -40,6 +40,7 @@ export const TableCalled: FC<{
         return true;
       return false;
     });
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   }, [data, searchTerm]);
 
   // Renderização do conteúdo da tabela

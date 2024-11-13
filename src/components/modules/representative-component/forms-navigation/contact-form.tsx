@@ -1,57 +1,57 @@
-import { HeaderForms } from "@/components/modules/representative-component/header-forms/header-forms"
-import { Button } from "@/components/ui/button"
+import { HeaderForms } from "@/components/modules/representative-component/header-forms/header-forms";
+import { Button } from "@/components/ui/button";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, type FC } from "react"
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { type FC, useEffect } from "react";
 import {
   Controller,
   FormProvider,
   useFieldArray,
   useForm,
-} from "react-hook-form"
-import { FaPlus, FaRegStar, FaStar, FaTrash } from "react-icons/fa"
-import { useFormStore } from "../zustand/gerenciador-zustand"
+} from "react-hook-form";
+import { FaPlus, FaRegStar, FaStar, FaTrash } from "react-icons/fa";
+import { toast } from "react-toastify";
 import {
   ContactSchema,
   type TContact,
-} from "../../client/zod-form/zod_contact.schema"
-import { toast } from "react-toastify"
+} from "../../client/zod-form/zod_contact.schema";
+import { useFormStore } from "../zustand/gerenciador-zustand";
 
 const applyMask = (value: string, mask: string): string => {
-  let formattedValue = ""
-  let maskIndex = 0
+  let formattedValue = "";
+  let maskIndex = 0;
   for (let i = 0; i < value.length && maskIndex < mask.length; i++) {
     if (/\d/.test(value[i])) {
       while (maskIndex < mask.length && mask[maskIndex] !== "9") {
-        formattedValue += mask[maskIndex++]
+        formattedValue += mask[maskIndex++];
       }
-      formattedValue += value[i]
-      maskIndex++
+      formattedValue += value[i];
+      maskIndex++;
     }
   }
-  return formattedValue
-}
+  return formattedValue;
+};
 
 export const ContactForm: FC<{
-  onNext?: (data: TContact) => void
-  initialValues?: TContact
+  onNext?: (data: TContact) => void;
+  initialValues?: TContact;
 }> = ({ onNext, initialValues }) => {
-  const { updateFormData } = useFormStore()
+  const { updateFormData } = useFormStore();
   const form = useForm<TContact>({
     resolver: zodResolver(ContactSchema),
     defaultValues: {
@@ -60,61 +60,61 @@ export const ContactForm: FC<{
       telefones: initialValues?.telefones || [],
       description: initialValues?.description || "",
     },
-  })
+  });
 
   const {
     handleSubmit,
     control,
     formState: { errors },
     reset,
-  } = form
+  } = form;
 
   useEffect(() => {
     if (initialValues) {
-      reset(initialValues)
+      reset(initialValues);
     }
-  }, [initialValues, reset])
+  }, [initialValues, reset]);
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "telefones",
-  })
+  });
 
   const handleAddPhone = () => {
-    append({ number: "", type: "TELEFONE", favorite: false })
-  }
+    append({ number: "", type: "TELEFONE", favorite: false });
+  };
 
   const getMask = (type: string) => {
     switch (type) {
       case "WHATSAPP":
       case "CELULAR":
-        return "(99) 99999-9999"
+        return "(99) 99999-9999";
       case "TELEFONE":
-        return "(99) 9999-9999"
+        return "(99) 9999-9999";
       default:
-        return ""
+        return "";
     }
-  }
+  };
 
   const submitForm = async (data: TContact) => {
     try {
       const cellphone =
-        data.telefones.find(t => t.type === "CELULAR")?.number || ""
+        data.telefones.find((t) => t.type === "CELULAR")?.number || "";
       const phone =
-        data.telefones.find(t => t.type === "TELEFONE")?.number || ""
+        data.telefones.find((t) => t.type === "TELEFONE")?.number || "";
 
       updateFormData({
         contact: {
-          email: data.contact,
+          email: data.contact || "",
           cellphone,
           phone,
         },
-      })
-      onNext?.(data)
+      });
+      onNext?.(data);
     } catch (error) {
-      if (error instanceof Error) return toast.error(error.message)
+      if (error instanceof Error) return toast.error(error.message);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col p-4 w-full h-screen">
@@ -203,11 +203,11 @@ export const ContactForm: FC<{
                         <Input
                           {...field}
                           value={field.value || ""}
-                          onChange={e => {
+                          onChange={(e) => {
                             const mask = getMask(
                               form.getValues(`telefones.${index}.type`)
-                            )
-                            field.onChange(applyMask(e.target.value, mask))
+                            );
+                            field.onChange(applyMask(e.target.value, mask));
                           }}
                           className="pr-10" // Espaço para o ícone
                         />
@@ -219,7 +219,7 @@ export const ContactForm: FC<{
                                 form.setValue(
                                   `telefones.${index}.favorite`,
                                   false
-                                )
+                                );
                               }}
                             />
                           ) : (
@@ -230,13 +230,13 @@ export const ContactForm: FC<{
                                   form.setValue(
                                     `telefones.${i}.favorite`,
                                     false
-                                  )
-                                })
+                                  );
+                                });
 
                                 form.setValue(
                                   `telefones.${index}.favorite`,
                                   true
-                                )
+                                );
                               }}
                             />
                           )}
@@ -286,5 +286,5 @@ export const ContactForm: FC<{
         </form>
       </FormProvider>
     </div>
-  )
-}
+  );
+};

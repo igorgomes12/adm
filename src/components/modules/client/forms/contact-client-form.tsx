@@ -1,41 +1,41 @@
-import { Button } from "@/components/ui/button"
+import { applyMask } from "@/common/regex/phones";
+import { Button } from "@/components/ui/button";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { type FC, useEffect } from "react"
+} from "@/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { type FC, useEffect } from "react";
 import {
   Controller,
   FormProvider,
   useFieldArray,
   useForm,
-} from "react-hook-form"
-import { FaPlus, FaRegStar, FaStar, FaTrash } from "react-icons/fa"
-import { HeaderClientForms } from "../header-client"
+} from "react-hook-form";
+import { FaPlus, FaRegStar, FaStar, FaTrash } from "react-icons/fa";
+import { HeaderClientForms } from "../header-client";
 import {
   type TContactDto,
   contactSchemaDto,
-} from "../zod-form/contact-client-zod"
-import { useFormStore } from "../zustand/form-client.zustand"
-import { applyMask } from "@/common/regex/phones"
+} from "../zod-form/contact-client-zod";
+import { useFormStore } from "../zustand/form-client.zustand";
 
 export const ContactClientForm: FC<{
-  onNext: (data: TContactDto) => void
-  initialValues: TContactDto
+  onNext: (data: TContactDto) => void;
+  initialValues: TContactDto;
 }> = ({ onNext, initialValues }) => {
-  const { updateFormData } = useFormStore()
+  const { updateFormData } = useFormStore();
 
   const form = useForm<TContactDto>({
     resolver: zodResolver(contactSchemaDto),
@@ -46,45 +46,45 @@ export const ContactClientForm: FC<{
         { number: "", type: "TELEFONE", favorite: true },
       ],
     },
-  })
+  });
 
   const {
     handleSubmit,
     control,
     reset,
     formState: { errors },
-  } = form
+  } = form;
 
   useEffect(() => {
     if (initialValues) {
-      reset(initialValues)
+      reset(initialValues);
     }
-  }, [initialValues, reset])
+  }, [initialValues, reset]);
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "telefones",
-  })
+  });
 
   const handleAddPhone = () => {
-    append({ number: "", type: "TELEFONE", favorite: false })
-  }
+    append({ number: "", type: "TELEFONE", favorite: false });
+  };
 
   const getMask = (type: string) => {
     switch (type) {
       case "WHATSAPP":
       case "CELULAR":
-        return "(99) 99999-9999"
+        return "(99) 99999-9999";
       case "TELEFONE":
-        return "(99) 9999-9999"
+        return "(99) 9999-9999";
       default:
-        return ""
+        return "";
     }
-  }
+  };
 
   const onSubmit = (data: TContactDto) => {
-    const { description, contact, telefones } = data
-    const firstTelefone = telefones[0]
+    const { description, contact, telefones } = data;
+    const firstTelefone = telefones[0];
 
     updateFormData({
       contacts: [
@@ -96,10 +96,10 @@ export const ContactClientForm: FC<{
           telefones,
         },
       ],
-    })
+    });
 
-    onNext(data)
-  }
+    onNext(data);
+  };
 
   return (
     <section className="w-full items-start justify-center p-4 flex flex-col">
@@ -182,11 +182,11 @@ export const ContactClientForm: FC<{
                         <Input
                           {...field}
                           value={field.value || ""}
-                          onChange={e => {
+                          onChange={(e) => {
                             const mask = getMask(
                               form.getValues(`telefones.${index}.type`)
-                            )
-                            field.onChange(applyMask(e.target.value, mask))
+                            );
+                            field.onChange(applyMask(e.target.value, mask));
                           }}
                           className="pr-10"
                         />
@@ -199,8 +199,8 @@ export const ContactClientForm: FC<{
                                   form.setValue(
                                     `telefones.${i}.favorite`,
                                     i === index
-                                  )
-                                })
+                                  );
+                                });
                               }}
                             />
                           ) : (
@@ -211,8 +211,8 @@ export const ContactClientForm: FC<{
                                   form.setValue(
                                     `telefones.${i}.favorite`,
                                     i === index
-                                  )
-                                })
+                                  );
+                                });
                               }}
                             />
                           )}
@@ -247,5 +247,5 @@ export const ContactClientForm: FC<{
         </form>
       </FormProvider>
     </section>
-  )
-}
+  );
+};

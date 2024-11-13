@@ -8,6 +8,7 @@ import { PaymentComponent } from "@/pages/channel/forms-payment/payment"
 import { FormRepresentative } from "@/pages/channel/representative/form-representative"
 import { RepresentativeComponent } from "@/pages/channel/representative/representative"
 import { CalledComponent } from "@/pages/channel/support/called/called"
+import { FormCalledComponent } from "@/pages/channel/support/called/form-called"
 import { SystemComponent } from "@/pages/channel/system/system"
 import { UsersComponent } from "@/pages/channel/user/users"
 import { MainDashboard } from "@/pages/dashboard/main-dashboard"
@@ -32,6 +33,10 @@ export const AppRoutes = () => {
           />
           <Route path="/canais" element={<RepresentativeComponent />} />
           <Route path="/formas-de-pagamento" element={<PaymentComponent />} />
+          <Route
+            path="/cadastro-chamado/:id?"
+            element={<FormCalledComponent />}
+          />
           <Route
             path="/cadastro-representante/:id?"
             element={<FormRepresentative />}

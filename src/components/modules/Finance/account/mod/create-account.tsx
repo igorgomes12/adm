@@ -32,7 +32,7 @@ export const CreateAccount: FC = () => {
       value: "",
       description: "",
       observation: "",
-      status: true, // Default status for creation
+      status: true,
       bank: false,
     },
   })

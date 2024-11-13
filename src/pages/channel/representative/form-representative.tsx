@@ -146,7 +146,6 @@ export const FormRepresentative: FC = () => {
       }
       setSelectedForm(nextFormTitle)
     } else {
-      console.log("Dados a serem enviados:", formData) // Log para verificar
       if (id) {
         updateRepresentativeMutation.mutate(formData)
       } else {

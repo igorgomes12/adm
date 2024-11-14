@@ -12,9 +12,8 @@ export const FormCalledComponent: FC = (): JSX.Element => {
   const { formData, updateFormData } = useCalledStore()
   const [selectedForm, setSelectedForm] = useState<string>("Dados Gerais")
   const [enabledForms, setEnabledForms] = useState<string[]>(["Dados Gerais"])
-  const [elapsedTime, setElapsedTime] = useState<number>(0) // Estado para o tempo decorrido
+  const [elapsedTime, setElapsedTime] = useState<number>(0)
 
-  // Mapeamento de nomes de formulários para chaves de estado
   const formKeyMap: Record<string, keyof typeof formData> = {
     "Dados Gerais": "dadosGerais",
     "Central de Atendimento": "centralAtendimento",
@@ -26,7 +25,6 @@ export const FormCalledComponent: FC = (): JSX.Element => {
       setElapsedTime(prevTime => prevTime + 1)
     }, 1000)
 
-    // Limpa o intervalo quando o componente é desmontado ou recriado
     return () => clearInterval(timer)
   }, [])
 
@@ -73,8 +71,6 @@ export const FormCalledComponent: FC = (): JSX.Element => {
         return <div>Selecione uma opção para ver o formulário.</div>
     }
   }
-
-  // Formata o tempo decorrido em mm:ss
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60

@@ -1,8 +1,8 @@
-import { TableCell, TableRow } from "@/components/ui/table";
-import { Switch } from "@radix-ui/react-switch";
-import { format } from "date-fns";
-import { type FC, useEffect, useState } from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { Switch } from "@/components/ui/switch"
+import { TableCell, TableRow } from "@/components/ui/table"
+import { format } from "date-fns"
+import { type FC, useEffect, useState } from "react"
+import { FaEdit, FaTrash } from "react-icons/fa"
 
 // Objeto mockado
 export const item = {
@@ -10,22 +10,22 @@ export const item = {
   name: "Representante XYZ",
   cellphone: "123456789",
   phone: "987654321",
-  type: "REPRESENTATIVE",
+  type: "BUG",
   region: "Sudeste",
   status: "ativo",
   timeStarted: "2024-11-13T10:00:00Z",
-};
+}
 
 const formatTime = (dateString: string) => {
-  const date = new Date(dateString);
-  return format(date, "HH:mm:ss");
-};
+  const date = new Date(dateString)
+  return format(date, "HH:mm:ss")
+}
 
 interface CalledRowProps {
-  item: typeof item;
-  onOpenDelete: (id: number) => void;
-  onOpenFormClient: (id: number) => void;
-  onStatusChange: (id: number, newStatus: boolean) => void;
+  item: typeof item
+  onOpenDelete: (id: number) => void
+  onOpenFormClient: (id: number) => void
+  onStatusChange: (id: number, newStatus: boolean) => void
 }
 
 export const CalledRow: FC<CalledRowProps> = ({
@@ -34,29 +34,29 @@ export const CalledRow: FC<CalledRowProps> = ({
   onOpenFormClient,
   onStatusChange,
 }) => {
-  const [color, setColor] = useState("bg-green-500");
+  const [color, setColor] = useState("bg-green-500")
 
   useEffect(() => {
     const updateColor = () => {
-      const now = new Date();
-      const startTime = new Date(item.timeStarted);
+      const now = new Date()
+      const startTime = new Date(item.timeStarted)
       const timeElapsed =
-        (now.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+        (now.getTime() - startTime.getTime()) / (1000 * 60 * 60)
 
       if (timeElapsed <= 1) {
-        setColor("text-green-500 font-bold text-lg");
+        setColor("text-green-500 font-bold text-lg")
       } else if (timeElapsed <= 2) {
-        setColor("text-yellow-500 font-bold text-lg");
+        setColor("text-yellow-500 font-bold text-lg")
       } else {
-        setColor("text-red-500 font-bold text-lg");
+        setColor("text-red-500 font-bold text-lg")
       }
-    };
+    }
 
-    const interval = setInterval(updateColor, 60 * 1000);
-    updateColor();
+    const interval = setInterval(updateColor, 60 * 1000)
+    updateColor()
 
-    return () => clearInterval(interval);
-  }, [item.timeStarted]);
+    return () => clearInterval(interval)
+  }, [item.timeStarted])
 
   return (
     <TableRow className="w-full" key={`representative${item.id}`}>
@@ -71,13 +71,13 @@ export const CalledRow: FC<CalledRowProps> = ({
         {formatTime(item.timeStarted)}
       </TableCell>
       <TableCell className="text-sm items-center">{item.region}</TableCell>
-      <TableCell className="text-sm items-center">{item.status}</TableCell>
       <TableCell className="text-sm items-center">
         <Switch
           checked={item.status === "ativo"}
-          onCheckedChange={(checked) => onStatusChange(item.id, checked)}
+          onCheckedChange={checked => onStatusChange(item.id, checked)}
         />
       </TableCell>
+      <TableCell className="text-sm items-center">{item.type}</TableCell>
       <TableCell className="flex items-center justify-center w-full h-full space-x-2">
         <button
           type="button"
@@ -95,5 +95,5 @@ export const CalledRow: FC<CalledRowProps> = ({
         </button>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

@@ -3,6 +3,10 @@ import { create } from "zustand";
 
 type TCalled = {
   id: number | null;
+  isOpen: boolean;
+  onOpen: (mode: "default" | "delete", id?: number) => void;
+  onClose: () => void;
+  mode: "default" | " delete";
   formData: {
     dadosGerais?: {
       caller: string;
@@ -32,6 +36,10 @@ type TCalled = {
 export const useCalledStore = create<TCalled>((set) => ({
   id: null,
   formData: {},
+  isOpen: false,
+  onOpen: () => set({ isOpen: true, mode: "default", id: null }),
+  onClose: () => set({ isOpen: false }),
+  mode: "default",
   updateFormData: (formStep, data) =>
     set((state) => ({
       formData: {

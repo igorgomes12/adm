@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { HeaderForms } from "@/components/modules/representative-component/header-forms/header-forms"
 import { Button } from "@/components/ui/button"
 import {
@@ -5,7 +6,6 @@ import {
   FormItem,
   FormLabel,
   FormControl,
-  FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
@@ -17,24 +17,59 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
 import type { FC } from "react"
-import { FormProvider, useForm } from "react-hook-form"
+import { FormProvider, useForm, useWatch } from "react-hook-form"
 import { ToastContainer } from "react-toastify"
+import { useCalledStore } from "../entity/hook/use-called"
+
+interface FormFields {
+  createdAt: string
+  timestamp: string
+  name: string
+  contact: string
+  caller: string
+}
 
 interface FormProviderProps {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  onNext: (data: any) => void
+  initialValues: Partial<FormFields>
+  onNext: (data: FormFields) => void
 }
 
 export const DadosGeraisCalled: FC<FormProviderProps> = ({
+  initialValues = {},
   onNext,
-}): JSX.Element => {
-  const form = useForm({})
-  const { handleSubmit, register } = form
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  const onSubmit = (data: any) => {
-    console.log(data)
+}) => {
+  const { updateFormData } = useCalledStore()
+
+  const form = useForm<FormFields>({
+    defaultValues: {
+      createdAt: initialValues.createdAt || "",
+      timestamp: initialValues.timestamp || "",
+      name: initialValues.name || "",
+      contact: initialValues.contact || "",
+      caller: initialValues.caller || "",
+    },
+  })
+
+  const { handleSubmit, control, setValue } = form
+  const formValues = useWatch({ control })
+
+  useEffect(() => {
+    updateFormData("dadosGerais", formValues)
+  }, [formValues, updateFormData])
+
+  useEffect(() => {
+    if (!initialValues.createdAt) {
+      const currentDate = new Date().toISOString().split("T")[0]
+      setValue("createdAt", currentDate)
+    }
+    if (!initialValues.timestamp) {
+      const currentTime = new Date().toLocaleTimeString("it-IT")
+      setValue("timestamp", currentTime)
+    }
+  }, [setValue, initialValues])
+
+  const onSubmit = (data: FormFields) => {
     onNext(data)
   }
 
@@ -49,64 +84,42 @@ export const DadosGeraisCalled: FC<FormProviderProps> = ({
           <div className="flex flex-col w-full gap-2">
             <div className="flex lg:flex-row flex-col items-start w-full gap-2 justify-between">
               <FormField
-                control={form.control}
-                name="id"
-                render={() => (
-                  <FormItem className="w-full">
-                    <FormLabel>Cód</FormLabel>
-                    <FormControl>
-                      <Input {...register("id")} disabled />
-                    </FormControl>
-                    {/* <FormMessage>
-                      {errors.id && <span>{errors.id.message}</span>}
-                    </FormMessage> */}
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
+                control={control}
                 name="createdAt"
-                render={() => (
+                render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Data Inicio</FormLabel>
+                    <FormLabel>Data Início</FormLabel>
                     <FormControl>
-                      <Input disabled type="date" {...register("createdAt")} />
+                      <Input {...field} type="date" disabled />
                     </FormControl>
-                    {/* <FormMessage>
-                      {errors.createdAt && (
-                        <span>{errors.createdAt.message}</span>
-                      )}
-                    </FormMessage> */}
                   </FormItem>
                 )}
               />
               <FormField
-                control={form.control}
+                control={control}
                 name="timestamp"
-                render={() => (
+                render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Hora Inicio</FormLabel>
+                    <FormLabel>Hora Início</FormLabel>
                     <FormControl>
-                      <Input disabled type="time" {...register("timestamp")} />
+                      <Input {...field} type="time" disabled />
                     </FormControl>
-                    {/* <FormMessage>
-                      {errors.timestamp && (
-                        <span>{errors.timestamp.message}</span>
-                      )}
-                    </FormMessage> */}
                   </FormItem>
                 )}
               />
             </div>
             <div className="flex flex-col lg:flex-row justify-center gap-2 mt-4">
               <FormField
-                control={form.control}
+                control={control}
                 name="name"
-                render={() => (
+                render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>Cliente</FormLabel>
                     <FormControl>
-                      <Select>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o cliente" />
                         </SelectTrigger>
@@ -122,53 +135,47 @@ export const DadosGeraisCalled: FC<FormProviderProps> = ({
                         </SelectContent>
                       </Select>
                     </FormControl>
-                    {/* <FormMessage>
-                      {errors.name && <span>{errors.name.message}</span>}
-                    </FormMessage> */}
                   </FormItem>
                 )}
               />
               <FormField
-                control={form.control}
+                control={control}
                 name="contact"
-                render={() => (
+                render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>Contato</FormLabel>
                     <FormControl>
-                      <Input {...register("contact")} />
+                      <Input {...field} />
                     </FormControl>
-                    {/* <FormMessage>
-                      {errors.contact && <span>{errors.contact.message}</span>}
-                    </FormMessage> */}
                   </FormItem>
                 )}
               />
               <FormField
-                control={form.control}
+                control={control}
                 name="caller"
-                render={() => (
+                render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>Atendente</FormLabel>
                     <FormControl>
-                      <Select>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o Atendente" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
                             <SelectLabel>Atendentes</SelectLabel>
-                            <SelectItem value="apple">Apple</SelectItem>
-                            <SelectItem value="banana">Banana</SelectItem>
-                            <SelectItem value="blueberry">Blueberry</SelectItem>
-                            <SelectItem value="grapes">Grapes</SelectItem>
-                            <SelectItem value="pineapple">Pineapple</SelectItem>
+                            <SelectItem value="joao">João</SelectItem>
+                            <SelectItem value="maria">Maria</SelectItem>
+                            <SelectItem value="carlos">Carlos</SelectItem>
+                            <SelectItem value="ana">Ana</SelectItem>
+                            <SelectItem value="lucas">Lucas</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
                     </FormControl>
-                    {/* <FormMessage>
-                      {errors.caller && <span>{errors.caller.message}</span>}
-                    </FormMessage> */}
                   </FormItem>
                 )}
               />

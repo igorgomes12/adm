@@ -94,7 +94,6 @@ export const DadosGerais: FC<{
   const onSubmit = (data: TSchemaDadosGerais) => {
     updateFormData(data)
     onNext(data)
-    console.log("dados", data)
   }
 
   const { data: supervisors } = useQuery<representative[], Error>({

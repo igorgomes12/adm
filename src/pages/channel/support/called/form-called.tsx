@@ -1,22 +1,41 @@
+import { useCalledStore } from "@/components/modules/support/called/data/entity/hook/use-called"
+import { CenterCalledComponent } from "@/components/modules/support/called/data/mod/central-atendimentos"
 import { DadosGeraisCalled } from "@/components/modules/support/called/data/mod/dados-gerais"
+import { DescriptionComponent } from "@/components/modules/support/called/data/mod/descrição"
 import { CalledNavComponent } from "@/components/modules/support/called/data/nav/navigation-called"
-import { useState, type FC } from "react"
+import { type FC, useState, useEffect } from "react"
+import { BiTime } from "react-icons/bi"
 import { useParams } from "react-router"
 
 export const FormCalledComponent: FC = (): JSX.Element => {
   const { id } = useParams<{ id: string }>()
+  const { formData, updateFormData } = useCalledStore()
   const [selectedForm, setSelectedForm] = useState<string>("Dados Gerais")
   const [enabledForms, setEnabledForms] = useState<string[]>(["Dados Gerais"])
+  const [elapsedTime, setElapsedTime] = useState<number>(0) // Estado para o tempo decorrido
 
-  const [formData, setFormData] = useState({})
+  // Mapeamento de nomes de formulários para chaves de estado
+  const formKeyMap: Record<string, keyof typeof formData> = {
+    "Dados Gerais": "dadosGerais",
+    "Central de Atendimento": "centralAtendimento",
+    Descrição: "descricao",
+  }
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setElapsedTime(prevTime => prevTime + 1)
+    }, 1000)
+
+    // Limpa o intervalo quando o componente é desmontado ou recriado
+    return () => clearInterval(timer)
+  }, [])
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const handleNext = (currentForm: string, data: any) => {
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    setFormData((prevData: any) => ({
-      ...prevData,
-      [currentForm.toLowerCase()]: data,
-    }))
+    const mappedKey = formKeyMap[currentForm]
+    if (mappedKey) {
+      updateFormData(mappedKey, data)
+    }
 
     const forms = ["Dados Gerais", "Central de Atendimento", "Descrição"]
     const nextFormIndex = forms.indexOf(currentForm) + 1
@@ -27,12 +46,6 @@ export const FormCalledComponent: FC = (): JSX.Element => {
         setEnabledForms(prev => [...prev, nextFormTitle])
       }
       setSelectedForm(nextFormTitle)
-    } else {
-      // if (id) {
-      //   updateRepresentativeMutation.mutate(formData)
-      // } else {
-      //   createRepresentativeMutation.mutate(formData)
-      // }
     }
   }
 
@@ -41,25 +54,48 @@ export const FormCalledComponent: FC = (): JSX.Element => {
       case "Dados Gerais":
         return (
           <DadosGeraisCalled
-            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-            onNext={(data: any) => handleNext("Dados Gerais", data)}
+            initialValues={{ ...formData.dadosGerais }}
+            onNext={data => handleNext("Dados Gerais", data)}
           />
         )
       case "Central de Atendimento":
-        return <div>Central de Atendimento</div>
+        return (
+          <CenterCalledComponent
+            initialValues={{ ...formData.centralAtendimento }}
+            onNext={data => handleNext("Central de Atendimento", data)}
+          />
+        )
       case "Descrição":
-        return <div>Descrição</div>
+        return (
+          <DescriptionComponent initialValues={{ ...formData.descricao }} />
+        )
       default:
         return <div>Selecione uma opção para ver o formulário.</div>
     }
   }
 
+  // Formata o tempo decorrido em mm:ss
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
+  }
+
   return (
     <div className="flex px-2">
       <aside className="w-96 bg-gray-100 h-screen items-center flex overscroll-none flex-col space-y-6">
-        <h2 className="text-2xl font-semibold p-2">
-          {id ? "Editar chamados" : "Cadastro chamados"}
-        </h2>
+        <div className="flex space-y-2 flex-col items-center">
+          <h2 className="text-2xl font-semibold p-2">
+            {id ? "Editar chamados" : "Cadastro chamados"}
+          </h2>
+          <p className="text-sm text-black">Duração</p>
+          <div className="flex items-center border-2 border-indigo-700 rounded-lg p-2 space-x-2">
+            <BiTime className="text-2xl text-indigo-600 " />
+            <span className="font-semibold text-indigo-600 text-2xl">
+              {formatTime(elapsedTime)}
+            </span>
+          </div>
+        </div>
         <CalledNavComponent
           selected={selectedForm}
           onSelect={title => {

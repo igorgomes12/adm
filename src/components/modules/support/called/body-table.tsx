@@ -1,28 +1,26 @@
-import { Switch } from "@/components/ui/switch"
-import { TableCell, TableRow } from "@/components/ui/table"
-import { format } from "date-fns"
 import { type FC, useEffect, useState } from "react"
+import { TableCell, TableRow } from "@/components/ui/table"
+import { Switch } from "@/components/ui/switch"
 import { FaEdit, FaTrash } from "react-icons/fa"
+import { format } from "date-fns"
 
-// Objeto mockado
-export const item = {
-  id: 1,
-  name: "Representante XYZ",
-  cellphone: "123456789",
-  phone: "987654321",
-  type: "BUG",
-  region: "Sudeste",
-  status: "ativo",
-  timeStarted: "2024-11-13T10:00:00Z",
-}
-
-const formatTime = (dateString: string) => {
+const formatTime = (dateString?: string) => {
+  if (!dateString) return "N/A"
   const date = new Date(dateString)
   return format(date, "HH:mm:ss")
 }
 
 interface CalledRowProps {
-  item: typeof item
+  item: {
+    id: number
+    name: string
+    cellphone?: string
+    phone?: string
+    type: string
+    region?: string
+    status: string
+    timeStarted?: string
+  }
   onOpenDelete: (id: number) => void
   onOpenFormClient: (id: number) => void
   onStatusChange: (id: number, newStatus: boolean) => void
@@ -38,6 +36,7 @@ export const CalledRow: FC<CalledRowProps> = ({
 
   useEffect(() => {
     const updateColor = () => {
+      if (!item.timeStarted) return
       const now = new Date()
       const startTime = new Date(item.timeStarted)
       const timeElapsed =
@@ -62,15 +61,23 @@ export const CalledRow: FC<CalledRowProps> = ({
     <TableRow className="w-full" key={`representative${item.id}`}>
       <TableCell className="text-sm items-center sticky">{item.id}</TableCell>
       <TableCell className="text-sm items-center sticky">{item.name}</TableCell>
-      <TableCell className="text-sm items-center">{item.cellphone}</TableCell>
-      <TableCell className="text-sm items-center">{item.phone}</TableCell>
-      <TableCell className="text-sm items-center">{item.timeStarted}</TableCell>
+      <TableCell className="text-sm items-center">
+        {item.cellphone || "N/A"}
+      </TableCell>
+      <TableCell className="text-sm items-center">
+        {item.phone || "N/A"}
+      </TableCell>
+      <TableCell className="text-sm items-center">
+        {item.timeStarted || "N/A"}
+      </TableCell>
       <TableCell
         className={`text-sm items-center justify-center w-28 ${color}`}
       >
         {formatTime(item.timeStarted)}
       </TableCell>
-      <TableCell className="text-sm items-center">{item.region}</TableCell>
+      <TableCell className="text-sm items-center">
+        {item.region || "Desconhecido"}
+      </TableCell>
       <TableCell className="text-sm items-center">
         <Switch
           checked={item.status === "ativo"}

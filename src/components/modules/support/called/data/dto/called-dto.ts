@@ -99,6 +99,11 @@ export const calledSchema = z.object({
     .optional()
     .nullable()
     .describe("A data de exclusão é opcional e pode ser nula."),
+  // Adicionando as propriedades faltantes
+  cellphone: z.string().optional().nullable(),
+  phone: z.string().optional().nullable(),
+  region: z.string().optional().nullable(),
+  timeStarted: z.string().optional().nullable(), // ou z.date() dependendo de como é usado
 });
 
 export type CalledDto = z.infer<typeof calledSchema>;

@@ -5,6 +5,7 @@ import { ClientComponent } from "@/pages/channel/client/client"
 import { FormClientComponent } from "@/pages/channel/client/form-client"
 import { EstablishmentComponent } from "@/pages/channel/establishment/establishment"
 import { PaymentComponent } from "@/pages/channel/forms-payment/payment"
+import { ModuleComponent } from "@/pages/channel/programming/module/module"
 import { FormRepresentative } from "@/pages/channel/representative/form-representative"
 import { RepresentativeComponent } from "@/pages/channel/representative/representative"
 import { CalledComponent } from "@/pages/channel/support/called/called"
@@ -33,6 +34,7 @@ export const AppRoutes = () => {
           />
           <Route path="/canais" element={<RepresentativeComponent />} />
           <Route path="/formas-de-pagamento" element={<PaymentComponent />} />
+          <Route path="/modulo" element={<ModuleComponent />} />
           <Route
             path="/cadastro-chamado/:id?"
             element={<FormCalledComponent />}

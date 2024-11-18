@@ -1,6 +1,8 @@
-import { BiBuildingHouse } from "react-icons/bi";
-import { BsFillPersonPlusFill } from "react-icons/bs";
-import { GiTakeMyMoney } from "react-icons/gi";
+import { BiBuildingHouse } from "react-icons/bi"
+import { BsFillPersonPlusFill } from "react-icons/bs"
+import { GiTakeMyMoney } from "react-icons/gi"
+import { GrSystem } from "react-icons/gr"
+import { VscFileSubmodule } from "react-icons/vsc"
 
 import {
   FaBell,
@@ -10,14 +12,14 @@ import {
   FaDollarSign,
   FaHeadset,
   FaUser,
-} from "react-icons/fa";
-import { RiSafe2Line } from "react-icons/ri";
+} from "react-icons/fa"
+import { RiSafe2Line } from "react-icons/ri"
 
 import {
   HiMiniMegaphone,
   HiOutlineChatBubbleLeftEllipsis,
-} from "react-icons/hi2";
-import { ImUsers } from "react-icons/im";
+} from "react-icons/hi2"
+import { ImUsers } from "react-icons/im"
 
 export const menuNavigation = [
   {
@@ -98,7 +100,20 @@ export const menuNavigation = [
       },
     ],
   },
-  // { id: "programacao", label: "Programação", link: "#", icon: <FaDesktop /> },
+  {
+    id: "programacao",
+    label: "Programação",
+    icon: <FaDesktop />,
+    subcategories: [
+      {
+        title: "Informação",
+        items: [
+          { label: "Sistema", icon: <GrSystem /> },
+          { label: "Módulo", icon: <VscFileSubmodule /> },
+        ],
+      },
+    ],
+  },
   // { id: "monitoramento", label: "Monitoramento", link: "#", icon: <FaBell /> },
   {
     id: "suporte",
@@ -122,7 +137,7 @@ export const menuNavigation = [
     ],
   },
   // { id: "utilitarios", label: "Utilitários", link: "#", icon: <ImUsers /> },
-];
+]
 
 export const canaisItems = [
   { label: "Clientes de Venda", icon: <BsFillPersonPlusFill /> },
@@ -131,15 +146,15 @@ export const canaisItems = [
   { label: "Sistemas", icon: <FaDesktop /> },
   { label: "Tipo Estabelecimento", icon: <FaCog /> },
   { label: "Produtos", icon: <FaChartBar /> },
-];
+]
 
-export const ratItems = [{ label: "Rat", icon: <FaHeadset /> }];
+export const ratItems = [{ label: "Rat", icon: <FaHeadset /> }]
 
-export const relatoriosItems = [{ label: "Relatório", icon: <FaBell /> }];
+export const relatoriosItems = [{ label: "Relatório", icon: <FaBell /> }]
 
-export const admitems = [{ label: "Admin", icon: <FaUser /> }];
+export const admitems = [{ label: "Admin", icon: <FaUser /> }]
 
-export type MenuId = "canais" | "rat" | "relatorios" | "administracao";
+export type MenuId = "canais" | "rat" | "relatorios" | "administracao"
 
 export const submenuItems: Record<
   MenuId,
@@ -149,9 +164,9 @@ export const submenuItems: Record<
   rat: ratItems,
   relatorios: relatoriosItems,
   administracao: admitems,
-};
+}
 
 export type TError = {
-  status: string;
-  message: string;
-};
+  status: string
+  message: string
+}

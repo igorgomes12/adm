@@ -52,7 +52,6 @@ export const TableCalled: FC<{
       return <div>Nenhum dado encontrado.</div>
 
     return filteredData.map(calledItem => {
-      // Criar um objeto completo com valores padrão
       const completeCalledItem = {
         ...calledItem,
         cellphone: calledItem.cellphone || "N/A",

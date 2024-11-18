@@ -21,6 +21,9 @@ import type { FC } from "react"
 import { FormProvider, useForm, useWatch } from "react-hook-form"
 import { ToastContainer } from "react-toastify"
 import { useCalledStore } from "../entity/hook/use-called"
+import type { TSystemSchemaDto } from "@/features/system/domain/dto/system.dto"
+import { api } from "@/infra/auth/database/acess-api/api"
+import { useQuery } from "@tanstack/react-query"
 
 interface CentralAtendimentoData {
   system: string
@@ -62,6 +65,16 @@ export const CenterCalledComponent: FC<FormProviderProps> = ({
     onNext(data)
   }
 
+  const { data } = useQuery<TSystemSchemaDto[], Error>({
+    queryKey: ["get-systems"],
+    queryFn: async () => {
+      const res = await api.get<TSystemSchemaDto[]>("/systems")
+      return res.data
+    },
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+  })
+
   return (
     <section className="w-full items-start justify-center p-4 flex flex-col">
       <HeaderForms title="Central de Atendimentos" />
@@ -85,11 +98,14 @@ export const CenterCalledComponent: FC<FormProviderProps> = ({
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Sistema</SelectLabel>
-                          <SelectItem value="apple">Apple</SelectItem>
-                          <SelectItem value="banana">Banana</SelectItem>
-                          <SelectItem value="blueberry">Blueberry</SelectItem>
-                          <SelectItem value="grapes">Grapes</SelectItem>
-                          <SelectItem value="pineapple">Pineapple</SelectItem>
+                          {data?.map(system => (
+                            <SelectItem
+                              key={system.id}
+                              value={system.name.toLowerCase()}
+                            >
+                              {system.name}
+                            </SelectItem>
+                          ))}
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -137,11 +153,8 @@ export const CenterCalledComponent: FC<FormProviderProps> = ({
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Tipos</SelectLabel>
-                          <SelectItem value="apple">Apple</SelectItem>
-                          <SelectItem value="banana">Banana</SelectItem>
-                          <SelectItem value="blueberry">Blueberry</SelectItem>
-                          <SelectItem value="grapes">Grapes</SelectItem>
-                          <SelectItem value="pineapple">Pineapple</SelectItem>
+                          <SelectItem value="bug">BUG</SelectItem>
+                          <SelectItem value="aux">AUXÍLIO</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>

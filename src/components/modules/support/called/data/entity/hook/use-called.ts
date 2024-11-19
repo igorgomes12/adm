@@ -1,4 +1,3 @@
-// Store configurada no Zustand
 import { create } from "zustand";
 
 type TCalled = {
@@ -6,7 +5,7 @@ type TCalled = {
   isOpen: boolean;
   onOpen: (mode: "default" | "delete", id?: number) => void;
   onClose: () => void;
-  mode: "default" | " delete";
+  mode: "default" | "delete";
   formData: {
     dadosGerais?: {
       caller: string;
@@ -34,17 +33,17 @@ type TCalled = {
 };
 
 export const useCalledStore = create<TCalled>((set) => ({
-  id: null,
+  id: null, // Inicie com null para refletir ausência de ID definido
   formData: {},
   isOpen: false,
-  onOpen: () => set({ isOpen: true, mode: "default", id: null }),
-  onClose: () => set({ isOpen: false }),
   mode: "default",
+  onOpen: (mode, id) => set({ isOpen: true, mode, id: id ?? null }), // Atualize para armazenar o ID passado
+  onClose: () => set({ isOpen: false, id: null }), // Resetar o ID ao fechar
   updateFormData: (formStep, data) =>
     set((state) => ({
       formData: {
         ...state.formData,
-        [formStep]: data, // Certifique-se de usar consistentemente essas chaves
+        [formStep]: data,
       },
     })),
 }));

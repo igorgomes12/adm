@@ -12,6 +12,7 @@ export const ModalModuleDelete = () => {
   const { onClose, id, isOpen } = useModuleZustand()
   const queryClient = useQueryClient()
 
+  console.log("=> ", id)
   const { mutate, isSuccess } = useMutation({
     mutationKey: ["delete-modules"],
     mutationFn: async () => {

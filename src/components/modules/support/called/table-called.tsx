@@ -60,17 +60,15 @@ export const TableCalled: FC<{
     if (!filteredData || filteredData.length === 0)
       return <div>Nenhum dado encontrado.</div>
 
-    return filteredData.map(calledItem => {
-      return (
-        <CalledRow
-          key={calledItem.id}
-          item={calledItem}
-          onOpenDelete={() => onOpen("delete", calledItem.id)}
-          onStatusChange={() => {}}
-          onOpenFormClient={onOpenFormClient}
-        />
-      )
-    })
+    return filteredData.map(calledItem => (
+      <CalledRow
+        key={calledItem.id}
+        item={calledItem}
+        onOpenDelete={() => onOpen("delete", calledItem.id)}
+        onStatusChange={() => {}}
+        onOpenFormClient={onOpenFormClient}
+      />
+    ))
   }, [filteredData, isLoading, isError, onOpenFormClient, onOpen])
 
   return (

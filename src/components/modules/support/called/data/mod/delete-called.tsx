@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import api from "@/infra/auth/database/acess-api/interceptors-axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FaRocket } from "react-icons/fa"
 import { IoWarningOutline } from "react-icons/io5"
 import { Flip, toast } from "react-toastify"
@@ -13,26 +13,30 @@ export const ModalCalledDelete = () => {
   const [isDeleting, setIsDeleting] = useState(false)
   const queryClient = useQueryClient()
 
+  useEffect(() => {
+    console.log("Modal opened with ID:", id)
+  }, [id])
+
   const { mutate } = useMutation({
-    mutationKey: ["delete-representative"],
+    mutationKey: ["delete-called"],
     mutationFn: async () => {
-      const res = await api.delete("/representative", {
+      const res = await api.delete("/called", {
         params: { id },
       })
       return res.data
     },
     onSuccess: () => {
-      toast.success("Chamados excluído com sucesso!", {
+      toast.success("Chamado excluído com sucesso!", {
         theme: "dark",
         icon: <FaRocket />,
         progressStyle: { background: "#1f62cf" },
         transition: Flip,
       })
-      queryClient.invalidateQueries({ queryKey: ["get-representative"] })
+      queryClient.invalidateQueries({ queryKey: ["called"] })
       onClose()
     },
     onError: error => {
-      console.error("Erro ao excluir o chamados:", error)
+      console.error("Erro ao excluir o chamado:", error)
       toast.error("Erro ao excluir o chamado. Por favor, tente novamente.", {
         theme: "colored",
         icon: <IoWarningOutline />,

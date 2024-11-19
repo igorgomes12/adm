@@ -13,26 +13,26 @@ export const ModalModuleDelete = () => {
   const queryClient = useQueryClient()
 
   const { mutate, isSuccess } = useMutation({
-    mutationKey: ["delete-client"],
+    mutationKey: ["delete-modules"],
     mutationFn: async () => {
-      const res = await api.delete("/client", {
+      const res = await api.delete("/modules", {
         params: { id },
       })
       return res.data
     },
     onSuccess: () => {
-      toast.success("Cliente excluído com sucesso!", {
+      toast.success("Modulo excluído com sucesso!", {
         theme: "dark",
         icon: <FaRocket />,
         progressStyle: { background: "#1f62cf" },
         transition: Flip,
       })
-      queryClient.invalidateQueries({ queryKey: ["clients"] })
+      queryClient.invalidateQueries({ queryKey: ["get-modules"] })
       onClose()
     },
     onError: error => {
-      console.error("Erro ao excluir o cliente:", error)
-      toast.error("Erro ao excluir o cliente. Por favor, tente novamente.", {
+      console.error("Erro ao excluir o modulo:", error)
+      toast.error("Erro ao excluir o modulo. Por favor, tente novamente.", {
         theme: "colored",
         icon: <IoWarningOutline />,
         transition: Flip,

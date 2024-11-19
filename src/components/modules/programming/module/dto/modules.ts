@@ -1,28 +1,32 @@
 import { z } from "zod";
 
+const moduleSystemTypes = z.enum([
+  "FRENTE",
+  "RETAGUARDA",
+  "LIDERPDV",
+  "LIDERODONTO",
+  "WEBLIDER",
+  "OUTROS",
+]);
+
 export const ModuleSchemaDto = z.object({
   id: z
     .number()
     .int()
-    .positive({ message: "O ID do modulo é obrigatório" })
+    .positive({ message: "O ID do módulo é obrigatório" })
     .optional(),
 
-  system: z
-    .string()
-    .min(1, { message: "O sistema é obrigatório" })
-    .min(5, { message: "O sistema deve ter pelo menos 5 caracteres" })
-    .max(100, {
-      message: "O sistema deve ter no máximo 100 caracteres",
-    }),
+  system: moduleSystemTypes,
 
   module: z
     .string()
-    .min(1, { message: "O nome do modulo é obrigatório" })
-    .min(5, { message: "O nome do modulo deve ter pelo menos 5 caracteres" })
+    .min(1, { message: "O nome do módulo é obrigatório" })
+    .min(5, { message: "O nome do módulo deve ter pelo menos 5 caracteres" })
     .max(100, {
-      message: "O nome do modulo deve ter no máximo 100 caracteres",
+      message: "O nome do módulo deve ter no máximo 100 caracteres",
     }),
 
-  status: z.enum(["Ativo", "Inativo"]).default("Ativo"),
+  status: z.boolean().default(true),
 });
+
 export type TModuleSchemaDto = z.infer<typeof ModuleSchemaDto>;

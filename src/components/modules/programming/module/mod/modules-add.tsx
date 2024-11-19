@@ -32,9 +32,9 @@ export const ModuleAddComponent: FC = () => {
   const queryClient = useQueryClient()
   const form = useForm<TModuleSchemaDto>({
     defaultValues: {
-      system: "",
+      system: "FRENTE",
       module: "",
-      status: "Ativo",
+      status: true,
     },
     resolver: zodResolver(ModuleSchemaDto),
   })
@@ -44,9 +44,12 @@ export const ModuleAddComponent: FC = () => {
   useEffect(() => {
     if (id) {
       api
-        .get(`/module/${id}`)
+        .get(`/modules/${id}`)
         .then(response => {
-          const moduleData = response.data
+          const moduleData = {
+            ...response.data,
+            id: response.data.id ?? undefined,
+          }
           reset(moduleData)
         })
         .catch(error => {
@@ -59,10 +62,10 @@ export const ModuleAddComponent: FC = () => {
   const { mutate, isSuccess } = useMutation({
     mutationFn: async (data: TModuleSchemaDto) => {
       if (id) {
-        await api.put(`/module/${id}`, data)
+        await api.put(`/modules/${id}`, data)
         return
       }
-      const res = await api.post("/module", { ...data, status: "Ativo" })
+      const res = await api.post("/modules", data)
       return res.data
     },
     onSuccess: () => {
@@ -84,9 +87,13 @@ export const ModuleAddComponent: FC = () => {
       })
     },
   })
-
   const handleSubmitAdd = () => {
-    mutate({ ...form.getValues(), status: "Ativo", id: 1 })
+    const formData = form.getValues()
+    mutate({
+      ...formData,
+      status: !!formData.status,
+      id: id !== null ? id : undefined,
+    })
   }
 
   return (
@@ -117,14 +124,14 @@ export const ModuleAddComponent: FC = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="frente">FRENTE</SelectItem>
-                        <SelectItem value="retaguarda">RETAGUARDA</SelectItem>
-                        <SelectItem value="lider">LIDER</SelectItem>
-                        <SelectItem value="lider-odonto">
+                        <SelectItem value="FRENTE">FRENTE</SelectItem>
+                        <SelectItem value="RETAGUARDA">RETAGUARDA</SelectItem>
+                        <SelectItem value="LIDERPDV">LIDER-PDV</SelectItem>
+                        <SelectItem value="LIDERODONTO">
                           LIDER ODONTO
                         </SelectItem>
-                        <SelectItem value="weblider">WEBLIDER</SelectItem>
-                        <SelectItem value="outros">OUTROS</SelectItem>
+                        <SelectItem value="WEBLIDER">WEBLIDER</SelectItem>
+                        <SelectItem value="OUTROS">OUTROS</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -158,9 +165,9 @@ export const ModuleAddComponent: FC = () => {
                       <FormControl>
                         <Switch
                           className="w-10 h-6"
-                          checked={field.value === "Ativo"}
+                          checked={field.value === true}
                           onCheckedChange={checked =>
-                            setValue("status", checked ? "Ativo" : "Inativo")
+                            setValue("status", checked)
                           }
                         />
                       </FormControl>

@@ -17,6 +17,8 @@ export const ModuleComponent = () => {
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         onOpen={() => onOpen("create")}
+        showPrinterButton={true}
+        onOpenPDF={() => {}}
       />
       <AccordionModuleComponents />
       {isOpen && (mode === "create" || mode === "edit") && (

@@ -1,103 +1,95 @@
-import { useModuleZustand } from "@/components/modules/programming/module/entity/zustand/useModule"
-import { ModalModuleDelete } from "@/components/modules/programming/module/mod/delete-modules"
+import type { FC } from "react"
+import { useQuery } from "@tanstack/react-query"
 import {
   Accordion,
-  AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  AccordionContent,
 } from "@/components/ui/accordion"
-import type { FC } from "react"
 import { FaEdit, FaTrash } from "react-icons/fa"
+import { useModuleZustand } from "@/components/modules/programming/module/entity/zustand/useModule"
+import { ModalModuleDelete } from "@/components/modules/programming/module/mod/delete-modules"
+import { api } from "@/infra/auth/database/acess-api/api"
+import type { GroupedModules, Module } from "."
 
-interface IAccordionItem {
-  id: number
-  name: string
+const groupModulesBySystem = (modules: Module[]): GroupedModules => {
+  return modules.reduce<GroupedModules>((acc, module) => {
+    if (!acc[module.system]) {
+      acc[module.system] = []
+    }
+    acc[module.system].push(module)
+    return acc
+  }, {})
 }
-
-interface IAccordionItemsProps {
-  value: string
-  trigger: string
-  content: string | IAccordionItem[]
-}
-
-const accordionItems: IAccordionItemsProps[] = [
-  {
-    value: "item-1",
-    trigger: "FRENTE",
-    content: [
-      { id: 1, name: "Módulo A" },
-      { id: 2, name: "Módulo B" },
-    ],
-  },
-  {
-    value: "item-2",
-    trigger: "RETAGUARDA-PLUS",
-    content: "Yes. It adheres to the WAI-ARIA design pattern.",
-  },
-  {
-    value: "item-3",
-    trigger: "LIDER PDV",
-    content: "Yes. It adheres to the WAI-ARIA design pattern.",
-  },
-  {
-    value: "item-4",
-    trigger: "WEBLIDER",
-    content: "Yes. It adheres to the WAI-ARIA design pattern.",
-  },
-  {
-    value: "item-5",
-    trigger: "LIDER ODONTO",
-    content: "Yes. It adheres to the WAI-ARIA design pattern.",
-  },
-  {
-    value: "item-6",
-    trigger: "OUTROS",
-    content: "Yes. It adheres to the WAI-ARIA design pattern.",
-  },
-]
 
 export const AccordionModuleComponents: FC = (): JSX.Element => {
   const { onOpen, mode, isOpen } = useModuleZustand()
 
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["get-modules"],
+    queryFn: async () => {
+      const response = await api.get<Module[]>("/modules")
+      console.log("modules", response)
+      return response.data
+    },
+  })
+
+  if (isLoading) {
+    return <p>Loading...</p>
+  }
+
+  if (error) {
+    return <p>Error loading modules</p>
+  }
+
+  const groupedModules = data ? groupModulesBySystem(data) : {}
+
   return (
-    <div className="flex flex-col gap-2 p-6 w-full">
+    <div className="flex flex-col gap-2 p-6 overflow-hidden w-full">
       <Accordion type="single" collapsible>
-        {accordionItems.map(item => (
-          <AccordionItem key={item.value} value={item.value}>
-            <AccordionTrigger className="text-md font-bold">
-              {item.trigger}
+        {Object.entries(groupedModules).map(([system, modules]) => (
+          <AccordionItem key={system} value={system}>
+            <AccordionTrigger className="text-lg font-bold">
+              {system}
             </AccordionTrigger>
             <AccordionContent className="flex flex-col gap-2">
-              {Array.isArray(item.content) ? (
-                item.content.map(module => (
-                  <div
-                    key={module.id}
-                    className="flex items-start justify-between w-full gap-2 border-b py-2"
-                  >
-                    <div>
-                      <h3 className="font-mono text-sm">{module.name}</h3>
+              {modules.map(module => (
+                <div
+                  key={module.id}
+                  className={`flex items-start justify-between w-full gap-2 py-2 ${
+                    groupedModules[system].lastIndexOf(module) ===
+                    groupedModules[system].length - 1
+                      ? "border-b-0"
+                      : "border-b"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="text-xs rounded-full border-colorProject-blue-light/40 font-mono border-2 w-8 h-8 flex justify-center items-center">
+                      <span>{module.id}</span>
                     </div>
-                    <div className="flex justify-end">
-                      <button
-                        type="button"
-                        className="text-blue-200 hover:text-blue-500"
-                        onClick={() => onOpen("edit", module.id)}
-                      >
-                        <FaEdit size={20} />
-                      </button>
-                      <button
-                        type="button"
-                        className="text-red-200 hover:text-red-500"
-                        onClick={() => onOpen("delete", module.id)}
-                      >
-                        <FaTrash size={20} />
-                      </button>
-                    </div>
+                    {" - "}
+                    <h3 className="font-mono text-sm uppercase">
+                      {module.module}
+                    </h3>
                   </div>
-                ))
-              ) : (
-                <p>{item.content}</p>
-              )}
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      className="text-blue-200 hover:text-blue-500"
+                      onClick={() => onOpen("edit", module.id)}
+                    >
+                      <FaEdit size={20} />
+                    </button>
+                    <button
+                      type="button"
+                      className="text-red-200 hover:text-red-500"
+                      onClick={() => onOpen("delete", module.id)}
+                    >
+                      <FaTrash size={20} />
+                    </button>
+                  </div>
+                </div>
+              ))}
             </AccordionContent>
           </AccordionItem>
         ))}

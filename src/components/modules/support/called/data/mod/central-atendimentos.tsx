@@ -24,6 +24,7 @@ import { useCalledStore } from "../entity/hook/use-called"
 import type { TSystemSchemaDto } from "@/features/system/domain/dto/system.dto"
 import { api } from "@/infra/auth/database/acess-api/api"
 import { useQuery } from "@tanstack/react-query"
+import type { Module } from "@/pages/channel/programming/module"
 
 interface CentralAtendimentoData {
   system: string
@@ -73,6 +74,14 @@ export const CenterCalledComponent: FC<FormProviderProps> = ({
     },
     refetchOnWindowFocus: true,
     staleTime: 0,
+  })
+
+  const { data: modules } = useQuery({
+    queryKey: ["get-modules"],
+    queryFn: async () => {
+      const response = await api.get<Module[]>("/modules")
+      return response.data
+    },
   })
 
   return (
@@ -126,12 +135,12 @@ export const CenterCalledComponent: FC<FormProviderProps> = ({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel>Módulo</SelectLabel>
-                          <SelectItem value="apple">Apple</SelectItem>
-                          <SelectItem value="banana">Banana</SelectItem>
-                          <SelectItem value="blueberry">Blueberry</SelectItem>
-                          <SelectItem value="grapes">Grapes</SelectItem>
-                          <SelectItem value="pineapple">Pineapple</SelectItem>
+                          <SelectLabel>Módulos</SelectLabel>
+                          {modules?.map(module => (
+                            <SelectItem key={module.id} value={module.module}>
+                              {module.module}
+                            </SelectItem>
+                          ))}
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -153,8 +162,8 @@ export const CenterCalledComponent: FC<FormProviderProps> = ({
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Tipos</SelectLabel>
-                          <SelectItem value="bug">BUG</SelectItem>
-                          <SelectItem value="aux">AUXÍLIO</SelectItem>
+                          <SelectItem value="BUG">BUG</SelectItem>
+                          <SelectItem value="ASSISTANCE">AUXÍLIO</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>

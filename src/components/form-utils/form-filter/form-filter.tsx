@@ -3,19 +3,21 @@ import { ButtonAdd } from "@/components/buttons/buttons-add"
 import { BsFillPrinterFill, BsPlus } from "react-icons/bs"
 
 interface FormFilterProps {
-  searchTerm: string
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>
+  searchTerm?: string
+  setSearchTerm?: React.Dispatch<React.SetStateAction<string>>
   onOpen: (id: number) => void
   showPrinterButton?: boolean
   onOpenPDF?: () => void
+  showFilter?: boolean
 }
 
 export const FormFilter: React.FC<FormFilterProps> = ({
-  searchTerm,
+  searchTerm = "",
   setSearchTerm,
   onOpen,
   showPrinterButton = false,
   onOpenPDF,
+  showFilter = true,
 }) => {
   const handleAddClick = () => {
     onOpen(0)
@@ -23,31 +25,35 @@ export const FormFilter: React.FC<FormFilterProps> = ({
 
   return (
     <div className="flex gap-2 items-center justify-between w-full">
-      <input
-        placeholder="Pesquisar"
-        type="text"
-        className="p-2 cursor-text w-full border rounded-lg"
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-      />
-
-      {showPrinterButton && onOpenPDF && (
-        <ButtonAdd
-          icon={
-            <BsFillPrinterFill
-              width="bold"
-              className="p-2 bg-lime-600 hover:bg-lime-600 rounded-full"
-              size={40}
-              onClick={onOpenPDF}
-            />
-          }
+      {showFilter && (
+        <input
+          placeholder="Pesquisar"
+          type="text"
+          className="p-2 cursor-text w-full border rounded-lg"
+          value={searchTerm}
+          onChange={e => setSearchTerm?.(e.target.value)}
         />
       )}
 
-      <ButtonAdd
-        icon={<BsPlus width="bold" size={40} />}
-        onOpen={handleAddClick}
-      />
+      <div className="flex gap-2">
+        {showPrinterButton && onOpenPDF && (
+          <ButtonAdd
+            icon={
+              <BsFillPrinterFill
+                width="bold"
+                className="p-2 bg-lime-600 hover:bg-lime-600 rounded-full"
+                size={40}
+                onClick={onOpenPDF}
+              />
+            }
+          />
+        )}
+
+        <ButtonAdd
+          icon={<BsPlus width="bold" size={40} />}
+          onOpen={handleAddClick}
+        />
+      </div>
     </div>
   )
 }

@@ -13,8 +13,9 @@ export const CalledComponent: FC = () => {
   const handleAddClick = () => {
     navigate("/cadastro-chamado")
   }
-  const handleAddClickEdit = () => {
-    navigate("/cadastro-chamado/:id")
+
+  const handleAddClickEdit = (id: number) => {
+    navigate(`/cadastro-chamado/${id}`)
   }
 
   return (

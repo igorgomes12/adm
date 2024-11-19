@@ -11,8 +11,13 @@ import { Textarea } from "@/components/ui/textarea"
 import type { FC } from "react"
 import { useEffect } from "react"
 import { FormProvider, useForm, useWatch } from "react-hook-form"
-import { ToastContainer } from "react-toastify"
+import { Flip, toast, ToastContainer } from "react-toastify"
 import { useCalledStore } from "../entity/hook/use-called"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { api } from "@/infra/auth/database/acess-api/api"
+import { FaRocket } from "react-icons/fa"
+import { IoWarningOutline } from "react-icons/io5"
+import { useNavigate } from "react-router"
 
 type TDesc = {
   note: string
@@ -29,7 +34,9 @@ interface IDescription {
 export const DescriptionComponent: FC<IDescription> = ({
   initialValues = {},
 }) => {
-  const { updateFormData, formData } = useCalledStore()
+  const { updateFormData, formData, id } = useCalledStore()
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   const form = useForm<TDesc>({
     defaultValues: {
@@ -50,13 +57,44 @@ export const DescriptionComponent: FC<IDescription> = ({
     updateFormData("descricao", formValues)
   }, [formValues, updateFormData])
 
+  const { mutate } = useMutation({
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    mutationFn: async (data: any) => {
+      if (id) {
+        await api.put(`/called/${id}`, data)
+        return
+      }
+      const res = await api.post("/called", data)
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["get-called"] })
+      toast.success(`Modulo ${id ? "atualizado" : "cadastrado"} com sucesso!`, {
+        theme: "dark",
+        icon: <FaRocket />,
+        progressStyle: { background: "#1f62cf" },
+        transition: Flip,
+        onClose: () => navigate("/chamados"),
+        autoClose: 2000,
+      })
+    },
+    onError: error => {
+      console.error("Erro ao cadastrar o modulo:", error)
+      toast.error("Erro ao cadastrar o modulo. Por favor, tente novamente.", {
+        theme: "colored",
+        icon: <IoWarningOutline />,
+        transition: Flip,
+      })
+    },
+  })
+
   const onSubmit = (data: TDesc) => {
     updateFormData("descricao", data)
     const completeData = {
       ...formData,
       descricao: data,
     }
-    console.log(completeData)
+    mutate(completeData)
   }
 
   return (
@@ -122,13 +160,13 @@ export const DescriptionComponent: FC<IDescription> = ({
                     >
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="telefone" />
+                          <RadioGroupItem value="PHONE" />
                         </FormControl>
                         <FormLabel className="font-normal">Telefone</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="acessoRemoto" />
+                          <RadioGroupItem value="REMOTE" />
                         </FormControl>
                         <FormLabel className="font-normal">
                           Acesso Remoto
@@ -136,7 +174,7 @@ export const DescriptionComponent: FC<IDescription> = ({
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="presencial" />
+                          <RadioGroupItem value="IN_PERSON" />
                         </FormControl>
                         <FormLabel className="font-normal">
                           Presencial
@@ -162,19 +200,19 @@ export const DescriptionComponent: FC<IDescription> = ({
                     >
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="alta" />
+                          <RadioGroupItem value="HIGH" />
                         </FormControl>
                         <FormLabel className="font-normal">Alta</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="media" />
+                          <RadioGroupItem value="MEDIUM" />
                         </FormControl>
                         <FormLabel className="font-normal">Média</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="baixa" />
+                          <RadioGroupItem value="LOW" />
                         </FormControl>
                         <FormLabel className="font-normal">Baixa</FormLabel>
                       </FormItem>

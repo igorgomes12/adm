@@ -2,8 +2,8 @@ import { type FC, useEffect, useState } from "react"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { Switch } from "@/components/ui/switch"
 import { FaEdit, FaTrash } from "react-icons/fa"
-import type { CalledDto } from "./data/dto/called-dto"
 import { formatarData, formatarHora } from "@/common/utils/formater/date"
+import type { CalledDto } from "./data/dto/called.dto"
 
 interface CalledRowProps {
   item: CalledDto
@@ -16,15 +16,15 @@ export const CalledRow: FC<CalledRowProps> = ({
   item,
   onOpenDelete,
   onOpenFormClient,
-  onStatusChange,
 }) => {
-  const [color, setColor] = useState("bg-green-500")
+  const [color, setColor] = useState("text-green-500 font-bold text-lg")
+  const [status, setStatus] = useState(item.descricao.note === "ativo")
 
   useEffect(() => {
     const updateColor = () => {
-      if (!item.timeStarted) return
+      if (!item.dadosGerais.createdAt) return
       const now = new Date()
-      const startTime = new Date(item.timeStarted)
+      const startTime = new Date(item.dadosGerais.createdAt)
       const timeElapsed =
         (now.getTime() - startTime.getTime()) / (1000 * 60 * 60)
 
@@ -41,35 +41,67 @@ export const CalledRow: FC<CalledRowProps> = ({
     updateColor()
 
     return () => clearInterval(interval)
-  }, [item.timeStarted])
+  }, [item.dadosGerais.createdAt])
 
-  const dataOriginal: Date | null | undefined = item.createdAt
-
+  const dataOriginal: Date | null | undefined = item.dadosGerais.createdAt
+    ? new Date(item.dadosGerais.createdAt)
+    : null
   const dataFormatada = formatarData(dataOriginal)
   const horaFormatada = formatarHora(dataOriginal)
 
+  const handleStatusChange = async (id: number, newStatus: boolean) => {
+    try {
+      const response = await fetch(`/called/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus ? "ativo" : "inativo" }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Erro ao atualizar o status")
+      }
+
+      setStatus(newStatus)
+    } catch (error) {
+      console.error("Erro ao atualizar o status:", error)
+    }
+  }
+  console.log("item", item.id)
   return (
-    <TableRow className="w-full" key={`representative${item.id}`}>
+    <TableRow
+      className="w-full"
+      key={`representative-${item.dadosGerais.caller}`}
+    >
       <TableCell className="text-sm items-center sticky">{item.id}</TableCell>
       <TableCell className="text-sm items-center sticky">
-        {item.priority}
+        {item.descricao.priority}
       </TableCell>
-      <TableCell className="text-sm items-center">{item.name}</TableCell>
-      <TableCell className="text-sm items-center">{item.caller}</TableCell>
+      <TableCell className="text-sm items-center">
+        {item.dadosGerais.name || "Desconhecido"}
+      </TableCell>
+      <TableCell className="text-sm items-center">
+        {item.dadosGerais.caller}
+      </TableCell>
       <TableCell className="text-sm items-center">{dataFormatada}</TableCell>
       <TableCell
         className={`text-sm items-center justify-center w-28 ${color}`}
       >
         {horaFormatada}
       </TableCell>
-      <TableCell className="text-sm items-center">{item.description}</TableCell>
+      <TableCell className="text-sm items-center">
+        {item.centralAtendimento.description}
+      </TableCell>
       <TableCell className="text-sm items-center">
         <Switch
-          checked={item.status}
-          onCheckedChange={checked => onStatusChange(item.id || 0, checked)}
+          checked={status}
+          onCheckedChange={checked => handleStatusChange(item.id || 0, checked)}
         />
       </TableCell>
-      <TableCell className="text-sm items-center">{item.type}</TableCell>
+      <TableCell className="text-sm items-center">
+        {item.centralAtendimento.type}
+      </TableCell>
       <TableCell className="flex items-center justify-center w-full h-full space-x-2">
         <button
           type="button"

@@ -3,8 +3,6 @@ import pdfFonts from "pdfmake/build/vfs_fonts"
 
 if (pdfFonts.pdfMake) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs
-} else {
-  console.error("Erro ao configurar as fontes para o PDFMake.")
 }
 
 type TAccount = {

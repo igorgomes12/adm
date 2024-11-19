@@ -29,7 +29,6 @@ export const AccordionModuleComponents: FC = (): JSX.Element => {
     queryKey: ["get-modules"],
     queryFn: async () => {
       const response = await api.get<Module[]>("/modules")
-      console.log("modules", response)
       return response.data
     },
   })
@@ -63,8 +62,8 @@ export const AccordionModuleComponents: FC = (): JSX.Element => {
                       : "border-b"
                   }`}
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="text-xs rounded-full border-colorProject-blue-light/40 font-mono border-2 w-8 h-8 flex justify-center items-center">
+                  <div className="flex items-center hover:bg-lime-100 w-full rounded-lg cursor-pointer p-2 gap-2">
+                    <div className="text-xs rounded-full border-lime-500  font-mono border-2 w-8 h-8 flex justify-center items-center">
                       <span>{module.id}</span>
                     </div>
                     {" - "}

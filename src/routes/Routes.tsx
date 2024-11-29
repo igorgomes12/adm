@@ -1,21 +1,21 @@
-import { SignIn } from "@/components/sing-in/sing-in"
-import { AccountingComponent } from "@/pages/channel/accounting/accounting"
-import { Account } from "@/pages/channel/accounts/account"
-import { ClientComponent } from "@/pages/channel/client/client"
-import { FormClientComponent } from "@/pages/channel/client/form-client"
-import { EstablishmentComponent } from "@/pages/channel/establishment/establishment"
-import { PaymentComponent } from "@/pages/channel/forms-payment/payment"
-import { ModuleComponent } from "@/pages/channel/programming/module/module"
-import { FormRepresentative } from "@/pages/channel/representative/form-representative"
-import { RepresentativeComponent } from "@/pages/channel/representative/representative"
-import { CalledComponent } from "@/pages/channel/support/called/called"
-import { FormCalledComponent } from "@/pages/channel/support/called/form-called"
-import { SystemComponent } from "@/pages/channel/system/system"
-import { UsersComponent } from "@/pages/channel/user/users"
-import { MainDashboard } from "@/pages/dashboard/main-dashboard"
-import { Layout } from "@/pages/layout"
-import { TelaPrincipal } from "@/pages/tela-principal/tela-principal"
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
+import { SignIn } from "@/components/sing-in/sing-in";
+import { AccountingComponent } from "@/pages/Channel/accounting/accounting";
+import { Account } from "@/pages/Finance/accounts/account";
+import { ClientComponent } from "@/pages/Channel/client/client";
+import { FormClientComponent } from "@/pages/Channel/client/form-client";
+import { EstablishmentComponent } from "@/pages/Channel/establishment/establishment";
+import { PaymentComponent } from "@/pages/Admin/forms-payment/payment";
+import { FormRepresentative } from "@/pages/Admin/representative/form-representative";
+import { RepresentativeComponent } from "@/pages/Admin/representative/representative";
+import { CalledComponent } from "@/pages/Supports/called/called";
+import { FormCalledComponent } from "@/pages/Supports/called/form-called";
+import { SystemComponent } from "@/pages/Programation/system/system";
+import { UsersComponent } from "@/pages/Admin/user/users";
+import { MainDashboard } from "@/pages/Dashboard/main-dashboard";
+import { Layout } from "@/pages/layout";
+import { TelaPrincipal } from "@/pages/Sign-In/tela-principal/tela-principal";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { ModuleComponent } from "@/pages/Programation/module/module";
 
 export const AppRoutes = () => {
   return (
@@ -55,5 +55,5 @@ export const AppRoutes = () => {
         </Route>
       </Routes>
     </BrowserRouter>
-  )
-}
+  );
+};

@@ -1,13 +1,13 @@
-import { useEffect } from "react"
-import { HeaderForms } from "@/components/modules/representative-component/header-forms/header-forms"
-import { Button } from "@/components/ui/button"
+import { useEffect } from "react";
+import { HeaderForms } from "@/components/modules/representative-component/header-forms/header-forms";
+import { Button } from "@/components/ui/button";
 import {
   FormField,
   FormItem,
   FormLabel,
   FormControl,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -16,33 +16,33 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import type { FC } from "react"
-import { FormProvider, useForm, useWatch } from "react-hook-form"
-import { ToastContainer } from "react-toastify"
-import { useCalledStore } from "../entity/hook/use-called"
-import type { TSystemSchemaDto } from "@/features/system/domain/dto/system.dto"
-import { api } from "@/infra/auth/database/acess-api/api"
-import { useQuery } from "@tanstack/react-query"
-import type { Module } from "@/pages/channel/programming/module"
+} from "@/components/ui/select";
+import type { FC } from "react";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
+import { ToastContainer } from "react-toastify";
+import { useCalledStore } from "../entity/hook/use-called";
+import type { TSystemSchemaDto } from "@/features/system/domain/dto/system.dto";
+import { api } from "@/infra/auth/database/acess-api/api";
+import { useQuery } from "@tanstack/react-query";
+import type { Module } from "@/pages/Programation/modules/module";
 
 interface CentralAtendimentoData {
-  system: string
-  module: string
-  type: string
-  description: string
+  system: string;
+  module: string;
+  type: string;
+  description: string;
 }
 
 interface FormProviderProps {
-  initialValues: Partial<CentralAtendimentoData>
-  onNext: (data: CentralAtendimentoData) => void
+  initialValues: Partial<CentralAtendimentoData>;
+  onNext: (data: CentralAtendimentoData) => void;
 }
 
 export const CenterCalledComponent: FC<FormProviderProps> = ({
   initialValues = {},
   onNext,
 }) => {
-  const { updateFormData } = useCalledStore()
+  const { updateFormData } = useCalledStore();
 
   const form = useForm<CentralAtendimentoData>({
     defaultValues: {
@@ -51,38 +51,38 @@ export const CenterCalledComponent: FC<FormProviderProps> = ({
       type: initialValues.type || "",
       description: initialValues.description || "",
     },
-  })
+  });
 
-  const { handleSubmit, control } = form
+  const { handleSubmit, control } = form;
 
   // Use `useWatch` para monitorar mudanças nos valores do formulário
-  const formValues = useWatch({ control })
+  const formValues = useWatch({ control });
 
   useEffect(() => {
-    updateFormData("centralAtendimento", formValues)
-  }, [formValues, updateFormData])
+    updateFormData("centralAtendimento", formValues);
+  }, [formValues, updateFormData]);
 
   const onSubmit = (data: CentralAtendimentoData) => {
-    onNext(data)
-  }
+    onNext(data);
+  };
 
   const { data } = useQuery<TSystemSchemaDto[], Error>({
     queryKey: ["get-systems"],
     queryFn: async () => {
-      const res = await api.get<TSystemSchemaDto[]>("/systems")
-      return res.data
+      const res = await api.get<TSystemSchemaDto[]>("/systems");
+      return res.data;
     },
     refetchOnWindowFocus: true,
     staleTime: 0,
-  })
+  });
 
   const { data: modules } = useQuery({
     queryKey: ["get-modules"],
     queryFn: async () => {
-      const response = await api.get<Module[]>("/modules")
-      return response.data
+      const response = await api.get<Module[]>("/modules");
+      return response.data;
     },
-  })
+  });
 
   return (
     <section className="w-full items-start justify-center p-4 flex flex-col">
@@ -107,7 +107,7 @@ export const CenterCalledComponent: FC<FormProviderProps> = ({
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Sistema</SelectLabel>
-                          {data?.map(system => (
+                          {data?.map((system) => (
                             <SelectItem
                               key={system.id}
                               value={system.name.toLowerCase()}
@@ -136,7 +136,7 @@ export const CenterCalledComponent: FC<FormProviderProps> = ({
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Módulos</SelectLabel>
-                          {modules?.map(module => (
+                          {modules?.map((module) => (
                             <SelectItem key={module.id} value={module.module}>
                               {module.module}
                             </SelectItem>
@@ -195,5 +195,5 @@ export const CenterCalledComponent: FC<FormProviderProps> = ({
       </FormProvider>
       <ToastContainer />
     </section>
-  )
-}
+  );
+};

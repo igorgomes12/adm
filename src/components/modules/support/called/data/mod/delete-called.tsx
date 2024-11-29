@@ -1,29 +1,29 @@
-import { Button } from "@/components/ui/button"
-import api from "@/infra/auth/database/acess-api/interceptors-axios"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
-import { FaRocket } from "react-icons/fa"
-import { IoWarningOutline } from "react-icons/io5"
-import { Flip, toast } from "react-toastify"
-import { TitleMessageDelete } from "@/common/utils/delete-of-message-and-title/title-message-delete"
-import { useCalledStore } from "../entity/hook/use-called"
+import { Button } from "@/components/ui/button";
+import api from "@/infra/auth/database/acess-api/interceptors-axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { FaRocket } from "react-icons/fa";
+import { IoWarningOutline } from "react-icons/io5";
+import { Flip, toast } from "react-toastify";
+import { TitleMessageDelete } from "@/common/utils/delete-of-message-and-title/title-message-delete";
+import { useCalledStore } from "../entity/hook/use-called";
 
 export const ModalCalledDelete = () => {
-  const { id, isOpen, onClose } = useCalledStore()
-  const [isDeleting, setIsDeleting] = useState(false)
-  const queryClient = useQueryClient()
+  const { id, isOpen, onClose } = useCalledStore();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.log("Modal opened with ID:", id)
-  }, [id])
+    console.log("Modal opened with ID:", id);
+  }, [id]);
 
   const { mutate } = useMutation({
     mutationKey: ["delete-called"],
     mutationFn: async () => {
       const res = await api.delete("/called", {
         params: { id },
-      })
-      return res.data
+      });
+      return res.data;
     },
     onSuccess: () => {
       toast.success("Chamado excluído com sucesso!", {
@@ -31,29 +31,29 @@ export const ModalCalledDelete = () => {
         icon: <FaRocket />,
         progressStyle: { background: "#1f62cf" },
         transition: Flip,
-      })
-      queryClient.invalidateQueries({ queryKey: ["called"] })
-      onClose()
+      });
+      queryClient.invalidateQueries({ queryKey: ["called"] });
+      onClose();
     },
-    onError: error => {
-      console.error("Erro ao excluir o chamado:", error)
+    onError: (error) => {
+      console.error("Erro ao excluir o chamado:", error);
       toast.error("Erro ao excluir o chamado. Por favor, tente novamente.", {
         theme: "colored",
         icon: <IoWarningOutline />,
         transition: Flip,
-      })
+      });
     },
     onSettled: () => {
-      setIsDeleting(false)
+      setIsDeleting(false);
     },
-  })
+  });
 
   const handleDelete = () => {
-    setIsDeleting(true)
-    mutate()
-  }
+    setIsDeleting(true);
+    mutate();
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 backdrop-blur-sm">
@@ -83,5 +83,5 @@ export const ModalCalledDelete = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

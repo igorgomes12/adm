@@ -1,47 +1,47 @@
-import type { FC } from "react"
-import { useQuery } from "@tanstack/react-query"
+import type { FC } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "@/components/ui/accordion"
-import { FaEdit, FaTrash } from "react-icons/fa"
-import { useModuleZustand } from "@/components/modules/programming/module/entity/zustand/useModule"
-import { ModalModuleDelete } from "@/components/modules/programming/module/mod/delete-modules"
-import { api } from "@/infra/auth/database/acess-api/api"
-import type { GroupedModules, Module } from "."
+} from "@/components/ui/accordion";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import { useModuleZustand } from "@/components/modules/programming/module/entity/zustand/useModule";
+import { ModalModuleDelete } from "@/components/modules/programming/module/mod/delete-modules";
+import { api } from "@/infra/auth/database/acess-api/api";
+import type { GroupedModules, Module } from "./module";
 
 const groupModulesBySystem = (modules: Module[]): GroupedModules => {
   return modules.reduce<GroupedModules>((acc, module) => {
     if (!acc[module.system]) {
-      acc[module.system] = []
+      acc[module.system] = [];
     }
-    acc[module.system].push(module)
-    return acc
-  }, {})
-}
+    acc[module.system].push(module);
+    return acc;
+  }, {});
+};
 
 export const AccordionModuleComponents: FC = (): JSX.Element => {
-  const { onOpen, mode, isOpen } = useModuleZustand()
+  const { onOpen, mode, isOpen } = useModuleZustand();
 
   const { data, error, isLoading } = useQuery({
     queryKey: ["get-modules"],
     queryFn: async () => {
-      const response = await api.get<Module[]>("/modules")
-      return response.data
+      const response = await api.get<Module[]>("/modules");
+      return response.data;
     },
-  })
+  });
 
   if (isLoading) {
-    return <p>Loading...</p>
+    return <p>Loading...</p>;
   }
 
   if (error) {
-    return <p>Error loading modules</p>
+    return <p>Error loading modules</p>;
   }
 
-  const groupedModules = data ? groupModulesBySystem(data) : {}
+  const groupedModules = data ? groupModulesBySystem(data) : {};
 
   return (
     <div className="flex flex-col gap-2 p-6 overflow-hidden w-full">
@@ -52,7 +52,7 @@ export const AccordionModuleComponents: FC = (): JSX.Element => {
               {system}
             </AccordionTrigger>
             <AccordionContent className="flex flex-col gap-2">
-              {modules.map(module => (
+              {modules.map((module) => (
                 <div
                   key={module.id}
                   className={`flex items-start justify-between w-full gap-2 py-2 ${
@@ -95,5 +95,5 @@ export const AccordionModuleComponents: FC = (): JSX.Element => {
       </Accordion>
       {isOpen && mode === "delete" && <ModalModuleDelete />}
     </div>
-  )
-}
+  );
+};

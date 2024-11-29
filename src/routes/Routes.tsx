@@ -16,6 +16,7 @@ import { Layout } from "@/pages/layout";
 import { TelaPrincipal } from "@/pages/Sign-In/tela-principal/tela-principal";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ModuleComponent } from "@/pages/Programation/module/module";
+import { DescriptionCalled } from "@/pages/Admin/description-called/description-called";
 
 export const AppRoutes = () => {
   return (
@@ -50,6 +51,10 @@ export const AppRoutes = () => {
           <Route path="/usuarios" element={<UsersComponent />} />
           <Route path="/chamados" element={<CalledComponent />} />
           <Route path="/contas" element={<Account />} />
+          <Route
+            path="/descricao-de-chamados"
+            element={<DescriptionCalled />}
+          />
 
           <Route path="*" element={<Navigate to="/tela-principal" />} />
         </Route>

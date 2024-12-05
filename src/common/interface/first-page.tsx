@@ -3,6 +3,7 @@ import { BsFillPersonPlusFill } from "react-icons/bs";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { GrSystem } from "react-icons/gr";
 import { VscFileSubmodule } from "react-icons/vsc";
+import { LuCalendarPlus } from "react-icons/lu";
 
 import {
   FaBell,
@@ -74,19 +75,19 @@ export const menuNavigation = [
           // { label: "Agendar Telemarketing", icon: <FaChartBar /> },
         ],
       },
-      // {
-      //   title: "Utilitários",
-      //   items: [
-      //     { label: "Exportar E-mail", icon: <FaChartBar /> },
-      //     { label: "Comissão", icon: <FaChartBar /> },
-      //     { label: "Pagamento comissão", icon: <FaChartBar /> },
-      //     { label: "Faturamento", icon: <FaChartBar /> },
-      //     { label: "Scheduler", icon: <FaChartBar /> },
-      //     { label: "Acordo", icon: <FaChartBar /> },
-      //     { label: "Máquina", icon: <FaChartBar /> },
-      //     { label: "Config. Empresa", icon: <FaChartBar /> },
-      //   ],
-      // },
+      {
+        title: "Utilitários",
+        items: [
+          // { label: "Exportar E-mail", icon: <FaChartBar /> },
+          // { label: "Comissão", icon: <FaChartBar /> },
+          // { label: "Pagamento comissão", icon: <FaChartBar /> },
+          // { label: "Faturamento", icon: <FaChartBar /> },
+          // { label: "Scheduler", icon: <FaChartBar /> },
+          { label: "Acordo", icon: <LuCalendarPlus /> },
+          // { label: "Máquina", icon: <FaChartBar /> },
+          // { label: "Config. Empresa", icon: <FaChartBar /> },
+        ],
+      },
     ],
   },
   {

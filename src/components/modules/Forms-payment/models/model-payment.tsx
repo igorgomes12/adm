@@ -98,9 +98,8 @@ export const PaymentModal = () => {
     console.log("Dados enviados:", data);
     try {
       await mutation(data);
-      console.log("Requisição enviada com sucesso");
     } catch (error) {
-      console.error("Erro ao enviar a requisição:", error);
+      alert("Erro ao enviar a requisição:");
     }
   };
 

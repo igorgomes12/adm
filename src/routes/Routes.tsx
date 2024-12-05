@@ -17,6 +17,8 @@ import { TelaPrincipal } from "@/pages/Sign-In/tela-principal/tela-principal";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ModuleComponent } from "@/pages/Programation/module/module";
 import { DescriptionCalled } from "@/pages/Admin/description-called/description-called";
+import { AgreementComponent } from "@/pages/Admin/acordo/agreement";
+import { FormAgreement } from "@/pages/Admin/acordo/form-agreement";
 
 export const AppRoutes = () => {
   return (
@@ -55,6 +57,8 @@ export const AppRoutes = () => {
             path="/descricao-de-chamados"
             element={<DescriptionCalled />}
           />
+          <Route path="/acordo" element={<AgreementComponent />} />
+          <Route path="/acordo-form/:id?" element={<FormAgreement />} />
 
           <Route path="*" element={<Navigate to="/tela-principal" />} />
         </Route>

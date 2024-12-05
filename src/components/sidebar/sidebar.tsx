@@ -1,20 +1,20 @@
-import { menuNavigation } from "@/common/interface/first-page"
-import { Separator } from "@/components/ui/separator"
-import { useCallback, useState } from "react"
-import { GoPin } from "react-icons/go"
-import { RxExit } from "react-icons/rx"
-import { useNavigate } from "react-router"
-import { Logout } from "../logout/logout"
+import { menuNavigation } from "@/common/interface/first-page";
+import { Separator } from "@/components/ui/separator";
+import { useCallback, useState } from "react";
+import { GoPin } from "react-icons/go";
+import { RxExit } from "react-icons/rx";
+import { useNavigate } from "react-router";
+import { Logout } from "../logout/logout";
 
 interface Subcategory {
-  title: string
-  items: MenuItem[]
+  title: string;
+  items: MenuItem[];
 }
 
 interface MenuItem {
-  label: string
-  icon: React.ReactNode
-  subcategories?: Subcategory[]
+  label: string;
+  icon: React.ReactNode;
+  subcategories?: Subcategory[];
 }
 
 function normalizeString(str: string) {
@@ -25,64 +25,64 @@ function normalizeString(str: string) {
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/\s+/g, "-")
       .toLowerCase()
-  )
+  );
 }
 
 export default function Sidebar() {
   const [openSubmenus, setOpenSubmenus] = useState<{ [key: string]: boolean }>(
     {}
-  )
-  const [isSidebarCompressed, setIsSidebarCompressed] = useState<boolean>(true)
-  const [isSidebarPinned, setIsSidebarPinned] = useState<boolean>(false)
-  const [showLogoutCard, setShowLogoutCard] = useState(false)
-  const navigate = useNavigate()
+  );
+  const [isSidebarCompressed, setIsSidebarCompressed] = useState<boolean>(true);
+  const [isSidebarPinned, setIsSidebarPinned] = useState<boolean>(false);
+  const [showLogoutCard, setShowLogoutCard] = useState(false);
+  const navigate = useNavigate();
 
   const handlePowerOffClick = () => {
-    setShowLogoutCard(true)
-  }
+    setShowLogoutCard(true);
+  };
 
   const handleConfirmLogout = () => {
-    setShowLogoutCard(false)
-    navigate("/")
-    window.location.reload()
-  }
+    setShowLogoutCard(false);
+    navigate("/");
+    window.location.reload();
+  };
 
   const handleCancelLogout = () => {
-    setShowLogoutCard(false)
-  }
+    setShowLogoutCard(false);
+  };
 
   const handleToggleSubmenu = useCallback((id: string) => {
-    setOpenSubmenus(prev => ({
+    setOpenSubmenus((prev) => ({
       ...prev,
       [id]: !prev[id],
-    }))
-  }, [])
+    }));
+  }, []);
 
   const handleMenuClick = useCallback(() => {
-    setIsSidebarCompressed(prev => !prev)
-    navigate("/dashboard")
-  }, [navigate])
+    setIsSidebarCompressed((prev) => !prev);
+    navigate("/dashboard");
+  }, [navigate]);
 
   const handleMouseEnter = useCallback(() => {
     if (!isSidebarPinned) {
-      setIsSidebarCompressed(false)
+      setIsSidebarCompressed(false);
     }
-  }, [isSidebarPinned])
+  }, [isSidebarPinned]);
 
   const handleMouseLeave = useCallback(() => {
     if (!isSidebarPinned) {
-      setIsSidebarCompressed(true)
+      setIsSidebarCompressed(true);
     }
-  }, [isSidebarPinned])
+  }, [isSidebarPinned]);
 
   const handlePinSidebar = useCallback(() => {
-    setIsSidebarPinned(prev => !prev)
-    setIsSidebarCompressed(false)
-  }, [])
+    setIsSidebarPinned((prev) => !prev);
+    setIsSidebarCompressed(false);
+  }, []);
 
   const renderSubcategories = useCallback(
     (subcategories: Subcategory[], depth = 0) => {
-      return subcategories.map(subcategory => (
+      return subcategories.map((subcategory) => (
         <div
           key={subcategory.title}
           className={`ml-${4 * (depth + 1)} mt-2 w-full gap-2`}
@@ -94,7 +94,7 @@ export default function Sidebar() {
                 className="items-center flex justify-center -ml-1 "
               />
             ) : (
-              <p>{subcategory.title}</p>
+              <p className="text-lime-400">{subcategory.title}</p>
             )}
           </div>
           {subcategory.items.map((item: MenuItem) => (
@@ -115,9 +115,9 @@ export default function Sidebar() {
                 }`}
                 onClick={() => {
                   if (item.subcategories) {
-                    handleToggleSubmenu(item.label)
+                    handleToggleSubmenu(item.label);
                   } else {
-                    navigate(`/${normalizeString(item.label)}`)
+                    navigate(`/${normalizeString(item.label)}`);
                   }
                 }}
                 title={item.label}
@@ -135,10 +135,10 @@ export default function Sidebar() {
             </div>
           ))}
         </div>
-      ))
+      ));
     },
     [isSidebarCompressed, openSubmenus, navigate, handleToggleSubmenu]
-  )
+  );
 
   return (
     <div className="flex">
@@ -204,7 +204,7 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {menuNavigation.map(menu => (
+        {menuNavigation.map((menu) => (
           <div key={menu.id} className="mb-2">
             <button
               type="button"
@@ -232,5 +232,5 @@ export default function Sidebar() {
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -4,6 +4,8 @@ import { GiTakeMyMoney } from "react-icons/gi";
 import { GrSystem } from "react-icons/gr";
 import { VscFileSubmodule } from "react-icons/vsc";
 import { LuCalendarPlus } from "react-icons/lu";
+import { FaCreditCard } from "react-icons/fa6";
+import { LuBookOpen } from "react-icons/lu";
 
 import {
   FaBell,
@@ -37,10 +39,10 @@ export const menuNavigation = [
           { label: "Tipo Estabelecimento", icon: <BiBuildingHouse /> },
         ],
       },
-      // {
-      //   title: "Lançamentos",
-      //   items: [{ label: "Planilha de Venda", icon: <BsJournalPlus /> }],
-      // },
+      {
+        title: "Lançamentos",
+        items: [{ label: "Orçamentos", icon: <LuBookOpen /> }],
+      },
     ],
   },
   // { id: "relatorios", label: "Relatórios", link: "#", icon: <FaChartBar /> },
@@ -72,6 +74,7 @@ export const menuNavigation = [
           // },
           { label: "Formas de Pagamento", icon: <GiTakeMyMoney /> },
           { label: "Descrição de Chamados", icon: <FaPenToSquare /> },
+          // { label: "Administradora de Cartão", icon: <FaCreditCard /> },
           // { label: "Agendar Telemarketing", icon: <FaChartBar /> },
         ],
       },
@@ -97,7 +100,10 @@ export const menuNavigation = [
     subcategories: [
       {
         title: "Conta",
-        items: [{ label: "Contas", icon: <RiSafe2Line /> }],
+        items: [
+          { label: "Contas", icon: <RiSafe2Line /> },
+          { label: "Administradora de Cartão", icon: <FaCreditCard /> },
+        ],
       },
     ],
   },

@@ -17,8 +17,10 @@ import { TelaPrincipal } from "@/pages/Sign-In/tela-principal/tela-principal";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ModuleComponent } from "@/pages/Programation/module/module";
 import { DescriptionCalled } from "@/pages/Admin/description-called/description-called";
-import { AgreementComponent } from "@/pages/Admin/acordo/agreement";
-import { FormAgreement } from "@/pages/Admin/acordo/form-agreement";
+import { AgreementComponent } from "@/pages/Admin/agreement/agreement";
+import { FormAgreement } from "@/pages/Admin/agreement/form-agreement";
+import { CardAdmComponent } from "@/pages/Finance/card-adm/card-adm";
+import { BugetComponent } from "@/pages/Admin/budget/budget";
 
 export const AppRoutes = () => {
   return (
@@ -57,6 +59,11 @@ export const AppRoutes = () => {
             path="/descricao-de-chamados"
             element={<DescriptionCalled />}
           />
+          <Route
+            path="/administradora-de-cartao"
+            element={<CardAdmComponent />}
+          />
+          <Route path="/orcamentos" element={<BugetComponent />} />
           <Route path="/acordo" element={<AgreementComponent />} />
           <Route path="/acordo-form/:id?" element={<FormAgreement />} />
 

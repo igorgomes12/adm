@@ -7,14 +7,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { FC } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { ToastContainer } from "react-toastify";
-import {
-  RegisterSchema,
-  type TSchemaRegisterSchema,
-} from "../dtos/regiter.zod";
 import {
   Select,
   SelectContent,
@@ -24,20 +16,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { FC } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { ToastContainer } from "react-toastify";
+import { type TSchemaPaymentSchema, paymentSchema } from "../dtos/regiter.zod";
 
 interface IDadosGeraisDoAcordo {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  onNext: (data: any) => void;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  initialValues: any;
+  onNext: (data: TSchemaPaymentSchema) => void;
+  initialValues: TSchemaPaymentSchema;
 }
 
 export const ModalFormasDePagamento: FC<IDadosGeraisDoAcordo> = ({
   initialValues,
   onNext,
 }): JSX.Element => {
-  const form = useForm<TSchemaRegisterSchema>({
-    resolver: zodResolver(RegisterSchema),
+  const form = useForm<TSchemaPaymentSchema>({
+    resolver: zodResolver(paymentSchema),
     defaultValues: initialValues,
   });
   const {
@@ -45,7 +40,7 @@ export const ModalFormasDePagamento: FC<IDadosGeraisDoAcordo> = ({
     handleSubmit,
     formState: { errors },
   } = form;
-  const onSubmit = (data: TSchemaRegisterSchema) => {
+  const onSubmit = (data: TSchemaPaymentSchema) => {
     console.log(data);
     onNext(data);
   };

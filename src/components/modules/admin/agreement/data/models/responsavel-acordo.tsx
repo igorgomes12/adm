@@ -7,14 +7,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { FC } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { ToastContainer } from "react-toastify";
-import {
-  RegisterSchema,
-  type TSchemaRegisterSchema,
-} from "../dtos/regiter.zod";
 import {
   Select,
   SelectContent,
@@ -23,20 +15,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { FC } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { ToastContainer } from "react-toastify";
+import {
+  ResponsableSchema,
+  type TSchemaResponsableSchema,
+} from "../dtos/regiter.zod";
 
 interface IDadosGeraisDoAcordo {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  onNext: (data: any) => void;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  initialValues: any;
+  onNext: (data: TSchemaResponsableSchema) => void;
+  initialValues: TSchemaResponsableSchema;
 }
 
 export const ModalResponsavelAcordo: FC<IDadosGeraisDoAcordo> = ({
   initialValues,
   onNext,
 }): JSX.Element => {
-  const form = useForm<TSchemaRegisterSchema>({
-    resolver: zodResolver(RegisterSchema),
+  const form = useForm<TSchemaResponsableSchema>({
+    resolver: zodResolver(ResponsableSchema),
     defaultValues: initialValues,
   });
   const {
@@ -44,7 +42,7 @@ export const ModalResponsavelAcordo: FC<IDadosGeraisDoAcordo> = ({
     handleSubmit,
     formState: { errors },
   } = form;
-  const onSubmit = (data: TSchemaRegisterSchema) => {
+  const onSubmit = (data: TSchemaResponsableSchema) => {
     console.log(data);
     onNext(data);
   };

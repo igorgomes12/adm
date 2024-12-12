@@ -1,4 +1,5 @@
-import { HeaderForms } from "@/components/modules/representative-component/header-forms/header-forms";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
@@ -8,14 +9,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { FC } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { ToastContainer } from "react-toastify";
-import {
-  RegisterSchema,
-  type TSchemaRegisterSchema,
-} from "../dtos/regiter.zod";
 import {
   Select,
   SelectContent,
@@ -24,35 +17,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DadosRegisterSchema,
+  type TSchemaDadosRegisterSchema,
+} from "../dtos/regiter.zod";
+import { format } from "date-fns";
+import type { FC } from "react";
+import { ToastContainer } from "react-toastify";
+import { formatCurrency } from "@/common/regex/money";
 
 interface IDadosGeraisDoAcordo {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  onNext: (data: any) => void;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  initialValues: any;
+  onNext: (data: TSchemaDadosRegisterSchema) => void;
+  initialValues: TSchemaDadosRegisterSchema;
 }
 
 export const ModalDadosGeraisDoAcordo: FC<IDadosGeraisDoAcordo> = ({
   initialValues,
   onNext,
-}): JSX.Element => {
-  const form = useForm<TSchemaRegisterSchema>({
-    resolver: zodResolver(RegisterSchema),
+}) => {
+  const form = useForm<TSchemaDadosRegisterSchema>({
+    resolver: zodResolver(DadosRegisterSchema),
     defaultValues: initialValues,
   });
+
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = form;
-  const onSubmit = (data: TSchemaRegisterSchema) => {
+
+  const onSubmit = (data: TSchemaDadosRegisterSchema) => {
     console.log(data);
     onNext(data);
   };
 
   return (
     <section className="w-full items-start justify-center p-4 flex flex-col">
-      <HeaderForms title="Dados Gerais do acordo" />
       <FormProvider {...form}>
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -67,7 +68,12 @@ export const ModalDadosGeraisDoAcordo: FC<IDadosGeraisDoAcordo> = ({
                   <FormItem className="w-full">
                     <FormLabel htmlFor="id">Código</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Código" />
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        placeholder="Código"
+                      />
                     </FormControl>
                     <FormMessage>{errors.id?.message}</FormMessage>
                   </FormItem>
@@ -78,15 +84,27 @@ export const ModalDadosGeraisDoAcordo: FC<IDadosGeraisDoAcordo> = ({
               <FormField
                 control={control}
                 name="time"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel htmlFor="time">Hora</FormLabel>
-                    <FormControl>
-                      <Input type="datetime-local" {...field} id="time" />
-                    </FormControl>
-                    <FormMessage>{errors.time?.message}</FormMessage>
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const formattedValue = field.value
+                    ? format(new Date(field.value), "yyyy-MM-dd'T'HH:mm")
+                    : "";
+
+                  return (
+                    <FormItem className="w-full">
+                      <FormLabel htmlFor="time">Hora</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="datetime-local"
+                          {...field}
+                          id="time"
+                          value={formattedValue}
+                          onChange={(e) => field.onChange(e.target.value)}
+                        />
+                      </FormControl>
+                      <FormMessage>{errors.time?.message}</FormMessage>
+                    </FormItem>
+                  );
+                }}
               />
             </div>
             <div className="flex w-full gap-2">
@@ -142,7 +160,18 @@ export const ModalDadosGeraisDoAcordo: FC<IDadosGeraisDoAcordo> = ({
                   <FormItem className="w-full">
                     <FormLabel htmlFor="value">Valor</FormLabel>
                     <FormControl>
-                      <Input {...field} id="value" />
+                      <Input
+                        {...field}
+                        id="value"
+                        value={field.value || ""}
+                        onChange={(e) => {
+                          const formattedValue = formatCurrency(e.target.value);
+                          setValue("value", formattedValue, {
+                            shouldValidate: true,
+                          });
+                        }}
+                        placeholder="R$ 0,00"
+                      />
                     </FormControl>
                     <FormMessage>{errors.value?.message}</FormMessage>
                   </FormItem>

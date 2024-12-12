@@ -12,18 +12,16 @@ import type { FC } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { ToastContainer } from "react-toastify";
 import {
-  RegisterSchema,
-  type TSchemaRegisterSchema,
+  situationSchema,
+  type TSchemaSituationSchema,
 } from "../dtos/regiter.zod";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { translateType } from "@/components/modules/representative-component/table-representative";
 
 interface IDadosGeraisDoAcordo {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  onNext: (data: any) => void;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  initialValues: any;
+  onNext: (data: TSchemaSituationSchema) => void;
+  initialValues: TSchemaSituationSchema;
 }
 
 interface IOption {
@@ -47,8 +45,8 @@ export const ModalSituacaoPagamento: FC<IDadosGeraisDoAcordo> = ({
   initialValues,
   onNext,
 }) => {
-  const form = useForm<TSchemaRegisterSchema>({
-    resolver: zodResolver(RegisterSchema),
+  const form = useForm<TSchemaSituationSchema>({
+    resolver: zodResolver(situationSchema),
     defaultValues: initialValues,
   });
 
@@ -58,7 +56,7 @@ export const ModalSituacaoPagamento: FC<IDadosGeraisDoAcordo> = ({
     formState: { errors },
   } = form;
 
-  const onSubmit = (data: TSchemaRegisterSchema) => {
+  const onSubmit = (data: TSchemaSituationSchema) => {
     console.log(data);
     onNext(data);
   };
